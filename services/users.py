@@ -13,22 +13,28 @@ db.commit()
 
 class UserServise:
 
+    def __init__(self, sql, db):
+        self.sql = sql
+        self.db = db
+
     def get_users(self) -> list:
         items = []
-        # for value in sql.execute("SELECT * FROM users"):
-        #     items.append(value)
+        for value in self.sql.execute("SELECT * FROM users"):
+            items.append(value)
 
         return items
 
 
     def register(self, payload: Creds) -> None:
-        pass
-        # sql.execute("SELECT username FROM users")
-        # if sql.fetchone() is None:
-        #     sql.execute("INSERT INTO users (role, username, password) VALUES (?, ?, ?)", ('user', payload.username, payload.password))
-        #     db.commit()
+        self.sql.execute("SELECT username FROM users")
+
+        role = "user"
+
+        if self.sql.fetchone() is None:
+            self.sql.execute("INSERT INTO users VALUES (?, ?, ?)", (role, payload.username, payload.password))
+            self.db.commit()
 
 
 
 
-user_service: UserServise = UserServise()
+user_service: UserServise = UserServise(sql, db)
