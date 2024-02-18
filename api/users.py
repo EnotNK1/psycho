@@ -16,7 +16,7 @@ def register_user(data: Creds):
 @router.get(
     "/users",
     status_code=200,
-    response_model=list[User],
+    response_model=list,
 )
 def get_users():
     return user_service.get_users()
