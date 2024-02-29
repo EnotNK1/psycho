@@ -2,9 +2,12 @@ import pydantic
 import uuid
 
 class Creds(pydantic.BaseModel):
-    username: str
+    email: str
     password: str
 
-class User(pydantic.BaseModel):
-    id: uuid.UUID
+class Reg(pydantic.BaseModel):
+    email: str
     username: str
+    password: str
+    confirm_password: str
+    gender: str

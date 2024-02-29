@@ -1,8 +1,11 @@
 import psycopg2
 from psycopg2 import Error
+from database.tables import create_user_table
+import uuid
 
+create_user_table()
 
-def create_users_table():
+def register_user(id, email, username, password, verified, gender, description, active, role_id):
     try:
         connection = psycopg2.connect(
             user="postgres",
@@ -14,48 +17,52 @@ def create_users_table():
 
         cursor = connection.cursor()
 
-        create_table_query = '''CREATE TABLE IF NOT EXISTS users (
-                                id SERIAL PRIMARY KEY,
-                                username VARCHAR(50) UNIQUE NOT NULL,
-                                password VARCHAR(50) NOT NULL); '''
-
-        cursor.execute(create_table_query)
-        connection.commit()
-        cursor.close()
-        connection.close()
-        print("Соединение с PostgreSQL закрыто")
-    except (Exception, Error) as error:
-        print("Ошибка при работе с PostgreSQL", error)
-
-
-def register_user(username, password):
-    try:
-        connection = psycopg2.connect(
-            user="postgres",
-            password="postgresosikati",
-            host="localhost",
-            port="5432",
-            database="psycho"
-        )
-
-        cursor = connection.cursor()
-
-        insert_query = """INSERT INTO users (username, password) VALUES (%s, %s)"""
-        record_to_insert = (username, password)
+        insert_query = """INSERT INTO users (id, email, username, password, verified, gender, description, active, role_id) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)"""
+        record_to_insert = (id, email, username, password, verified, gender, description, active, role_id)
 
         cursor.execute(insert_query, record_to_insert)
         connection.commit()
         print("Пользователь успешно зарегистрирован")
         cursor.close()
         connection.close()
+        return 0
 
     except (Exception, Error) as error:
         print("Ошибка при работе с PostgreSQL", error)
+        return -1
 
+# register_user(uuid.uuid4().__str__(), "admin@mail.ru", "admin", "admin", True, "male", "", True, "0")
 
-# Пример использования функций
-create_users_table()
-
+# def check_admin(email, password):
+#     try:
+#         connection = psycopg2.connect(
+#             user="postgres",
+#             password="postgresosikati",
+#             host="localhost",
+#             port="5432",
+#             database="psycho"
+#         )
+#
+#         cursor = connection.cursor()
+#
+#         query = "SELECT role_id FROM users WHERE email = %s"
+#         cursor.execute(query, (email,))
+#         role_id = cursor.fetchone()
+#
+#         query = "SELECT password FROM users WHERE email = %s"
+#         cursor.execute(query, (email,))
+#         confirm_password = cursor.fetchone()
+#
+#         cursor.close()
+#         connection.close()
+#         if (confirm_password == password and role_id == "0"):
+#             return 0
+#         else:
+#             return -1
+#
+#     except (Exception, Error) as error:
+#         print("Ошибка при работе с PostgreSQL", error)
+#         return -1
 
 def get_all_users():
     try:
@@ -78,13 +85,19 @@ def get_all_users():
 
         # Вывод результатов
         user_list = []
-        user_item = []
+        user_dict = {}
         for user in users:
-            user_item.append(user[0])
-            user_item.append(user[1])
-            user_item.append(user[2])
-            user_list.append(user_item)
-            user_item = []
+            user_dict['id'] = user[0]
+            user_dict['email'] = user[1]
+            user_dict['username'] = user[2]
+            user_dict['password'] = user[3]
+            user_dict['verified'] = user[4]
+            user_dict['gender'] = user[5]
+            user_dict['description'] = user[6]
+            user_dict['active'] = user[7]
+            user_dict['role_id'] = user[8]
+            user_list.append(user_dict)
+            user_dict = {}
 
         cursor.close()
         connection.close()
