@@ -64,6 +64,88 @@ def register_user(id, email, username, password, verified, gender, description, 
 #         print("Ошибка при работе с PostgreSQL", error)
 #         return -1
 
+def check_user(email, password):
+    try:
+        connection = psycopg2.connect(
+            user="postgres",
+            password="postgresosikati",
+            host="localhost",
+            port="5432",
+            database="psycho"
+        )
+
+        cursor = connection.cursor()
+
+        query = "SELECT password FROM users WHERE email = %s"
+        cursor.execute(query, (email,))
+        confirm_password = cursor.fetchone()
+
+        cursor.close()
+        connection.close()
+        if (confirm_password[0] == password):
+            return 0
+        else:
+            return -1
+
+    except (Exception, Error) as error:
+        print("Ошибка при работе с PostgreSQL", error)
+        return -1
+
+def check_role(user_id):
+    try:
+        connection = psycopg2.connect(
+            user="postgres",
+            password="postgresosikati",
+            host="localhost",
+            port="5432",
+            database="psycho"
+        )
+
+        cursor = connection.cursor()
+
+        query = "SELECT role_id FROM users WHERE id = %s"
+        cursor.execute(query, (user_id,))
+        confirm_id = cursor.fetchone()
+
+        cursor.close()
+        connection.close()
+        if (confirm_id[0] == "0"):
+            return 0
+        elif (confirm_id[0] == "1"):
+            return 1
+        elif (confirm_id[0] == "2"):
+            return 2
+        else:
+            return -1
+
+    except (Exception, Error) as error:
+        print("Ошибка при работе с PostgreSQL", error)
+        return -1
+
+def get_id_user(email):
+    try:
+        connection = psycopg2.connect(
+            user="postgres",
+            password="postgresosikati",
+            host="localhost",
+            port="5432",
+            database="psycho"
+        )
+
+        cursor = connection.cursor()
+
+        query = "SELECT id FROM users WHERE email = %s"
+        cursor.execute(query, (email,))
+        id_user = cursor.fetchone()
+
+        cursor.close()
+        connection.close()
+        return id_user[0]
+
+    except (Exception, Error) as error:
+        print("Ошибка при работе с PostgreSQL", error)
+        return -1
+
 def get_all_users():
     try:
         connection = psycopg2.connect(
