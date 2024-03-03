@@ -1,8 +1,10 @@
-from schemas.users import Creds, Reg
-from database.database import register_user, get_all_users, check_user, get_id_user, check_role
+from schemas.users import Creds, Reg, ResetPassword
+from database.database import register_user, get_all_users, check_user, get_id_user, check_role, get_password_user
+from services.auth import send_email
 from services.auth import generate_token, verify_token
 import uuid
 from starlette.responses import JSONResponse, Response
+from smtplib import SMTPRecipientsRefused
 
 class UserServise:
 
@@ -11,9 +13,14 @@ class UserServise:
             return "not token"
         token_data = verify_token(access_token)
 
+        if token_data == 'Token has expired':
+            return "Token has expired"
+        elif token_data == 'Invalid token':
+            return  "Invalid token"
+
         role = check_role(token_data['user_id'])
 
-        if (role == 0):
+        if role == 0:
             items = get_all_users()
             return items
         else:
@@ -21,7 +28,7 @@ class UserServise:
 
     def authorization (self, payload: Creds, response: Response):
 
-        if (check_user(payload.email, payload.password) == 0):
+        if check_user(payload.email, payload.password) == 0:
             id_user = get_id_user(payload.email)
 
             token = generate_token(id_user)
@@ -32,11 +39,26 @@ class UserServise:
 
     def register(self, payload: Reg) -> str:
 
-        if (payload.password == payload.confirm_password):
-            if (register_user(uuid.uuid4().__str__(), payload.email, payload.username, payload.password, False, payload.gender, "", True, "1") == 0):
+        if payload.password == payload.confirm_password:
+            if register_user(uuid.uuid4().__str__(), payload.email, payload.username, payload.password, False, payload.gender, "", True, "1") == 0:
                 return "Successfully"
             else:
                 return "A user with this email address has already been registered"
+
+    def reset_password(self, payload: ResetPassword) -> str:
+
+        if get_id_user(payload.email) != -1:
+            try:
+                user_password = get_password_user(payload.email)
+                subject = "Password Reset"
+                message = f"Your password is: {user_password}"
+                send_email(payload.email, subject, message)
+                return "The password email has been sent"
+            except SMTPRecipientsRefused:
+                return "incorrect email"
+        else:
+            return "No user with this e-mail account was found"
+
 
 
 
