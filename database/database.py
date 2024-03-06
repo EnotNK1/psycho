@@ -31,7 +31,7 @@ def register_user(id, email, username, password, verified, gender, description, 
         print("Ошибка при работе с PostgreSQL", error)
         return -1
 
-# register_user(uuid.uuid4().__str__(), "admin@mail.ru", "admin", "admin", True, "male", "", True, "0")
+register_user(uuid.uuid4().__str__(), "admin@mail.ru", "admin", "admin", True, "male", "", True, "0")
 
 def check_user(email, password):
     try:

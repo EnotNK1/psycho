@@ -12,7 +12,7 @@ router = APIRouter()
     "/users",
     response_model=None,
 )
-def register_user(data: Reg):
+async def register_user(data: Reg):
     return user_service.register(data)
 
 
@@ -20,7 +20,7 @@ def register_user(data: Reg):
     "/users/auth",
     response_model=None,
 )
-def auth_user(data: Creds, response: Response):
+async def auth_user(data: Creds, response: Response):
     return user_service.authorization(data, response)
 
 
@@ -29,7 +29,7 @@ def auth_user(data: Creds, response: Response):
     status_code=200,
     response_model=None,
 )
-def get_users(access_token: str = Cookie(None)):
+async def get_users(access_token: str = Cookie(None)):
     return user_service.get_users(access_token)
 
 
@@ -37,5 +37,5 @@ def get_users(access_token: str = Cookie(None)):
     "/users/reset_password",
     response_model=None,
 )
-def reset_password(data: ResetPassword):
+async def reset_password(data: ResetPassword):
     return user_service.reset_password(data)

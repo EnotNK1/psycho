@@ -8,7 +8,7 @@ from smtplib import SMTPRecipientsRefused
 
 class UserServise:
 
-    def get_users(self, access_token) -> list or str:
+    async def get_users(self, access_token) -> list or str:
         if not access_token:
             return "not token"
         token_data = verify_token(access_token)
@@ -26,7 +26,7 @@ class UserServise:
         else:
             return "access denied"
 
-    def authorization (self, payload: Creds, response: Response):
+    async def authorization (self, payload: Creds, response: Response):
 
         if check_user(payload.email, payload.password) == 0:
             id_user = get_id_user(payload.email)
@@ -37,7 +37,7 @@ class UserServise:
         else:
             return "error"
 
-    def register(self, payload: Reg) -> str:
+    async def register(self, payload: Reg) -> str:
 
         if payload.password == payload.confirm_password:
             if register_user(uuid.uuid4().__str__(), payload.email, payload.username, payload.password, False, payload.gender, "", True, "1") == 0:
@@ -45,7 +45,7 @@ class UserServise:
             else:
                 return "A user with this email address has already been registered"
 
-    def reset_password(self, payload: ResetPassword) -> str:
+    async def reset_password(self, payload: ResetPassword) -> str:
 
         if get_id_user(payload.email) != -1:
             try:
