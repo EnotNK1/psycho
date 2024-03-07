@@ -1,182 +1,116 @@
-import psycopg2
 from psycopg2 import Error
-from database.tables import create_user_table
+from sqlalchemy import Integer, String, create_engine, select
+from sqlalchemy.orm import sessionmaker
+from database.tables import Users, Base
 import uuid
 
-create_user_table()
+engine = create_engine(url="postgresql://postgres:postgresosikati@localhost:5432/psycho", echo=False)
+
+session_factory = sessionmaker(engine)
+
+def create_tables():
+    # Base.metadata.drop_all(engine)
+    Base.metadata.create_all(engine)
+create_tables()
 
 def register_user(id, email, username, password, verified, gender, description, active, role_id):
-    try:
-        connection = psycopg2.connect(
-            user="postgres",
-            password="postgresosikati",
-            host="localhost",
-            port="5432",
-            database="psycho"
-        )
-
-        cursor = connection.cursor()
-
-        insert_query = """INSERT INTO users (id, email, username, password, verified, gender, description, active, role_id) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)"""
-        record_to_insert = (id, email, username, password, verified, gender, description, active, role_id)
-
-        cursor.execute(insert_query, record_to_insert)
-        connection.commit()
-        print("Пользователь успешно зарегистрирован")
-        cursor.close()
-        connection.close()
-        return 0
-
-    except (Exception, Error) as error:
-        print("Ошибка при работе с PostgreSQL", error)
-        return -1
-
-register_user(uuid.uuid4().__str__(), "admin@mail.ru", "admin", "admin", True, "male", "", True, "0")
+    with session_factory() as session:
+        try:
+            user = Users(id=id,
+                         email=email,
+                         username=username,
+                         password=password,
+                         verified=verified,
+                         gender=gender,
+                         description=description,
+                         active=active,
+                         role_id=role_id
+                         )
+            session.add(user)
+            session.commit()
+            return 0
+        except (Exception, Error) as error:
+            print(error)
+            return -1
+# register_user(uuid.uuid4().__str__(), "admin", "admin", "admin", True, True, "", True, 0)
 
 def check_user(email, password):
-    try:
-        connection = psycopg2.connect(
-            user="postgres",
-            password="postgresosikati",
-            host="localhost",
-            port="5432",
-            database="psycho"
-        )
+    with session_factory() as session:
+        try:
+            user = session.query(Users).filter_by(email=email).one()
+            pas = user.password
 
-        cursor = connection.cursor()
+            if pas == password:
+                return 0
+            else:
+                return -1
 
-        query = "SELECT password FROM users WHERE email = %s"
-        cursor.execute(query, (email,))
-        confirm_password = cursor.fetchone()
-
-        cursor.close()
-        connection.close()
-        if (confirm_password[0] == password):
-            return 0
-        else:
+        except (Exception, Error) as error:
+            print(error)
+            print("xyi")
             return -1
 
-    except (Exception, Error) as error:
-        print("Ошибка при работе с PostgreSQL", error)
-        return -1
+def check_role(id):
+    with session_factory() as session:
+        try:
+            user = session.get(Users, id)
+            role_id = user.role_id
+            if role_id == 0:
+                return 0
+            elif role_id == 1:
+                return 1
+            elif role_id == 2:
+                return 2
+            else:
+                return -1
 
-
-def check_role(user_id):
-    try:
-        connection = psycopg2.connect(
-            user="postgres",
-            password="postgresosikati",
-            host="localhost",
-            port="5432",
-            database="psycho"
-        )
-
-        cursor = connection.cursor()
-
-        query = "SELECT role_id FROM users WHERE id = %s"
-        cursor.execute(query, (user_id,))
-        confirm_id = cursor.fetchone()
-
-        cursor.close()
-        connection.close()
-        if (confirm_id[0] == "0"):
-            return 0
-        elif (confirm_id[0] == "1"):
-            return 1
-        elif (confirm_id[0] == "2"):
-            return 2
-        else:
+        except (Exception, Error) as error:
+            print(error)
             return -1
-
-    except (Exception, Error) as error:
-        print("Ошибка при работе с PostgreSQL", error)
-        return -1
 
 def get_id_user(email):
-    try:
-        connection = psycopg2.connect(
-            user="postgres",
-            password="postgresosikati",
-            host="localhost",
-            port="5432",
-            database="psycho"
-        )
+    with session_factory() as session:
+        try:
+            user = session.query(Users).filter_by(email=email).one()
+            return user.id
 
-        cursor = connection.cursor()
-
-        query = "SELECT id FROM users WHERE email = %s"
-        cursor.execute(query, (email,))
-        id_user = cursor.fetchone()
-
-        cursor.close()
-        connection.close()
-        return id_user[0]
-
-    except (Exception, Error) as error:
-        print("Ошибка при работе с PostgreSQL", error)
-        return -1
+        except (Exception, Error) as error:
+            print(error)
+            return -1
 
 def get_password_user(email):
-    try:
-        connection = psycopg2.connect(
-            user="postgres",
-            password="postgresosikati",
-            host="localhost",
-            port="5432",
-            database="psycho"
-        )
+    with session_factory() as session:
+        try:
+            user = session.query(Users).filter_by(email=email).one()
+            return user.password
 
-        cursor = connection.cursor()
-
-        query = "SELECT password FROM users WHERE email = %s"
-        cursor.execute(query, (email,))
-        password_user = cursor.fetchone()
-
-        cursor.close()
-        connection.close()
-        return password_user[0]
-
-    except (Exception, Error) as error:
-        print("Ошибка при работе с PostgreSQL", error)
-        return -1
+        except (Exception, Error) as error:
+            print(error)
+            return -1
 
 def get_all_users():
-    try:
-        connection = psycopg2.connect(
-            user="postgres",
-            password="postgresosikati",
-            host="localhost",
-            port="5432",
-            database="psycho"
-        )
+    with session_factory() as session:
+        try:
+            query = select(Users)
+            result = session.execute(query)
+            users = result.scalars().all()
 
-        cursor = connection.cursor()
-
-        select_query = """SELECT * FROM users"""
-
-        cursor.execute(select_query)
-
-        # Получение результатов запроса
-        users = cursor.fetchall()
-
-        # Вывод результатов
-        user_list = []
-        user_dict = {}
-        for user in users:
-            user_dict['id'] = user[0]
-            user_dict['email'] = user[1]
-            user_dict['username'] = user[2]
-            user_dict['password'] = user[3]
-            user_dict['verified'] = user[4]
-            user_dict['gender'] = user[5]
-            user_dict['description'] = user[6]
-            user_dict['active'] = user[7]
-            user_dict['role_id'] = user[8]
-            user_list.append(user_dict)
+            user_list = []
             user_dict = {}
+            for user in users:
+                user_dict['id'] = user.id
+                user_dict['email'] = user.email
+                user_dict['username'] = user.username
+                user_dict['password'] = user.password
+                user_dict['verified'] = user.verified
+                user_dict['gender'] = user.gender
+                user_dict['description'] = user.description
+                user_dict['active'] = user.active
+                user_dict['role_id'] = user.role_id
+                user_list.append(user_dict)
+                user_dict = {}
+            return user_list
 
-        cursor.close()
-        connection.close()
-        return user_list
-    except (Exception, Error) as error:
-        print("Ошибка при работе с PostgreSQL", error)
+        except (Exception, Error) as error:
+            print(error)
+            return -1

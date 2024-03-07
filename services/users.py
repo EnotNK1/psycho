@@ -40,7 +40,7 @@ class UserServise:
     def register(self, payload: Reg) -> str:
 
         if payload.password == payload.confirm_password:
-            if register_user(uuid.uuid4().__str__(), payload.email, payload.username, payload.password, False, payload.gender, "", True, "1") == 0:
+            if register_user(uuid.uuid4().__str__(), payload.email, payload.username, payload.password, False, True, "", True, "1") == 0:
                 return "Successfully"
             else:
                 return "A user with this email address has already been registered"
