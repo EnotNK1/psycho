@@ -10,6 +10,10 @@ class Reg(pydantic.BaseModel):
     username: str
     password: str
     confirm_password: str
+    role: int
 
 class ResetPassword(pydantic.BaseModel):
     email: str
+
+class AddProblem(pydantic.BaseModel):
+    description: str

@@ -1,7 +1,7 @@
 import uuid
 
 from fastapi import APIRouter, Cookie
-from schemas.users import Creds, Reg, ResetPassword
+from schemas.users import Creds, Reg, ResetPassword, AddProblem
 from services.users import user_service
 from starlette.responses import JSONResponse, Response
 
@@ -39,3 +39,10 @@ def get_users(access_token: str = Cookie(None)):
 )
 def reset_password(data: ResetPassword):
     return user_service.reset_password(data)
+
+@router.post(
+    "/users/new_problem",
+    response_model=None,
+)
+def add_problem(data: AddProblem, access_token: str = Cookie(None)):
+    return user_service.add_problem(data, access_token)

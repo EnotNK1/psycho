@@ -1,5 +1,5 @@
-from schemas.users import Creds, Reg, ResetPassword
-from database.database import register_user, get_all_users, check_user, get_id_user, check_role, get_password_user
+from schemas.users import Creds, Reg, ResetPassword, AddProblem
+from database.database import register_user, get_all_users, check_user, get_id_user, check_role, get_password_user, add_problem_db
 from services.auth import send_email
 from services.auth import generate_token, verify_token
 import uuid
@@ -18,7 +18,7 @@ class UserServise:
         elif token_data == 'Invalid token':
             return  "Invalid token"
 
-        role = check_role(token_data['user_id'])
+        role = check_role(uuid.UUID(token_data['user_id']))
 
         if role == 0:
             items = get_all_users()
@@ -39,11 +39,16 @@ class UserServise:
 
     def register(self, payload: Reg) -> str:
 
-        if payload.password == payload.confirm_password:
-            if register_user(uuid.uuid4().__str__(), payload.email, payload.username, payload.password, False, True, "", True, "1") == 0:
-                return "Successfully"
+        if payload.role == 1 or payload.role == 2:
+            if payload.password == payload.confirm_password:
+                if register_user(uuid.uuid4(), payload.username, payload.email, payload.password, "", False, False, "", "", payload.role, False) == 0:
+                    return "Successfully"
+                else:
+                    return "A user with this email address has already been registered"
             else:
-                return "A user with this email address has already been registered"
+                return "Password mismatch"
+        else:
+            return "Role is incorrect"
 
     def reset_password(self, payload: ResetPassword) -> str:
 
@@ -58,6 +63,20 @@ class UserServise:
                 return "incorrect email"
         else:
             return "No user with this e-mail account was found"
+
+    def add_problem(self, payload: AddProblem, access_token):
+        if not access_token:
+            return "not token"
+        token_data = verify_token(access_token)
+
+        if token_data == 'Token has expired':
+            return "Token has expired"
+        elif token_data == 'Invalid token':
+            return  "Invalid token"
+
+        add_problem_db(token_data['user_id'], payload.description)
+
+        return "Successfully"
 
 
 

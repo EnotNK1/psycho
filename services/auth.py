@@ -9,7 +9,7 @@ def generate_token(user_id):
     expiry = datetime.utcnow() + timedelta(hours=1)
 
     # Создание токена с идентификатором пользователя и сроком действия
-    token = jwt.encode({'user_id': user_id, 'exp': expiry}, 'secret_key', algorithm='HS256')
+    token = jwt.encode({'user_id': str(user_id), 'exp': expiry}, 'secret_key', algorithm='HS256')
 
     return token
 

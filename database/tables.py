@@ -1,5 +1,9 @@
-from sqlalchemy import Table, Column, UUID, Integer, String
-from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
+import enum
+import uuid
+
+from sqlalchemy import ForeignKey
+from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
+import datetime
 
 class Base(DeclarativeBase):
     pass
@@ -7,12 +11,315 @@ class Base(DeclarativeBase):
 class Users(Base):
     __tablename__ = "users"
 
-    id: Mapped[str] = mapped_column(primary_key=True)
+    id: Mapped[uuid.UUID] = mapped_column(primary_key=True)
     username: Mapped[str]
-    password: Mapped[str]
     email: Mapped[str] = mapped_column(unique=True)
-    verified: Mapped[bool]
-    gender: Mapped[bool]
+    password: Mapped[str]
+    city: Mapped[str]
+    online: Mapped[bool]
+    face_to_face: Mapped[bool]
+    gender: Mapped[str]
     description: Mapped[str]
-    active: Mapped[bool]
     role_id: Mapped[int]
+    is_active: Mapped[bool]
+
+    problem: Mapped[list["Problem"]] = relationship()
+    core_belief: Mapped[list["Deep_conviction"]] = relationship()
+    test_result: Mapped[list["Test_result"]] = relationship()
+    behavioral_experiment: Mapped[list["Behavioral_experiment"]] = relationship()
+    goal: Mapped[list["Goal"]] = relationship()
+    educational_material: Mapped[list["Educational_material"]] = relationship(back_populates="users", secondary="educational_progress")
+    record: Mapped[list["Record"]] = relationship()
+    education: Mapped[list["Education"]] = relationship()
+    task: Mapped[list["Task"]] = relationship()
+    message: Mapped[list["Message"]] = relationship()
+    job_application: Mapped[list["Job_application"]] = relationship()
+    inquiry: Mapped[list["Inquiry"]] = relationship(back_populates="users", secondary="user_inquiries")
+    post_in_feed: Mapped[list["Post_in_feed"]] = relationship()
+    like: Mapped[list["Like"]] = relationship()
+    token: Mapped["Token"] = relationship()
+
+class Token(Base):
+    __tablename__ = "token"
+
+    id: Mapped[uuid.UUID] = mapped_column(primary_key=True)
+    user_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"))
+    token: Mapped[str]
+    exp_date: Mapped[datetime.datetime]
+    type: Mapped[str]
+
+class Problem(Base):
+    __tablename__ = "problem"
+
+    id: Mapped[uuid.UUID] = mapped_column(primary_key=True)
+    description: Mapped[str]
+    user_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"))
+
+    message_r_i_dialog: Mapped[list["Message_r_i_dialog"]] = relationship()
+    intermediate_belief: Mapped[list["Intermediate_belief"]] = relationship()
+
+class Deep_conviction(Base):
+    __tablename__ = "deep_conviction"
+
+    id: Mapped[uuid.UUID] = mapped_column(primary_key=True)
+    disadaptive: Mapped[str]
+    adaptive: Mapped[str]
+    user_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"))
+
+    intermediate_belief: Mapped[list["Intermediate_belief"]] = relationship()
+    diary_record: Mapped[list["Diary_record"]] = relationship()
+
+class Message_r_i_dialog(Base):
+    __tablename__ = "message_r_i_dialog"
+
+    id: Mapped[uuid.UUID] = mapped_column(primary_key=True)
+    is_rational: Mapped[bool]
+    text: Mapped[str]
+    date: Mapped[datetime.datetime]
+    problem_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("problem.id", ondelete="CASCADE"))
+
+class Intermediate_belief(Base):
+    __tablename__ = "intermediate_belief"
+
+    id: Mapped[uuid.UUID] = mapped_column(primary_key=True)
+    text: Mapped[str]
+    truthfulness_consistency: Mapped[str]
+    usefulness: Mapped[str]
+    feelings_and_actions_motivation: Mapped[str]
+    hindrances: Mapped[str]
+    incorrect_victims: Mapped[str]
+    results: Mapped[str]
+    problem_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("problem.id", ondelete="CASCADE"))
+    deep_conviction: Mapped[uuid.UUID] = mapped_column(ForeignKey("deep_conviction.id", ondelete="CASCADE"))
+
+class Test_result(Base):
+    __tablename__ = "test_result"
+
+    id: Mapped[uuid.UUID] = mapped_column(primary_key=True)
+    user_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"))
+    test_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("test.id", ondelete="CASCADE"))
+
+    scale: Mapped[list["Scale"]] = relationship()
+
+class Scale(Base):
+    __tablename__ = "scale"
+
+    id: Mapped[uuid.UUID] = mapped_column(primary_key=True)
+    score: Mapped[int]
+    test_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("test_result.id", ondelete="CASCADE"))
+
+class Test(Base):
+    __tablename__ = "test"
+
+    id: Mapped[uuid.UUID] = mapped_column(primary_key=True)
+    title: Mapped[str]
+    description: Mapped[str]
+    short_desc: Mapped[str]
+
+    test_result: Mapped[list["Test_result"]] = relationship()
+    question: Mapped[list["Question"]] = relationship()
+
+class Question(Base):
+    __tablename__ = "question"
+
+    id: Mapped[uuid.UUID] = mapped_column(primary_key=True)
+    text: Mapped[str]
+    number: Mapped[int]
+    test_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("test.id", ondelete="CASCADE"))
+
+    answer_choice: Mapped[list["Answer_choice"]] = relationship()
+
+class Answer_choice(Base):
+    __tablename__ = "answer_choice"
+
+    id: Mapped[uuid.UUID] = mapped_column(primary_key=True)
+    text: Mapped[str]
+    question_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("question.id", ondelete="CASCADE"))
+    score: Mapped[int]
+
+class Behavioral_experiment(Base):
+    __tablename__ = "behavioral_experiment"
+
+    id: Mapped[uuid.UUID] = mapped_column(primary_key=True)
+    belief: Mapped[str]
+    description: Mapped[str]
+    difficulties: Mapped[str]
+    strategies: Mapped[str]
+    best_scenario: Mapped[str]
+    best_scenario_probability: Mapped[str]
+    worst_scenario: Mapped[str]
+    worst_scenario_probability: Mapped[str]
+    real_scenario: Mapped[str]
+    real_scenario_probability: Mapped[str]
+    alternative_belief: Mapped[str]
+    alternative_belief_confidence: Mapped[str]
+    user_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"))
+
+    result_experiment: Mapped[list["Result_experiment"]] = relationship()
+
+class Result_experiment(Base):
+    __tablename__ = "result_experiment"
+
+    id: Mapped[uuid.UUID] = mapped_column(primary_key=True)
+    behavioral_experiment_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("behavioral_experiment.id", ondelete="CASCADE"))
+    text: Mapped[str]
+    emotion_before: Mapped[str]
+    emotion_level_before: Mapped[int]
+    emotion_after: Mapped[str]
+    emotion_level_after: Mapped[int]
+
+class Diary_record(Base):
+    __tablename__ = "diary_record"
+
+    id: Mapped[uuid.UUID] = mapped_column(primary_key=True)
+    deep_conviction_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("deep_conviction.id", ondelete="CASCADE"))
+    situation: Mapped[str]
+    mood: Mapped[str]
+    level: Mapped[int]
+    auto_thought: Mapped[str]
+    proofs: Mapped[str]
+    refutations: Mapped[str]
+    new_mood: Mapped[str]
+    new_level: Mapped[int]
+    behavioral: Mapped[str]
+
+class Goal(Base):
+    __tablename__ = "goal"
+
+    id: Mapped[uuid.UUID] = mapped_column(primary_key=True)
+    description: Mapped[str]
+    user_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"))
+
+    plan_point: Mapped[list["Plan_point"]] = relationship()
+    ladder_of_fear_rung: Mapped[list["Ladder_of_fear_rung"]] = relationship()
+
+class Plan_point(Base):
+    __tablename__ = "plan_point"
+
+    id: Mapped[uuid.UUID] = mapped_column(primary_key=True)
+    goal_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("goal.id", ondelete="CASCADE"))
+    description: Mapped[str]
+    number: Mapped[int]
+    term: Mapped[datetime.datetime]
+
+    trouble: Mapped[list["Trouble"]] = relationship()
+
+class Ladder_of_fear_rung(Base):
+    __tablename__ = "ladder_of_fear_rung"
+
+    id: Mapped[uuid.UUID] = mapped_column(primary_key=True)
+    goal_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("goal.id", ondelete="CASCADE"))
+    number: Mapped[int]
+    description: Mapped[str]
+
+class Trouble(Base):
+    __tablename__ = "trouble"
+
+    id: Mapped[uuid.UUID] = mapped_column(primary_key=True)
+    plan_point_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("plan_point.id", ondelete="CASCADE"))
+    description: Mapped[str]
+    strategy: Mapped[str]
+
+class Educational_material(Base):
+    __tablename__ = "educational_material"
+
+    id: Mapped[uuid.UUID] = mapped_column(primary_key=True)
+    text: Mapped[str]
+    title: Mapped[str]
+    theme: Mapped[str]
+
+    users: Mapped[list["Users"]] = relationship(back_populates="educational_material", secondary="educational_progress")
+
+class Educational_progress(Base):
+    __tablename__ = "educational_progress"
+
+    user_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"), primary_key=True)
+    educational_material_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("educational_material.id", ondelete="CASCADE"), primary_key=True)
+
+class Record(Base):
+    __tablename__ = "record"
+
+    id: Mapped[uuid.UUID] = mapped_column(primary_key=True)
+    text: Mapped[str]
+    date: Mapped[datetime.datetime]
+    type: Mapped[str]
+    user_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"))
+
+class Education(Base):
+    __tablename__ = "education"
+
+    id: Mapped[uuid.UUID] = mapped_column(primary_key=True)
+    title: Mapped[str]
+    document: Mapped[str]
+    psychologist_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"))
+
+class Task(Base):
+    __tablename__ = "task"
+
+    id: Mapped[uuid.UUID] = mapped_column(primary_key=True)
+    text: Mapped[str]
+    psychologist_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"))
+    client_id: Mapped[uuid.UUID]
+    is_complete: Mapped[bool]
+
+class Message(Base):
+    __tablename__ = "message"
+
+    id: Mapped[uuid.UUID] = mapped_column(primary_key=True)
+    text: Mapped[str]
+    psychologist_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"))
+    client_id: Mapped[uuid.UUID]
+
+class Job_application(Base):
+    __tablename__ = "job_application"
+
+    id: Mapped[uuid.UUID] = mapped_column(primary_key=True)
+    text: Mapped[str]
+    psychologist_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"))
+    client_id: Mapped[uuid.UUID]
+    status: Mapped[str]
+
+class Inquiry(Base):
+    __tablename__ = "inquiry"
+
+    id: Mapped[uuid.UUID] = mapped_column(primary_key=True)
+    text: Mapped[str]
+
+    users: Mapped[list["Users"]] = relationship(back_populates="inquiry", secondary="user_inquiries")
+    book: Mapped[list["Book"]] = relationship(back_populates="inquiry", secondary="inquiry_to_book")
+
+class User_inquiries(Base):
+    __tablename__ = "user_inquiries"
+
+    user_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"), primary_key=True)
+    inquiry_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("inquiry.id", ondelete="CASCADE"), primary_key=True)
+
+class Book(Base):
+    __tablename__ = "book"
+
+    id: Mapped[uuid.UUID] = mapped_column(primary_key=True)
+    description: Mapped[str]
+    link: Mapped[str]
+
+    inquiry: Mapped[list["Inquiry"]] = relationship(back_populates="book", secondary="inquiry_to_book")
+
+class Inquiry_to_book(Base):
+    __tablename__ = "inquiry_to_book"
+
+    book_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("book.id", ondelete="CASCADE"), primary_key=True)
+    inquiry_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("inquiry.id", ondelete="CASCADE"), primary_key=True)
+
+class Post_in_feed(Base):
+    __tablename__ = "post_in_feed"
+
+    id: Mapped[uuid.UUID] = mapped_column(primary_key=True)
+    user_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"))
+    like_score: Mapped[int]
+    date: Mapped[datetime.datetime]
+
+class Like(Base):
+    __tablename__ = "like"
+
+    id: Mapped[uuid.UUID] = mapped_column(primary_key=True)
+    user_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"))
+    post_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("post_in_feed.id", ondelete="CASCADE"))

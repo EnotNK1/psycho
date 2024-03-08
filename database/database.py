@@ -1,7 +1,7 @@
 from psycopg2 import Error
-from sqlalchemy import Integer, String, create_engine, select
+from sqlalchemy import Integer, String, create_engine, select, func
 from sqlalchemy.orm import sessionmaker
-from database.tables import Users, Base
+from database.tables import Users, Base, Problem, Message_r_i_dialog
 import uuid
 
 engine = create_engine(url="postgresql://postgres:postgresosikati@localhost:5432/psycho", echo=False)
@@ -13,18 +13,20 @@ def create_tables():
     Base.metadata.create_all(engine)
 create_tables()
 
-def register_user(id, email, username, password, verified, gender, description, active, role_id):
+def register_user(id, username, email, password, city, online, face_to_face, gender, description, role_id, is_active):
     with session_factory() as session:
         try:
             user = Users(id=id,
-                         email=email,
                          username=username,
+                         email=email,
                          password=password,
-                         verified=verified,
+                         city=city,
+                         online=online,
+                         face_to_face=face_to_face,
                          gender=gender,
                          description=description,
-                         active=active,
-                         role_id=role_id
+                         role_id=role_id,
+                         is_active=is_active
                          )
             session.add(user)
             session.commit()
@@ -32,7 +34,8 @@ def register_user(id, email, username, password, verified, gender, description, 
         except (Exception, Error) as error:
             print(error)
             return -1
-# register_user(uuid.uuid4().__str__(), "admin", "admin", "admin", True, True, "", True, 0)
+
+register_user(uuid.uuid4(), "admin", "admin", "admin", "", True, True, "", "", 0, True)
 
 def check_user(email, password):
     with session_factory() as session:
@@ -99,14 +102,16 @@ def get_all_users():
             user_dict = {}
             for user in users:
                 user_dict['id'] = user.id
-                user_dict['email'] = user.email
                 user_dict['username'] = user.username
+                user_dict['email'] = user.email
                 user_dict['password'] = user.password
-                user_dict['verified'] = user.verified
+                user_dict['city'] = user.city
+                user_dict['online'] = user.online
+                user_dict['face_to_face'] = user.face_to_face
                 user_dict['gender'] = user.gender
                 user_dict['description'] = user.description
-                user_dict['active'] = user.active
                 user_dict['role_id'] = user.role_id
+                user_dict['is_active'] = user.is_active
                 user_list.append(user_dict)
                 user_dict = {}
             return user_list
@@ -114,3 +119,33 @@ def get_all_users():
         except (Exception, Error) as error:
             print(error)
             return -1
+
+def add_problem_db(user_id, description):
+    with session_factory() as session:
+        try:
+            problem = Problem(id=uuid.uuid4(),
+                         description=description,
+                         user_id=user_id,
+                         )
+            session.add(problem)
+            session.commit()
+            return 0
+        except (Exception, Error) as error:
+            print(error)
+            return -1
+
+# def add_message(problem_id):
+#     with session_factory() as session:
+#         try:
+#             message = Message_r_i_dialog(id=uuid.uuid4().__str__(),
+#                          is_rational=True,
+#                          text="sdf",
+#                          date=func.now(),
+#                          problem_id=problem_id
+#                          )
+#             session.add(message)
+#             session.commit()
+#             return 0
+#         except (Exception, Error) as error:
+#             print(error)
+#             return -1
