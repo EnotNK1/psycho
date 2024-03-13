@@ -4,14 +4,18 @@ from sqlalchemy.orm import sessionmaker
 from database.tables import Users, Base, Problem, Message_r_i_dialog
 import uuid
 
-engine = create_engine(url="postgresql://postgres:postgresosikati@localhost:5432/psycho", echo=False)
+engine = create_engine(url="postgresql://user:password@db:5432/dbname", echo=False)
 
 session_factory = sessionmaker(engine)
+
 
 def create_tables():
     # Base.metadata.drop_all(engine)
     Base.metadata.create_all(engine)
+
+
 create_tables()
+
 
 def register_user(id, username, email, password, city, online, face_to_face, gender, description, role_id, is_active):
     with session_factory() as session:
@@ -35,7 +39,6 @@ def register_user(id, username, email, password, city, online, face_to_face, gen
             print(error)
             return -1
 
-register_user(uuid.uuid4(), "admin", "admin", "admin", "", True, True, "", "", 0, True)
 
 def check_user(email, password):
     with session_factory() as session:
@@ -52,6 +55,7 @@ def check_user(email, password):
             print(error)
             print("xyi")
             return -1
+
 
 def check_role(id):
     with session_factory() as session:
@@ -71,6 +75,7 @@ def check_role(id):
             print(error)
             return -1
 
+
 def get_id_user(email):
     with session_factory() as session:
         try:
@@ -81,6 +86,7 @@ def get_id_user(email):
             print(error)
             return -1
 
+
 def get_password_user(email):
     with session_factory() as session:
         try:
@@ -90,6 +96,7 @@ def get_password_user(email):
         except (Exception, Error) as error:
             print(error)
             return -1
+
 
 def get_all_users():
     with session_factory() as session:
@@ -120,19 +127,21 @@ def get_all_users():
             print(error)
             return -1
 
+
 def add_problem_db(user_id, description):
     with session_factory() as session:
         try:
             problem = Problem(id=uuid.uuid4(),
-                         description=description,
-                         user_id=user_id,
-                         )
+                              description=description,
+                              user_id=user_id,
+                              )
             session.add(problem)
             session.commit()
             return 0
         except (Exception, Error) as error:
             print(error)
             return -1
+
 
 # def add_message(problem_id):
 #     with session_factory() as session:
@@ -149,3 +158,6 @@ def add_problem_db(user_id, description):
 #         except (Exception, Error) as error:
 #             print(error)
 #             return -1
+
+if check_user("admin", "admin") == -1:
+    register_user(uuid.uuid4(), "admin", "admin", "admin", "", True, True, "", "", 0, True)
