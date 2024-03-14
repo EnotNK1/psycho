@@ -29,26 +29,24 @@ class UserServise:
     def authorization (self, payload: Creds, response: Response):
 
         if database_service.check_user(payload.email, payload.password) == 0:
-            id_user = database_service.get_id_user(payload.email)
+            user_id = database_service.get_id_user(payload.email)
 
-            token = generate_token(id_user)
+            token = generate_token(user_id)
             response.set_cookie(key="access_token", value=token, httponly=True)
-            return "Logged in successfully"
+            database_service.add_token_db(user_id, token)
+            return token
         else:
             return "error"
 
     def register(self, payload: Reg) -> str:
 
-        if payload.role == 1 or payload.role == 2:
-            if payload.password == payload.confirm_password:
-                if database_service.register_user(uuid.uuid4(), payload.username, payload.email, payload.password, "", False, False, "", "", payload.role, False) == 0:
-                    return "Successfully"
-                else:
-                    return "A user with this email address has already been registered"
+        if payload.password == payload.confirm_password:
+            if database_service.register_user(uuid.uuid4(), payload.username, payload.email, payload.password, "", False, False, "", "", 1, False) == 0:
+                return "Successfully"
             else:
-                return "Password mismatch"
+                return "A user with this email address has already been registered"
         else:
-            return "Role is incorrect"
+            return "Password mismatch"
 
     def reset_password(self, payload: ResetPassword) -> str:
 

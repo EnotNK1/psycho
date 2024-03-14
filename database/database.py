@@ -1,7 +1,7 @@
 from psycopg2 import Error
 from sqlalchemy import Integer, String, create_engine, select, func
 from sqlalchemy.orm import sessionmaker
-from database.tables import Users, Base, Problem, Message_r_i_dialog
+from database.tables import Users, Base, Problem, Message_r_i_dialog, Token
 import uuid
 
 # engine = create_engine(url="postgresql://postgres:postgresosikati@localhost:5432/psycho", echo=False)
@@ -116,6 +116,7 @@ class DatabaseService:
                     user_dict['description'] = user.description
                     user_dict['role_id'] = user.role_id
                     user_dict['is_active'] = user.is_active
+                    user_dict['token'] = user.token
                     user_list.append(user_dict)
                     user_dict = {}
                 return user_list
@@ -130,9 +131,25 @@ class DatabaseService:
             try:
                 problem = Problem(id=uuid.uuid4(),
                                   description=description,
-                                  user_id=user_id,
+                                  user_id=user_id
                                   )
                 session.add(problem)
+                session.commit()
+                return 0
+            except (Exception, Error) as error:
+                print(error)
+                return -1
+
+    def add_token_db(self, user_id, token_str):
+        with session_factory() as session:
+            try:
+                token = Token(id=uuid.uuid4(),
+                              user_id=user_id,
+                              token=token_str,
+                              exp_date=func.now(),
+                              type=""
+                              )
+                session.add(token)
                 session.commit()
                 return 0
             except (Exception, Error) as error:

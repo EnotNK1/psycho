@@ -83,7 +83,8 @@ class Intermediate_belief(Base):
 
     id: Mapped[uuid.UUID] = mapped_column(primary_key=True)
     text: Mapped[str]
-    truthfulness_consistency: Mapped[str]
+    truthfulness: Mapped[str]
+    consistency: Mapped[str]
     usefulness: Mapped[str]
     feelings_and_actions_motivation: Mapped[str]
     hindrances: Mapped[str]
