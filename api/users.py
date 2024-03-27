@@ -46,3 +46,10 @@ def reset_password(data: ResetPassword):
 )
 def add_problem(data: AddProblem, access_token: str = Cookie(None)):
     return user_service.add_problem(data, access_token)
+
+@router.post(
+    "/users/saving_test_result",
+    response_model=None,
+)
+def add_problem(data: AddProblem, access_token: str = Cookie(None)):
+    return user_service.add_problem(data, access_token)
