@@ -27,7 +27,6 @@ class Users(Base):
     core_belief: Mapped[list["Deep_conviction"]] = relationship()
     test_result: Mapped[list["Test_result"]] = relationship()
     behavioral_experiment: Mapped[list["Behavioral_experiment"]] = relationship()
-    goal: Mapped[list["Goal"]] = relationship()
     educational_material: Mapped[list["Educational_material"]] = relationship(back_populates="users", secondary="educational_progress")
     record: Mapped[list["Record"]] = relationship()
     education: Mapped[list["Education"]] = relationship()
@@ -53,8 +52,11 @@ class Problem(Base):
 
     id: Mapped[uuid.UUID] = mapped_column(primary_key=True)
     description: Mapped[str]
+    goal: Mapped[str]
     user_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"))
 
+    plan_point: Mapped[list["Plan_point"]] = relationship()
+    ladder_of_fear_rung: Mapped[list["Ladder_of_fear_rung"]] = relationship()
     message_r_i_dialog: Mapped[list["Message_r_i_dialog"]] = relationship()
     intermediate_belief: Mapped[list["Intermediate_belief"]] = relationship()
 
@@ -86,7 +88,8 @@ class Intermediate_belief(Base):
     truthfulness: Mapped[str]
     consistency: Mapped[str]
     usefulness: Mapped[str]
-    feelings_and_actions_motivation: Mapped[str]
+    feelings_and_actions: Mapped[str]
+    motivation: Mapped[str]
     hindrances: Mapped[str]
     incorrect_victims: Mapped[str]
     results: Mapped[str]
@@ -184,21 +187,21 @@ class Diary_record(Base):
     new_level: Mapped[int]
     behavioral: Mapped[str]
 
-class Goal(Base):
-    __tablename__ = "goal"
-
-    id: Mapped[uuid.UUID] = mapped_column(primary_key=True)
-    description: Mapped[str]
-    user_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"))
-
-    plan_point: Mapped[list["Plan_point"]] = relationship()
-    ladder_of_fear_rung: Mapped[list["Ladder_of_fear_rung"]] = relationship()
+# class Goal(Base):
+#     __tablename__ = "goal"
+#
+#     id: Mapped[uuid.UUID] = mapped_column(primary_key=True)
+#     description: Mapped[str]
+#     user_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"))
+#
+#     plan_point: Mapped[list["Plan_point"]] = relationship()
+#     ladder_of_fear_rung: Mapped[list["Ladder_of_fear_rung"]] = relationship()
 
 class Plan_point(Base):
     __tablename__ = "plan_point"
 
     id: Mapped[uuid.UUID] = mapped_column(primary_key=True)
-    goal_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("goal.id", ondelete="CASCADE"))
+    problem_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("problem.id", ondelete="CASCADE"))
     description: Mapped[str]
     number: Mapped[int]
     term: Mapped[datetime.datetime]
@@ -209,7 +212,7 @@ class Ladder_of_fear_rung(Base):
     __tablename__ = "ladder_of_fear_rung"
 
     id: Mapped[uuid.UUID] = mapped_column(primary_key=True)
-    goal_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("goal.id", ondelete="CASCADE"))
+    problem_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("problem.id", ondelete="CASCADE"))
     number: Mapped[int]
     description: Mapped[str]
 
@@ -228,6 +231,8 @@ class Educational_material(Base):
     text: Mapped[str]
     title: Mapped[str]
     theme: Mapped[str]
+    type: Mapped[int]
+    link: Mapped[str]
 
     users: Mapped[list["Users"]] = relationship(back_populates="educational_material", secondary="educational_progress")
 
@@ -294,6 +299,7 @@ class User_inquiries(Base):
 
     user_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"), primary_key=True)
     inquiry_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("inquiry.id", ondelete="CASCADE"), primary_key=True)
+    type: Mapped[int]
 
 class Book(Base):
     __tablename__ = "book"
