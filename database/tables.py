@@ -5,6 +5,9 @@ from sqlalchemy import ForeignKey
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
 import datetime
 
+from typing import List
+
+
 class Base(DeclarativeBase):
     pass
 
@@ -19,23 +22,24 @@ class Users(Base):
     online: Mapped[bool]
     face_to_face: Mapped[bool]
     gender: Mapped[str]
+    birth_date: Mapped[datetime.date] = mapped_column(nullable=True)
     description: Mapped[str]
     role_id: Mapped[int]
     is_active: Mapped[bool]
 
-    problem: Mapped[list["Problem"]] = relationship()
-    core_belief: Mapped[list["Deep_conviction"]] = relationship()
-    test_result: Mapped[list["Test_result"]] = relationship()
-    behavioral_experiment: Mapped[list["Behavioral_experiment"]] = relationship()
-    educational_material: Mapped[list["Educational_material"]] = relationship(back_populates="users", secondary="educational_progress")
-    record: Mapped[list["Record"]] = relationship()
-    education: Mapped[list["Education"]] = relationship()
-    task: Mapped[list["Task"]] = relationship()
-    message: Mapped[list["Message"]] = relationship()
-    job_application: Mapped[list["Job_application"]] = relationship()
-    inquiry: Mapped[list["Inquiry"]] = relationship(back_populates="users", secondary="user_inquiries")
-    post_in_feed: Mapped[list["Post_in_feed"]] = relationship()
-    like: Mapped[list["Like"]] = relationship()
+    problem: Mapped[List["Problem"]] = relationship()
+    core_belief: Mapped[List["Deep_conviction"]] = relationship()
+    test_result: Mapped[List["Test_result"]] = relationship()
+    behavioral_experiment: Mapped[List["Behavioral_experiment"]] = relationship()
+    educational_material: Mapped[List["Educational_material"]] = relationship(back_populates="users", secondary="educational_progress")
+    record: Mapped[List["Record"]] = relationship()
+    education: Mapped[List["Education"]] = relationship()
+    task: Mapped[List["Task"]] = relationship()
+    message: Mapped[List["Message"]] = relationship()
+    job_application: Mapped[List["Job_application"]] = relationship()
+    inquiry: Mapped[List["Inquiry"]] = relationship(back_populates="users", secondary="user_inquiries")
+    post_in_feed: Mapped[List["Post_in_feed"]] = relationship()
+    like: Mapped[List["Like"]] = relationship()
     token: Mapped["Token"] = relationship()
 
 class Token(Base):
@@ -55,10 +59,10 @@ class Problem(Base):
     goal: Mapped[str]
     user_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"))
 
-    plan_point: Mapped[list["Plan_point"]] = relationship()
-    ladder_of_fear_rung: Mapped[list["Ladder_of_fear_rung"]] = relationship()
-    message_r_i_dialog: Mapped[list["Message_r_i_dialog"]] = relationship()
-    intermediate_belief: Mapped[list["Intermediate_belief"]] = relationship()
+    plan_point: Mapped[List["Plan_point"]] = relationship()
+    ladder_of_fear_rung: Mapped[List["Ladder_of_fear_rung"]] = relationship()
+    message_r_i_dialog: Mapped[List["Message_r_i_dialog"]] = relationship()
+    intermediate_belief: Mapped[List["Intermediate_belief"]] = relationship()
 
 class Deep_conviction(Base):
     __tablename__ = "deep_conviction"
@@ -68,8 +72,8 @@ class Deep_conviction(Base):
     adaptive: Mapped[str]
     user_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"))
 
-    intermediate_belief: Mapped[list["Intermediate_belief"]] = relationship()
-    diary_record: Mapped[list["Diary_record"]] = relationship()
+    intermediate_belief: Mapped[List["Intermediate_belief"]] = relationship()
+    diary_record: Mapped[List["Diary_record"]] = relationship()
 
 class Message_r_i_dialog(Base):
     __tablename__ = "message_r_i_dialog"
@@ -104,7 +108,7 @@ class Test_result(Base):
     test_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("test.id", ondelete="CASCADE"))
     date: Mapped[datetime.datetime]
 
-    scale: Mapped[list["Scale"]] = relationship()
+    scale: Mapped[List["Scale"]] = relationship()
 
 class Scale(Base):
     __tablename__ = "scale"
@@ -122,8 +126,8 @@ class Test(Base):
     description: Mapped[str]
     short_desc: Mapped[str]
 
-    test_result: Mapped[list["Test_result"]] = relationship()
-    question: Mapped[list["Question"]] = relationship()
+    test_result: Mapped[List["Test_result"]] = relationship()
+    question: Mapped[List["Question"]] = relationship()
 
 class Question(Base):
     __tablename__ = "question"
@@ -133,7 +137,7 @@ class Question(Base):
     number: Mapped[int]
     test_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("test.id", ondelete="CASCADE"))
 
-    answer_choice: Mapped[list["Answer_choice"]] = relationship()
+    answer_choice: Mapped[List["Answer_choice"]] = relationship()
 
 class Answer_choice(Base):
     __tablename__ = "answer_choice"
@@ -161,7 +165,7 @@ class Behavioral_experiment(Base):
     alternative_belief_confidence: Mapped[str]
     user_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"))
 
-    result_experiment: Mapped[list["Result_experiment"]] = relationship()
+    result_experiment: Mapped[List["Result_experiment"]] = relationship()
 
 class Result_experiment(Base):
     __tablename__ = "result_experiment"
@@ -196,8 +200,8 @@ class Diary_record(Base):
 #     description: Mapped[str]
 #     user_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"))
 #
-#     plan_point: Mapped[list["Plan_point"]] = relationship()
-#     ladder_of_fear_rung: Mapped[list["Ladder_of_fear_rung"]] = relationship()
+#     plan_point: Mapped[List["Plan_point"]] = relationship()
+#     ladder_of_fear_rung: Mapped[List["Ladder_of_fear_rung"]] = relationship()
 
 class Plan_point(Base):
     __tablename__ = "plan_point"
@@ -208,7 +212,7 @@ class Plan_point(Base):
     number: Mapped[int]
     term: Mapped[datetime.datetime]
 
-    trouble: Mapped[list["Trouble"]] = relationship()
+    trouble: Mapped[List["Trouble"]] = relationship()
 
 class Ladder_of_fear_rung(Base):
     __tablename__ = "ladder_of_fear_rung"
@@ -236,7 +240,7 @@ class Educational_material(Base):
     type: Mapped[int]
     link: Mapped[str]
 
-    users: Mapped[list["Users"]] = relationship(back_populates="educational_material", secondary="educational_progress")
+    users: Mapped[List["Users"]] = relationship(back_populates="educational_material", secondary="educational_progress")
 
 class Educational_progress(Base):
     __tablename__ = "educational_progress"
@@ -290,17 +294,18 @@ class Job_application(Base):
 class Inquiry(Base):
     __tablename__ = "inquiry"
 
-    id: Mapped[uuid.UUID] = mapped_column(primary_key=True)
+    id: Mapped[int] = mapped_column(primary_key=True)
     text: Mapped[str]
 
-    users: Mapped[list["Users"]] = relationship(back_populates="inquiry", secondary="user_inquiries")
-    book: Mapped[list["Book"]] = relationship(back_populates="inquiry", secondary="inquiry_to_book")
+    users: Mapped[List["Users"]] = relationship(back_populates="inquiry", secondary="user_inquiries")
+    book: Mapped[List["Book"]] = relationship(back_populates="inquiry", secondary="inquiry_to_book")
 
 class User_inquiries(Base):
     __tablename__ = "user_inquiries"
 
+    id: Mapped[uuid.UUID] = mapped_column(primary_key=True)
     user_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"), primary_key=True)
-    inquiry_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("inquiry.id", ondelete="CASCADE"), primary_key=True)
+    inquiry_id: Mapped[int] = mapped_column(ForeignKey("inquiry.id", ondelete="CASCADE"), primary_key=True)
     type: Mapped[int]
 
 class Book(Base):
@@ -310,7 +315,7 @@ class Book(Base):
     description: Mapped[str]
     link: Mapped[str]
 
-    inquiry: Mapped[list["Inquiry"]] = relationship(back_populates="book", secondary="inquiry_to_book")
+    inquiry: Mapped[List["Inquiry"]] = relationship(back_populates="book", secondary="inquiry_to_book")
 
 class Inquiry_to_book(Base):
     __tablename__ = "inquiry_to_book"
@@ -332,3 +337,13 @@ class Like(Base):
     id: Mapped[uuid.UUID] = mapped_column(primary_key=True)
     user_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"))
     post_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("post_in_feed.id", ondelete="CASCADE"))
+
+
+class Clients(Base):
+    __tablename__ = "clients"
+
+    id: Mapped[uuid.UUID] = mapped_column(primary_key=True)
+    client_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"))
+    psychologist_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"))
+    text: Mapped[str]
+    status: Mapped[bool]

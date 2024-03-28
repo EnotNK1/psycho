@@ -1,10 +1,12 @@
-from schemas.users import Creds, Reg, ResetPassword, AddProblem, SaveTestRes, CreateTest, GetTestRes
+from schemas.users import Creds, Reg, ResetPassword, AddProblem, SaveTestRes, CreateTest, GetTestRes, UpdateUser, \
+    Psychologist, GetClient, SendАpplication, ConfirmApplication
 from database.database import database_service
 from services.auth import send_email
 from services.auth import generate_token, verify_token
 import uuid
 from starlette.responses import JSONResponse, Response
 from smtplib import SMTPRecipientsRefused
+
 
 class UserServise:
 
@@ -16,7 +18,7 @@ class UserServise:
         if token_data == 'Token has expired':
             return "Token has expired"
         elif token_data == 'Invalid token':
-            return  "Invalid token"
+            return "Invalid token"
 
         role = database_service.check_role(uuid.UUID(token_data['user_id']))
 
@@ -26,7 +28,7 @@ class UserServise:
         else:
             return "access denied"
 
-    def authorization (self, payload: Creds, response: Response):
+    def authorization(self, payload: Creds, response: Response):
 
         if database_service.check_user(payload.email, payload.password) == 0:
             user_id = database_service.get_id_user(payload.email)
@@ -41,7 +43,8 @@ class UserServise:
     def register(self, payload: Reg) -> str:
 
         if payload.password == payload.confirm_password:
-            if database_service.register_user(uuid.uuid4(), payload.username, payload.email, payload.password, "", False, False, "", "", 1, False) == 0:
+            if database_service.register_user(uuid.uuid4(), payload.username, payload.email, payload.password, "",
+                                              False, False, "", "", 1, False) == 0:
                 return "Successfully"
             else:
                 return "A user with this email address has already been registered"
@@ -62,6 +65,39 @@ class UserServise:
         else:
             return "No user with this e-mail account was found"
 
+    def update_user(self, payload: UpdateUser, access_token):
+        if not access_token:
+            return "not token"
+        token_data = verify_token(access_token)
+
+        if token_data == 'Token has expired':
+            return "Token has expired"
+        elif token_data == 'Invalid token':
+            return "Invalid token"
+
+        database_service.update_user_db(token_data['user_id'], payload.username, payload.gender, payload.birth_date,
+                                        payload.request, payload.city, payload.description, payload.type)
+
+        return "Successfully"
+
+    def psychologist_sent(self, payload: Psychologist, access_token):
+        if not access_token:
+            return "not token"
+        token_data = verify_token(access_token)
+
+        if token_data == 'Token has expired':
+            return "Token has expired"
+        elif token_data == 'Invalid token':
+            return "Invalid token"
+
+        database_service.psychologist_sent_db(token_data['user_id'], payload.username, payload.title, payload.document,
+                                              payload.description,
+                                              payload.city, payload.online, payload.face_to_face, payload.gender,
+                                              payload.birth_date,
+                                              payload.request)
+
+        return "Successfully"
+
     def add_problem(self, payload: AddProblem, access_token):
         if not access_token:
             return "not token"
@@ -70,7 +106,7 @@ class UserServise:
         if token_data == 'Token has expired':
             return "Token has expired"
         elif token_data == 'Invalid token':
-            return  "Invalid token"
+            return "Invalid token"
 
         database_service.add_problem_db(token_data['user_id'], payload.description)
 
@@ -84,9 +120,10 @@ class UserServise:
         if token_data == 'Token has expired':
             return "Token has expired"
         elif token_data == 'Invalid token':
-            return  "Invalid token"
+            return "Invalid token"
 
-        database_service.save_test_result_db(token_data['user_id'], payload.title, uuid.UUID(payload.test_id), payload.date, payload.score)
+        database_service.save_test_result_db(token_data['user_id'], payload.title, uuid.UUID(payload.test_id),
+                                             payload.date, payload.score)
 
         return "Successfully"
 
@@ -115,14 +152,113 @@ class UserServise:
         if token_data == 'Token has expired':
             return "Token has expired"
         elif token_data == 'Invalid token':
-            return  "Invalid token"
+            return "Invalid token"
 
         res_list = database_service.get_test_res_db(token_data['user_id'], uuid.UUID(payload.test_id))
 
         return res_list
 
+    def get_client(self, payload: GetClient, access_token):
+        if not access_token:
+            return "not token"
+        token_data = verify_token(access_token)
 
+        if token_data == 'Token has expired':
+            return "Token has expired"
+        elif token_data == 'Invalid token':
+            return "Invalid token"
 
+        role = database_service.check_role(uuid.UUID(token_data['user_id']))
+        if role == 0 or role == 2:
+            items = database_service.getClient(payload.user_id)
+            return items
+        else:
+            return "access denied"
+
+    def get_list_client(self, access_token):
+        if not access_token:
+            return "not token"
+        token_data = verify_token(access_token)
+
+        if token_data == 'Token has expired':
+            return "Token has expired"
+        elif token_data == 'Invalid token':
+            return "Invalid token"
+
+        role = database_service.check_role(uuid.UUID(token_data['user_id']))
+        if role == 0 or role == 2:
+            items = database_service.getListClient(token_data['user_id'])
+            return items
+        else:
+            return "access denied"
+
+    def send_application(self, payload: SendАpplication, access_token):
+        if not access_token:
+            return "not token"
+        token_data = verify_token(access_token)
+
+        if token_data == 'Token has expired':
+            return "Token has expired"
+        elif token_data == 'Invalid token':
+            return "Invalid token"
+
+        role = database_service.check_role(payload.user_id)
+        if role == 2 and token_data['user_id'] != payload.user_id:
+            database_service.send_application_db(token_data['user_id'], payload.user_id, payload.text)
+            return "Successfully"
+        else:
+            return "error"
+
+    def confirm_application(self, payload: ConfirmApplication, access_token):
+        if not access_token:
+            return "not token"
+        token_data = verify_token(access_token)
+
+        if token_data == 'Token has expired':
+            return "Token has expired"
+        elif token_data == 'Invalid token':
+            return "Invalid token"
+        role = database_service.check_role(token_data['user_id'])
+        if role == 2:
+            database_service.confirm_application_db(token_data['user_id'], payload.user_id, payload.status)
+            return "Successfully"
+        else:
+            return "error"
+
+    def get_psycholog(self, payload: GetClient, access_token):
+        if not access_token:
+            return "not token"
+        token_data = verify_token(access_token)
+
+        if token_data == 'Token has expired':
+            return "Token has expired"
+        elif token_data == 'Invalid token':
+            return "Invalid token"
+
+        role = database_service.check_role(uuid.UUID(token_data['user_id']))
+        role1 = database_service.check_role(uuid.UUID(payload.user_id))
+        if role == 1 and role1 == 2:
+            items = database_service.get_psycholog(payload.user_id)
+            return items
+        else:
+            return "access denied"
+
+    def get_list_psycholog(self, access_token):
+        if not access_token:
+            return "not token"
+        token_data = verify_token(access_token)
+
+        if token_data == 'Token has expired':
+            return "Token has expired"
+        elif token_data == 'Invalid token':
+            return "Invalid token"
+
+        role = database_service.check_role(uuid.UUID(token_data['user_id']))
+        if role == 1 or role == 2:
+            items = database_service.getListPsycholog(token_data['user_id'])
+            return items
+        else:
+            return "access denied"
 
 
 user_service: UserServise = UserServise()
