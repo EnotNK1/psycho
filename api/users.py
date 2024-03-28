@@ -1,7 +1,7 @@
 import uuid
 
 from fastapi import APIRouter, Cookie
-from schemas.users import Creds, Reg, ResetPassword, AddProblem
+from schemas.users import Creds, Reg, ResetPassword, AddProblem, SaveTestRes, CreateTest, GetTestRes
 from services.users import user_service
 from starlette.responses import JSONResponse, Response
 
@@ -48,8 +48,22 @@ def add_problem(data: AddProblem, access_token: str = Cookie(None)):
     return user_service.add_problem(data, access_token)
 
 @router.post(
-    "/users/saving_test_result",
+    "/users/save_test_result",
     response_model=None,
 )
-def add_problem(data: AddProblem, access_token: str = Cookie(None)):
-    return user_service.add_problem(data, access_token)
+def save_test_result(data: SaveTestRes, access_token: str = Cookie(None)):
+    return user_service.save_test_result(data, access_token)
+
+@router.post(
+    "/users/create_test",
+    response_model=None,
+)
+def create_test(data: CreateTest, access_token: str = Cookie(None)):
+    return user_service.create_test(data, access_token)
+
+@router.post(
+    "/users/get_test_result",
+    response_model=None,
+)
+def get_test_res(data: GetTestRes, access_token: str = Cookie(None)):
+    return user_service.get_test_res(data, access_token)

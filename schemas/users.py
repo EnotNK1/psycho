@@ -1,3 +1,5 @@
+import datetime
+
 import pydantic
 import uuid
 
@@ -16,3 +18,17 @@ class ResetPassword(pydantic.BaseModel):
 
 class AddProblem(pydantic.BaseModel):
     description: str
+
+class SaveTestRes(pydantic.BaseModel):
+    title: str
+    score: int
+    test_id: str
+    date: datetime.datetime
+
+class CreateTest(pydantic.BaseModel):
+    title: str
+    description: str
+    short_desc: str
+
+class GetTestRes(pydantic.BaseModel):
+    test_id: str

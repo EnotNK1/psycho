@@ -102,6 +102,7 @@ class Test_result(Base):
     id: Mapped[uuid.UUID] = mapped_column(primary_key=True)
     user_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"))
     test_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("test.id", ondelete="CASCADE"))
+    date: Mapped[datetime.datetime]
 
     scale: Mapped[list["Scale"]] = relationship()
 
@@ -109,8 +110,9 @@ class Scale(Base):
     __tablename__ = "scale"
 
     id: Mapped[uuid.UUID] = mapped_column(primary_key=True)
+    title: Mapped[str]
     score: Mapped[int]
-    test_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("test_result.id", ondelete="CASCADE"))
+    test_result_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("test_result.id", ondelete="CASCADE"))
 
 class Test(Base):
     __tablename__ = "test"

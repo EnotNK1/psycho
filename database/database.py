@@ -1,7 +1,7 @@
 from psycopg2 import Error
 from sqlalchemy import Integer, String, create_engine, select, func
-from sqlalchemy.orm import sessionmaker
-from database.tables import Users, Base, Problem, Message_r_i_dialog, Token
+from sqlalchemy.orm import sessionmaker, joinedload
+from database.tables import Users, Base, Problem, Message_r_i_dialog, Token, Test, Test_result, Scale
 import uuid
 
 # engine = create_engine(url="postgresql://postgres:postgresosikati@localhost:5432/psycho", echo=False)
@@ -125,6 +125,27 @@ class DatabaseService:
                 print(error)
                 return -1
 
+    def get_test_res_db(self, user_id, test_id):
+        with session_factory() as session:
+            try:
+                query = select(Test_result).filter_by(user_id=user_id, test_id=test_id).options(joinedload(Test_result.scale))
+                res = session.execute(query)
+                users = res.unique().scalars().all()
+
+                user_list = []
+                user_dict = {}
+                for user in users:
+                    user_dict['datetime'] = user.date
+                    user_dict['scale'] = user.scale
+
+                    user_list.append(user_dict)
+                    user_dict = {}
+                return user_list
+
+            except (Exception, Error) as error:
+                print(error)
+                return -1
+
 
     def add_problem_db(self, user_id, description):
         with session_factory() as session:
@@ -172,6 +193,42 @@ class DatabaseService:
     #         except (Exception, Error) as error:
     #             print(error)
     #             return -1
+
+    def save_test_result_db(self, user_id, title,test_id, date, score):
+        with session_factory() as session:
+            try:
+                test_res_id = uuid.uuid4()
+                test_res = Test_result(id=test_res_id,
+                                       user_id=user_id,
+                                       test_id=test_id,
+                                       date=date
+                                  )
+                scale = Scale(id=uuid.uuid4(),
+                              title=title,
+                              score=score,
+                              test_result_id=test_res_id)
+                session.add(test_res)
+                session.add(scale)
+                session.commit()
+                return 0
+            except (Exception, Error) as error:
+                print(error)
+                return -1
+
+    def create_test_db(self, title, description, short_desc):
+        with session_factory() as session:
+            try:
+                test = Test(id=uuid.uuid4(),
+                            title=title,
+                            description=description,
+                            short_desc=short_desc
+                            )
+                session.add(test)
+                session.commit()
+                return 0
+            except (Exception, Error) as error:
+                print(error)
+                return -1
 
 database_service = DatabaseService()
 
