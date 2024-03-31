@@ -2,7 +2,8 @@ import uuid
 
 from fastapi import APIRouter, Cookie
 from schemas.users import Creds, Reg, ResetPassword, AddProblem, SaveTestRes, CreateTest, GetTestRes, UpdateUser, \
-    Psychologist, GetClient, SendАpplication, ConfirmApplication
+    Psychologist, GetClient, SendАpplication, ConfirmApplication, ProblemAnalysisCreate, CreateDeepConviction, \
+    BeliefAnalysis
 from services.users import user_service
 from starlette.responses import JSONResponse, Response
 
@@ -134,3 +135,28 @@ def get_psycholog(data: GetClient, access_token: str = Cookie(None)):
 )
 def get_list_get_psycholog(access_token: str = Cookie(None)):
     return user_service.get_list_psycholog(access_token)
+
+@router.post(
+    "/users/save_problem_analysis",
+    response_model=None,
+)
+def save_problem_analysis(data: ProblemAnalysisCreate, access_token: str = Cookie(None)):
+    return user_service.save_problem_analysis(data, access_token)
+
+@router.post(
+    "/users/create_deep_conviction",
+    response_model=None,
+)
+def create_deep_conviction(data: CreateDeepConviction, access_token: str = Cookie(None)):
+    return user_service.create_deep_conviction(data, access_token)
+
+
+
+# @router.post(
+#     "/users/save_belief_analysis",
+#     response_model=None,
+# )
+# def save_belief_analysis(data: BeliefAnalysis, access_token: str = Cookie(None)):
+#     return user_service.save_belief_analysis(data, access_token)
+
+

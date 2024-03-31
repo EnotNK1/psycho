@@ -1,5 +1,6 @@
 from schemas.users import Creds, Reg, ResetPassword, AddProblem, SaveTestRes, CreateTest, GetTestRes, UpdateUser, \
-    Psychologist, GetClient, SendАpplication, ConfirmApplication
+    Psychologist, GetClient, SendАpplication, ConfirmApplication, ProblemAnalysisCreate, CreateDeepConviction, \
+    BeliefAnalysis
 from database.database import database_service
 from services.auth import send_email
 from services.auth import generate_token, verify_token
@@ -108,7 +109,7 @@ class UserServise:
         elif token_data == 'Invalid token':
             return "Invalid token"
 
-        database_service.add_problem_db(token_data['user_id'], payload.description)
+        database_service.add_problem_db(token_data['user_id'], payload.description, payload.goal)
 
         return "Successfully"
 
@@ -255,10 +256,67 @@ class UserServise:
 
         role = database_service.check_role(uuid.UUID(token_data['user_id']))
         if role == 1 or role == 2:
-            items = database_service.getListPsycholog(token_data['user_id'])
+            items = database_service.get_list_psycholog(token_data['user_id'])
             return items
         else:
             return "access denied"
 
+
+    def save_problem_analysis(self, payload: ProblemAnalysisCreate, access_token):
+        if not access_token:
+            return "not token"
+        token_data = verify_token(access_token)
+
+        if token_data == 'Token has expired':
+            return "Token has expired"
+        elif token_data == 'Invalid token':
+            return "Invalid token"
+
+        role = database_service.check_role(uuid.UUID(token_data['user_id']))
+        if role == 2:
+            database_service.save_problem_analysis_db(uuid.UUID(payload.problem_id), payload.type)
+            return "Successfully"
+        else:
+            return "access denied"
+
+    def create_deep_conviction(self, payload: CreateDeepConviction, access_token):
+        if not access_token:
+            return "not token"
+        token_data = verify_token(access_token)
+
+        if token_data == 'Token has expired':
+
+            return "Token has expired"
+        elif token_data == 'Invalid token':
+            return "Invalid token"
+
+        role = database_service.check_role(uuid.UUID(token_data['user_id']))
+        if role == 2:
+            database_service.create_deep_conviction_db(uuid.UUID(payload.problem_id), payload.disadaptive,
+                                                       payload.adaptive)
+            return "Successfully"
+        else:
+            return "access denied"
+
+    # def save_belief_analysis(self, payload: BeliefAnalysis, access_token):
+    #     if not access_token:
+    #         return "not token"
+    #     token_data = verify_token(access_token)
+    #
+    #     if token_data == 'Token has expired':
+    #
+    #         return "Token has expired"
+    #     elif token_data == 'Invalid token':
+    #         return "Invalid token"
+    #
+    #     role = database_service.check_role(uuid.UUID(token_data['user_id']))
+    #     if role == 2:
+    #         database_service.save_belief_analysis_db(uuid.UUID(payload.deep_conviction_id), payload.text,
+    #                                                    payload.truthfulness, payload.consistency, payload.usefulness,
+    #                                                    payload.feeling_and_actions, payload.motivation, payload.hindrances,
+    #                                                    payload.incorrect_victims, payload.results)
+    #         return "Successfully"
+    #     else:
+    #         return "access denied"
 
 user_service: UserServise = UserServise()
