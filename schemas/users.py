@@ -87,14 +87,20 @@ class CreateDeepConviction(pydantic.BaseModel):
     adaptive: str
     problem_id: str
 
-# class BeliefAnalysis(pydantic.BaseModel):
-#     text: str
-#     truthfulness: str
-#     consistency: str
-#     usefulness: str
-#     feeling_and_actions: str
-#     motivation: str
-#     hindrances: str
-#     incorrect_victims: str
-#     results: str
-#     deep_conviction_id: str
+class BeliefAnalysis(pydantic.BaseModel):
+    text: str
+    truthfulness: str
+    consistency: str
+    usefulness: str
+    feeling_and_actions: str
+    motivation: str
+    hindrances: str
+    incorrect_victims: str
+    results: str
+    deep_conviction_id: str
+
+class WritingFreeDiary(pydantic.BaseModel):
+    text: str
+
+class WatchApplication(pydantic.BaseModel):
+    app_id: str

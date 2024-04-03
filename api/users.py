@@ -2,7 +2,8 @@ import uuid
 
 from fastapi import APIRouter, Cookie
 from schemas.users import Creds, Reg, ResetPassword, AddProblem, SaveTestRes, CreateTest, GetTestRes, UpdateUser, \
-    Psychologist, GetClient, SendАpplication, ConfirmApplication, ProblemAnalysisCreate, CreateDeepConviction
+    Psychologist, GetClient, SendАpplication, ConfirmApplication, ProblemAnalysisCreate, CreateDeepConviction, \
+    BeliefAnalysis, WritingFreeDiary, WatchApplication
 from services.users import user_service
 from starlette.responses import JSONResponse, Response
 
@@ -151,11 +152,38 @@ def create_deep_conviction(data: CreateDeepConviction, access_token: str = Cooki
 
 
 
-# @router.post(
-#     "/users/save_belief_analysis",
-#     response_model=None,
-# )
-# def save_belief_analysis(data: BeliefAnalysis, access_token: str = Cookie(None)):
-#     return user_service.save_belief_analysis(data, access_token)
+@router.post(
+    "/users/save_belief_analysis",
+    response_model=None,
+)
+def save_belief_analysis(data: BeliefAnalysis, access_token: str = Cookie(None)):
+    return user_service.save_belief_analysis(data, access_token)
 
 
+@router.post(
+    "/users/writing_free_diary",
+    response_model=None,
+)
+def writing_free_diary(data: WritingFreeDiary, access_token: str = Cookie(None)):
+    return user_service.writing_free_diary(data, access_token)
+
+@router.get(
+    "/users/reading_free_diary",
+    response_model=None,
+)
+def reading_free_diary(access_token: str = Cookie(None)):
+    return user_service.reading_free_diary(access_token)
+
+@router.get(
+    "/users/get_list_applications",
+    response_model=None,
+)
+def get_list_applications(access_token: str = Cookie(None)):
+    return user_service.get_list_applications(access_token)
+
+@router.post(
+    "/users/watch_application",
+    response_model=None,
+)
+def watch_application(data: WatchApplication, access_token: str = Cookie(None)):
+    return user_service.watch_application(data, access_token)

@@ -40,6 +40,7 @@ class Users(Base):
     post_in_feed: Mapped[List["Post_in_feed"]] = relationship()
     like: Mapped[List["Like"]] = relationship()
     token: Mapped["Token"] = relationship()
+    free_diary: Mapped[List["FreeDiary"]] = relationship()
 
 class Token(Base):
     __tablename__ = "token"
@@ -355,3 +356,11 @@ class Clients(Base):
     psychologist_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"))
     text: Mapped[str]
     status: Mapped[bool]
+
+
+class FreeDiary(Base):
+    __tablename__ = "free_diary"
+
+    id: Mapped[uuid.UUID] = mapped_column(primary_key=True)
+    user_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"))
+    text: Mapped[str]
