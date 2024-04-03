@@ -2,10 +2,10 @@ from psycopg2 import Error
 from sqlalchemy import Integer, String, create_engine, select, func
 from sqlalchemy.orm import sessionmaker, joinedload
 from database.tables import Users, Base, Problem, Message_r_i_dialog, Token, User_inquiries, Test_result, Test, Scale, \
-    Inquiry, Education, Clients, Type_analysis, Intermediate_belief, Deep_conviction
+    Inquiry, Education, Clients, Type_analysis, Intermediate_belief, Deep_conviction, FreeDiary
 import uuid
 
-# engine = create_engine(url="postgresql://postgres:postgresosikati@localhost:5432/psycho", echo=False)
+# engine = create_engine(url="postgresql://postgres:1111@localhost:5432/psycho", echo=False)
 engine = create_engine(url="postgresql://user:password@db:5432/dbname", echo=False)
 
 session_factory = sessionmaker(engine)
@@ -52,7 +52,6 @@ class DatabaseService:
 
             except (Exception, Error) as error:
                 print(error)
-                print("xyi")
                 return -1
 
     def check_role(self, id):
@@ -273,27 +272,31 @@ class DatabaseService:
     def psychologist_sent_db(self, user_id, username, title, document, description, city, online, face_to_face, gender,
                              birth_date, request):
         with session_factory() as session:
-            database_service.update_user_db(user_id, username, gender, birth_date, request, city, description, 2)
-            user = session.get(Users, user_id)
-            user.online = online
-            user.face_to_face = face_to_face
-            user.role_id = 2
+            try:
+                database_service.update_user_db(user_id, username, gender, birth_date, request, city, description, 2)
+                user = session.get(Users, user_id)
+                user.online = online
+                user.face_to_face = face_to_face
+                user.role_id = 2
 
-            ed = session.query(Education).filter_by(psychologist_id=user_id).all()
-            for obj in ed:
-                session.delete(obj)
-            session.commit()
+                ed = session.query(Education).filter_by(psychologist_id=user_id).all()
+                for obj in ed:
+                    session.delete(obj)
+                session.commit()
 
-            educ = Education(
-                id=uuid.uuid4(),
-                title=title,
-                document=document,
-                psychologist_id=user_id
-            )
-            session.add(educ)
+                educ = Education(
+                    id=uuid.uuid4(),
+                    title=title,
+                    document=document,
+                    psychologist_id=user_id
+                )
+                session.add(educ)
 
-            session.commit()
-            return 0
+                session.commit()
+                return 0
+            except (Exception, Error) as error:
+                print(error)
+                return -1
 
     def getClient(self, user_id):
         with session_factory() as session:
@@ -475,25 +478,123 @@ class DatabaseService:
     # def save_belief_analysis_db(self, deep_conviction_id, text, truthfulness, consistency, usefulness,
     #                             feeling_and_actions, motivation, hindrances, incorrect_victims, results):
     #     with session_factory() as session:
-    #         try:
-    #             temp = Intermediate_belief(
-    #                 deep_conviction=deep_conviction_id,
-    #                 text=text,
-    #                 truthfulness=truthfulness,
-    #                 consistency=consistency,
-    #                 usefulness=usefulness,
-    #                 feeling_and_actions=feeling_and_actions,
-    #                 motivation=motivation,
-    #                 hindrances=hindrances,
-    #                 incorrect_victims=incorrect_victims,
-    #                 results=results,
-    #             )
-    #             session.add(temp)
+    #         if  session.query(Intermediate_belief).filter_by(deep_conviction=deep_conviction_id).all():
+    #             dci = session.query(Intermediate_belief).filter_by(deep_conviction=deep_conviction_id).all()
+    #             for obj in dci:
+    #                 type = obj.type
+    #                 session.delete(obj)
     #             session.commit()
-    #             return 0
-    #         except (Exception, Error) as error:
-    #             print(error)
-    #             return -1
+    #             try:
+    #                 deepcon = session.get(Deep_conviction, deep_conviction_id)
+    #                 intbel = session.get(Intermediate_belief, deepcon.problem_id)
+    #
+    #                 intbel.text = text
+    #                 intbel.truthfulness = truthfulness
+    #                 intbel.consistency = consistency
+    #                 intbel.usefulness = usefulness
+    #                 intbel.feelings_and_actions = feeling_and_actions
+    #                 intbel.motivation = motivation
+    #                 intbel.hindrances = hindrances
+    #                 intbel.incorrect_victims = incorrect_victims
+    #                 intbel.results = results
+    #                 intbel.type = type
+    #                 session.commit()
+    #                 return 0
+    #             except (Exception, Error) as error:
+    #                 print(error)
+    #                 return -1
+    #
+    #         else:
+    #             try:
+    #                 deepcon = session.get(Deep_conviction, deep_conviction_id)
+    #                 intbel = session.get(Intermediate_belief, deepcon.problem_id)
+    #                 temp = Intermediate_belief(
+    #                     id=uuid.uuid4(),
+    #                     text = text,
+    #                     truthfulness=truthfulness,
+    #                     consistency=consistency,
+    #                     usefulness=usefulness,
+    #                     feelings_and_actions=feeling_and_actions,
+    #                     motivation=motivation,
+    #                     hindrances=hindrances,
+    #                     incorrect_victims=incorrect_victims,
+    #                     problem_id=deepcon.problem_id,
+    #                     deep_conviction=deep_conviction_id,
+    #                     results=results,
+    #                     type = 1
+    #                 )
+    #                 session.add(temp)
+    #                 session.commit()
+    #                 return 0
+    #             except (Exception, Error) as error:
+    #                 print(error)
+    #                 return -1
+
+    def writing_free_diary_db(self, user_id, text):
+        with session_factory() as session:
+            try:
+                temp = FreeDiary(
+                    id=uuid.uuid4(),
+                    user_id=user_id,
+                    text=text
+                )
+                session.add(temp)
+                session.commit()
+                return 0
+            except (Exception, Error) as error:
+                print(error)
+                return -1
+
+    def reading_free_diary_db(self,  user_id):
+        with session_factory() as session:
+            try:
+                list = []
+                temp = session.query(FreeDiary).filter_by(user_id=user_id).all()
+
+                for obj in temp:
+                    list.append(obj.text)
+
+
+                return list
+            except (Exception, Error) as error:
+                print(error)
+                return -1
+
+    def get_list_applications_db(self, user_id):
+        with session_factory() as session:
+            try:
+                list = []
+                dict = {}
+                temp = session.query(Clients).filter_by(psychologist_id=user_id, status=False).all()
+
+                for obj in temp:
+                    # user = session.get(Users, obj.client_id)
+                    #
+                    # dict["username"] = user.username
+                    # dict["text"] = obj.text
+                    list.append(obj.id)
+
+                return list
+            except (Exception, Error) as error:
+                print(error)
+                return -1
+
+    def watch_application_db(self, user_id, app_id):
+        with session_factory() as session:
+            try:
+                app = session.get(Clients, app_id)
+                user = session.get(Users, app.client_id)
+                dict = {}
+
+                dict["username"] = user.username
+                dict["text"] = app.text
+
+
+                return dict
+            except (Exception, Error) as error:
+                print(error)
+                return -1
+
 
 
 database_service = DatabaseService()
