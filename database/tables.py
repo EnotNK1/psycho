@@ -28,7 +28,6 @@ class Users(Base):
     is_active: Mapped[bool]
 
     problem: Mapped[List["Problem"]] = relationship()
-    core_belief: Mapped[List["Deep_conviction"]] = relationship()
     test_result: Mapped[List["Test_result"]] = relationship()
     behavioral_experiment: Mapped[List["Behavioral_experiment"]] = relationship()
     educational_material: Mapped[List["Educational_material"]] = relationship(back_populates="users", secondary="educational_progress")
@@ -70,7 +69,7 @@ class Deep_conviction(Base):
     id: Mapped[uuid.UUID] = mapped_column(primary_key=True)
     disadaptive: Mapped[str]
     adaptive: Mapped[str]
-    user_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"))
+    problem_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("problem.id", ondelete="CASCADE"))
 
     intermediate_belief: Mapped[List["Intermediate_belief"]] = relationship()
     diary_record: Mapped[List["Diary_record"]] = relationship()
@@ -88,17 +87,18 @@ class Intermediate_belief(Base):
     __tablename__ = "intermediate_belief"
 
     id: Mapped[uuid.UUID] = mapped_column(primary_key=True)
-    text: Mapped[str]
-    truthfulness: Mapped[str]
-    consistency: Mapped[str]
-    usefulness: Mapped[str]
-    feelings_and_actions: Mapped[str]
-    motivation: Mapped[str]
-    hindrances: Mapped[str]
-    incorrect_victims: Mapped[str]
-    results: Mapped[str]
+    text: Mapped[str] = mapped_column(nullable=True)
+    truthfulness: Mapped[str] = mapped_column(nullable=True)
+    consistency: Mapped[str] = mapped_column(nullable=True)
+    usefulness: Mapped[str] = mapped_column(nullable=True)
+    feelings_and_actions: Mapped[str] = mapped_column(nullable=True)
+    motivation: Mapped[str] = mapped_column(nullable=True)
+    hindrances: Mapped[str] = mapped_column(nullable=True)
+    incorrect_victims: Mapped[str] = mapped_column(nullable=True)
+    results: Mapped[str] = mapped_column(nullable=True)
     problem_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("problem.id", ondelete="CASCADE"))
-    deep_conviction: Mapped[uuid.UUID] = mapped_column(ForeignKey("deep_conviction.id", ondelete="CASCADE"))
+    deep_conviction: Mapped[uuid.UUID] = mapped_column(ForeignKey("deep_conviction.id", ondelete="CASCADE"), nullable=True)
+    type: Mapped[int] = mapped_column(ForeignKey("type_analysis.id", ondelete="CASCADE"))
 
 class Test_result(Base):
     __tablename__ = "test_result"
@@ -299,6 +299,14 @@ class Inquiry(Base):
 
     users: Mapped[List["Users"]] = relationship(back_populates="inquiry", secondary="user_inquiries")
     book: Mapped[List["Book"]] = relationship(back_populates="inquiry", secondary="inquiry_to_book")
+
+class Type_analysis(Base):
+    __tablename__ = "type_analysis"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    text: Mapped[str]
+
+    intermediate_belief: Mapped[List["Intermediate_belief"]] = relationship()
 
 class User_inquiries(Base):
     __tablename__ = "user_inquiries"

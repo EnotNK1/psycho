@@ -23,6 +23,7 @@ class ResetPassword(pydantic.BaseModel):
 
 class AddProblem(pydantic.BaseModel):
     description: str
+    goal: str
 
 
 class UpdateUser(pydantic.BaseModel):
@@ -76,3 +77,24 @@ class SendАpplication(pydantic.BaseModel):
 class ConfirmApplication(pydantic.BaseModel):
     user_id: str
     status: bool
+
+class ProblemAnalysisCreate(pydantic.BaseModel):
+    problem_id: str
+    type: int
+
+class CreateDeepConviction(pydantic.BaseModel):
+    disadaptive: str
+    adaptive: str
+    problem_id: str
+
+# class BeliefAnalysis(pydantic.BaseModel):
+#     text: str
+#     truthfulness: str
+#     consistency: str
+#     usefulness: str
+#     feeling_and_actions: str
+#     motivation: str
+#     hindrances: str
+#     incorrect_victims: str
+#     results: str
+#     deep_conviction_id: str

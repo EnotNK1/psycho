@@ -2,7 +2,7 @@ from psycopg2 import Error
 from sqlalchemy import Integer, String, create_engine, select, func
 from sqlalchemy.orm import sessionmaker, joinedload
 from database.tables import Users, Base, Problem, Message_r_i_dialog, Token, User_inquiries, Test_result, Test, Scale, \
-    Inquiry, Education, Clients
+    Inquiry, Education, Clients, Type_analysis, Intermediate_belief, Deep_conviction
 import uuid
 
 engine = create_engine(url="postgresql://postgres:1111@localhost:5432/psycho", echo=False)
@@ -145,12 +145,13 @@ class DatabaseService:
                 print(error)
                 return -1
 
-    def add_problem_db(self, user_id, description):
+    def add_problem_db(self, user_id, description, goal):
         with session_factory() as session:
             try:
                 problem = Problem(id=uuid.uuid4(),
                                   description=description,
-                                  user_id=user_id
+                                  user_id=user_id,
+                                  goal=goal
                                   )
                 session.add(problem)
                 session.commit()
@@ -316,7 +317,6 @@ class DatabaseService:
             user_dict = {}
             user_list = []
 
-
             list_clients = session.query(Clients).filter_by(psychologist_id=psyh_id, status=True).all()
             for obj in list_clients:
                 request_list = []
@@ -402,11 +402,10 @@ class DatabaseService:
         session.commit()
         return user_dict
 
-    def getListPsycholog(self, user_id):
+    def get_list_psycholog(self, user_id):
         with session_factory() as session:
             user_dict = {}
             user_list = []
-
 
             list_psycholog = session.query(Clients).filter_by(client_id=user_id, status=True).all()
             for obj in list_psycholog:
@@ -431,10 +430,77 @@ class DatabaseService:
             session.commit()
             return user_list
 
+    def create_type_analysis(self):
+        with session_factory() as session:
+            type = ["догматическое требование", "Драматизация", "НПФ", "Гибкое предпочтение", "Унизительные замечание",
+                    "Перспектива", "Высокий порог фрустрации", "Безусловное принятие"]
+            for i in range(len(type)):
+                tanalys = Type_analysis(id=i + 1,
+                                        text=type[i]
+                                        )
+                session.add(tanalys)
+            session.commit()
+
+    def save_problem_analysis_db(self, problem_id, type):
+        with session_factory() as session:
+            try:
+                temp = Intermediate_belief(
+                    id=uuid.uuid4(),
+                    problem_id=problem_id,
+                    type=type
+                )
+                session.add(temp)
+                session.commit()
+                return 0
+            except (Exception, Error) as error:
+                print(error)
+                return -1
+
+    def create_deep_conviction_db(self, problem_id, disadaptive, adaptive):
+        with session_factory() as session:
+            try:
+                temp = Deep_conviction(
+                    id=uuid.uuid4(),
+                    problem_id=problem_id,
+                    disadaptive=disadaptive,
+                    adaptive=adaptive
+                )
+                session.add(temp)
+                session.commit()
+                return 0
+            except (Exception, Error) as error:
+                print(error)
+                return -1
+
+    # def save_belief_analysis_db(self, deep_conviction_id, text, truthfulness, consistency, usefulness,
+    #                             feeling_and_actions, motivation, hindrances, incorrect_victims, results):
+    #     with session_factory() as session:
+    #         try:
+    #             temp = Intermediate_belief(
+    #                 deep_conviction=deep_conviction_id,
+    #                 text=text,
+    #                 truthfulness=truthfulness,
+    #                 consistency=consistency,
+    #                 usefulness=usefulness,
+    #                 feeling_and_actions=feeling_and_actions,
+    #                 motivation=motivation,
+    #                 hindrances=hindrances,
+    #                 incorrect_victims=incorrect_victims,
+    #                 results=results,
+    #             )
+    #             session.add(temp)
+    #             session.commit()
+    #             return 0
+    #         except (Exception, Error) as error:
+    #             print(error)
+    #             return -1
+
+
 database_service = DatabaseService()
 
 database_service.create_tables()
 
 if database_service.check_user("admin", "admin") == -1:
     database_service.create_inquirty()
+    database_service.create_type_analysis()
     database_service.register_user(uuid.uuid4(), "admin", "admin", "admin", "", True, True, "", "", 0, True)
