@@ -1,6 +1,5 @@
 from schemas.users import Creds, Reg, ResetPassword, AddProblem, SaveTestRes, CreateTest, GetTestRes, UpdateUser, \
-    Psychologist, GetClient, SendАpplication, ConfirmApplication, ProblemAnalysisCreate, CreateDeepConviction, \
-    BeliefAnalysis
+    Psychologist, GetClient, SendАpplication, ConfirmApplication, ProblemAnalysisCreate, CreateDeepConviction
 from database.database import database_service
 from services.auth import send_email
 from services.auth import generate_token, verify_token

@@ -16,4 +16,4 @@ ENV POSTGRES_DB=dbname
 ENV POSTGRES_HOST=db
 
 # Запускаем приложение
-CMD ["python", "main.py"]
+CMD gunicorn main:app --bind=0.0.0.0:8080

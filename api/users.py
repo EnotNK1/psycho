@@ -2,8 +2,7 @@ import uuid
 
 from fastapi import APIRouter, Cookie
 from schemas.users import Creds, Reg, ResetPassword, AddProblem, SaveTestRes, CreateTest, GetTestRes, UpdateUser, \
-    Psychologist, GetClient, SendАpplication, ConfirmApplication, ProblemAnalysisCreate, CreateDeepConviction, \
-    BeliefAnalysis
+    Psychologist, GetClient, SendАpplication, ConfirmApplication, ProblemAnalysisCreate, CreateDeepConviction
 from services.users import user_service
 from starlette.responses import JSONResponse, Response
 
