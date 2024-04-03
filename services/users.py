@@ -6,6 +6,7 @@ from services.auth import generate_token, verify_token
 import uuid
 from starlette.responses import JSONResponse, Response
 from smtplib import SMTPRecipientsRefused
+from psycopg2 import Error
 
 
 class UserServise:
@@ -75,10 +76,13 @@ class UserServise:
         elif token_data == 'Invalid token':
             return "Invalid token"
 
-        database_service.update_user_db(token_data['user_id'], payload.username, payload.gender, payload.birth_date,
-                                        payload.request, payload.city, payload.description, payload.type)
+        try:
+            database_service.update_user_db(token_data['user_id'], payload.username, payload.gender, payload.birth_date,
+                                            payload.request, payload.city, payload.description, payload.type)
 
-        return "Successfully"
+            return "Successfully"
+        except(Error):
+            return "error"
 
     def psychologist_sent(self, payload: Psychologist, access_token):
         if not access_token:
@@ -90,13 +94,15 @@ class UserServise:
         elif token_data == 'Invalid token':
             return "Invalid token"
 
-        database_service.psychologist_sent_db(token_data['user_id'], payload.username, payload.title, payload.document,
-                                              payload.description,
-                                              payload.city, payload.online, payload.face_to_face, payload.gender,
-                                              payload.birth_date,
-                                              payload.request)
-
-        return "Successfully"
+        try:
+            database_service.psychologist_sent_db(token_data['user_id'], payload.username, payload.title, payload.document,
+                                                  payload.description,
+                                                  payload.city, payload.online, payload.face_to_face, payload.gender,
+                                                  payload.birth_date,
+                                                  payload.request)
+            return "Successfully"
+        except(Error):
+            return "error"
 
     def add_problem(self, payload: AddProblem, access_token):
         if not access_token:
@@ -108,9 +114,11 @@ class UserServise:
         elif token_data == 'Invalid token':
             return "Invalid token"
 
-        database_service.add_problem_db(token_data['user_id'], payload.description, payload.goal)
-
-        return "Successfully"
+        try:
+            database_service.add_problem_db(token_data['user_id'], payload.description, payload.goal)
+            return "Successfully"
+        except(Error):
+            return "error"
 
     def save_test_result(self, payload: SaveTestRes, access_token):
         if not access_token:
@@ -122,10 +130,12 @@ class UserServise:
         elif token_data == 'Invalid token':
             return "Invalid token"
 
-        database_service.save_test_result_db(token_data['user_id'], payload.title, uuid.UUID(payload.test_id),
-                                             payload.date, payload.score)
-
-        return "Successfully"
+        try:
+            database_service.save_test_result_db(token_data['user_id'], payload.title, uuid.UUID(payload.test_id),
+                                                 payload.date, payload.score)
+            return "Successfully"
+        except(Error):
+            return "error"
 
     def create_test(self, payload: CreateTest, access_token) -> str:
         if not access_token:
