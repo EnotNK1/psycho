@@ -10,7 +10,7 @@ router = APIRouter()
 
 
 @router.post(
-    "/users",
+    "/users/reg",
     response_model=None,
 )
 def register_user(data: Reg):
@@ -26,7 +26,7 @@ def auth_user(data: Creds, response: Response):
 
 
 @router.get(
-    "/users",
+    "/users/get",
     status_code=200,
     response_model=None,
 )
