@@ -53,7 +53,7 @@ def update_user(data: UpdateUser, access_token: str = Cookie(None)):
 
 
 @router.post(
-    "/users/new_problem",
+    "/problem/new_problem",
     response_model=None,
 )
 def add_problem(data: AddProblem, access_token: str = Cookie(None)):
@@ -61,7 +61,7 @@ def add_problem(data: AddProblem, access_token: str = Cookie(None)):
 
 
 @router.post(
-    "/users/save_test_result",
+    "/test/save_test_result",
     response_model=None,
 )
 def save_test_result(data: SaveTestRes, access_token: str = Cookie(None)):
@@ -69,7 +69,7 @@ def save_test_result(data: SaveTestRes, access_token: str = Cookie(None)):
 
 
 @router.post(
-    "/users/create_test",
+    "/test/create_test",
     response_model=None,
 )
 def create_test(data: CreateTest, access_token: str = Cookie(None)):
@@ -77,7 +77,7 @@ def create_test(data: CreateTest, access_token: str = Cookie(None)):
 
 
 @router.post(
-    "/users/get_test_result",
+    "/test/get_test_result",
     response_model=None,
 )
 def get_test_res(data: GetTestRes, access_token: str = Cookie(None)):
@@ -85,7 +85,7 @@ def get_test_res(data: GetTestRes, access_token: str = Cookie(None)):
 
 
 @router.post(
-    "/users/send_psychologist",
+    "/psychologist/send_psychologist",
     response_model=None,
 )
 def psychologist_sent(data: Psychologist, access_token: str = Cookie(None)):
@@ -93,7 +93,7 @@ def psychologist_sent(data: Psychologist, access_token: str = Cookie(None)):
 
 
 @router.post(
-    "/users/get_client",
+    "/psychologist/get_client",
     response_model=None,
 )
 def get_client(data: GetClient, access_token: str = Cookie(None)):
@@ -101,14 +101,14 @@ def get_client(data: GetClient, access_token: str = Cookie(None)):
 
 
 @router.get(
-    "/users/get_list_client",
+    "/psychologist/get_list_client",
     response_model=None,
 )
 def get_list_client(access_token: str = Cookie(None)):
     return user_service.get_list_client(access_token)
 
 @router.post(
-    "/users/send_application",
+    "/client/send_application",
     response_model=None,
 )
 def send_application(data: SendАpplication, access_token: str = Cookie(None)):
@@ -116,14 +116,14 @@ def send_application(data: SendАpplication, access_token: str = Cookie(None)):
 
 
 @router.post(
-    "/users/confirm_application",
+    "/psychologist/confirm_application",
     response_model=None,
 )
 def confirm_application(data: ConfirmApplication, access_token: str = Cookie(None)):
     return user_service.confirm_application(data, access_token)
 
 @router.post(
-    "/users/get_psycholog",
+    "/client/get_psycholog",
     response_model=None,
 )
 def get_psycholog(data: GetClient, access_token: str = Cookie(None)):
@@ -131,21 +131,21 @@ def get_psycholog(data: GetClient, access_token: str = Cookie(None)):
 
 
 @router.get(
-    "/users/get_list_get_psycholog",
+    "/client/get_list_get_psycholog",
     response_model=None,
 )
 def get_list_get_psycholog(access_token: str = Cookie(None)):
     return user_service.get_list_psycholog(access_token)
 
 @router.post(
-    "/users/save_problem_analysis",
+    "/problem/save_problem_analysis",
     response_model=None,
 )
 def save_problem_analysis(data: ProblemAnalysisCreate, access_token: str = Cookie(None)):
     return user_service.save_problem_analysis(data, access_token)
 
 @router.post(
-    "/users/create_deep_conviction",
+    "/belief/create_deep_conviction",
     response_model=None,
 )
 def create_deep_conviction(data: CreateDeepConviction, access_token: str = Cookie(None)):
@@ -154,27 +154,27 @@ def create_deep_conviction(data: CreateDeepConviction, access_token: str = Cooki
 
 
 @router.post(
-    "/users/save_belief_analysis",
+    "/belief/save_belief_analysis",
     response_model=None,
 )
 def save_belief_analysis(data: BeliefAnalysis, access_token: str = Cookie(None)):
     return user_service.save_belief_analysis(data, access_token)
 
 @router.post(
-    "/users/save_belief_check",
+    "/belief/save_belief_check",
     response_model=None,
 )
 def save_belief_check(data: CheckBelief, access_token: str = Cookie(None)):
     return user_service.save_belief_check(data, access_token)
 @router.post(
-    "/users/get_belief_analysis",
+    "/belief/get_belief_analysis",
     response_model=None,
 )
 def get_belief_analysis(data: GetBeliefAnalysis, access_token: str = Cookie(None)):
     return user_service.get_belief_analysis(data, access_token)
 
 @router.post(
-    "/users/get_belief_check",
+    "/belief/get_belief_check",
     response_model=None,
 )
 def get_belief_check(data: GetBeliefAnalysis, access_token: str = Cookie(None)):
@@ -182,42 +182,42 @@ def get_belief_check(data: GetBeliefAnalysis, access_token: str = Cookie(None)):
 
 
 @router.post(
-    "/users/writing_free_diary",
+    "/diary/writing_free_diary",
     response_model=None,
 )
 def writing_free_diary(data: WritingFreeDiary, access_token: str = Cookie(None)):
     return user_service.writing_free_diary(data, access_token)
 
 @router.get(
-    "/users/reading_free_diary",
+    "/diary/reading_free_diary",
     response_model=None,
 )
 def reading_free_diary(access_token: str = Cookie(None)):
     return user_service.reading_free_diary(access_token)
 
 @router.post(
-    "/users/writing_think_diary",
+    "/diary/writing_think_diary",
     response_model=None,
 )
 def writing_think_diary(data: WritingThinkDiary, access_token: str = Cookie(None)):
     return user_service.writing_think_diary(data, access_token)
 
 @router.post(
-    "/users/reading_think_diary",
+    "/diary/reading_think_diary",
     response_model=None,
 )
 def reading_think_diary(data: ReadThinkDiary, access_token: str = Cookie(None)):
     return user_service.reading_think_diary(data, access_token)
 
 @router.get(
-    "/users/get_list_applications",
+    "/application/get_list_applications",
     response_model=None,
 )
 def get_list_applications(access_token: str = Cookie(None)):
     return user_service.get_list_applications(access_token)
 
 @router.post(
-    "/users/watch_application",
+    "/application/watch_application",
     response_model=None,
 )
 def watch_application(data: WatchApplication, access_token: str = Cookie(None)):
