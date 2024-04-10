@@ -3,7 +3,8 @@ import uuid
 from fastapi import APIRouter, Cookie
 from schemas.users import Creds, Reg, ResetPassword, AddProblem, SaveTestRes, CreateTest, GetTestRes, UpdateUser, \
     Psychologist, GetClient, SendАpplication, ConfirmApplication, ProblemAnalysisCreate, CreateDeepConviction, \
-    BeliefAnalysis, WritingFreeDiary, WatchApplication
+    BeliefAnalysis, WritingFreeDiary, WatchApplication, GetBeliefAnalysis, CheckBelief, WritingThinkDiary, \
+    ReadThinkDiary
 from services.users import user_service
 from starlette.responses import JSONResponse, Response
 
@@ -159,6 +160,26 @@ def create_deep_conviction(data: CreateDeepConviction, access_token: str = Cooki
 def save_belief_analysis(data: BeliefAnalysis, access_token: str = Cookie(None)):
     return user_service.save_belief_analysis(data, access_token)
 
+@router.post(
+    "/users/save_belief_check",
+    response_model=None,
+)
+def save_belief_check(data: CheckBelief, access_token: str = Cookie(None)):
+    return user_service.save_belief_check(data, access_token)
+@router.post(
+    "/users/get_belief_analysis",
+    response_model=None,
+)
+def get_belief_analysis(data: GetBeliefAnalysis, access_token: str = Cookie(None)):
+    return user_service.get_belief_analysis(data, access_token)
+
+@router.post(
+    "/users/get_belief_check",
+    response_model=None,
+)
+def get_belief_check(data: GetBeliefAnalysis, access_token: str = Cookie(None)):
+    return user_service.get_belief_check(data, access_token)
+
 
 @router.post(
     "/users/writing_free_diary",
@@ -173,6 +194,20 @@ def writing_free_diary(data: WritingFreeDiary, access_token: str = Cookie(None))
 )
 def reading_free_diary(access_token: str = Cookie(None)):
     return user_service.reading_free_diary(access_token)
+
+@router.post(
+    "/users/writing_think_diary",
+    response_model=None,
+)
+def writing_think_diary(data: WritingThinkDiary, access_token: str = Cookie(None)):
+    return user_service.writing_think_diary(data, access_token)
+
+@router.post(
+    "/users/reading_think_diary",
+    response_model=None,
+)
+def reading_think_diary(data: ReadThinkDiary, access_token: str = Cookie(None)):
+    return user_service.reading_think_diary(data, access_token)
 
 @router.get(
     "/users/get_list_applications",

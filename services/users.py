@@ -1,6 +1,7 @@
 from schemas.users import Creds, Reg, ResetPassword, AddProblem, SaveTestRes, CreateTest, GetTestRes, UpdateUser, \
     Psychologist, GetClient, SendАpplication, ConfirmApplication, ProblemAnalysisCreate, CreateDeepConviction, \
-    BeliefAnalysis, WritingFreeDiary, WatchApplication
+    BeliefAnalysis, WritingFreeDiary, WatchApplication, GetBeliefAnalysis, CheckBelief, WritingThinkDiary, \
+    ReadThinkDiary
 from database.database import database_service
 from services.auth import send_email
 from services.auth import generate_token, verify_token
@@ -324,13 +325,68 @@ class UserServise:
 
         role = database_service.check_role(uuid.UUID(token_data['user_id']))
         if role == 2:
-            database_service.save_belief_analysis_db(uuid.UUID(payload.deep_conviction_id), payload.text,
-                                                       payload.truthfulness, payload.consistency, payload.usefulness,
+            database_service.save_belief_analysis_db(uuid.UUID(payload.intermediate_conviction_id), payload.text,
                                                        payload.feeling_and_actions, payload.motivation, payload.hindrances,
                                                        payload.incorrect_victims, payload.results)
             return "Successfully"
         else:
             return "access denied"
+
+    def save_belief_check(self, payload: CheckBelief, access_token):
+        if not access_token:
+            return "not token"
+        token_data = verify_token(access_token)
+
+        if token_data == 'Token has expired':
+
+            return "Token has expired"
+        elif token_data == 'Invalid token':
+            return "Invalid token"
+
+        role = database_service.check_role(uuid.UUID(token_data['user_id']))
+        if role == 2:
+            database_service.save_belief_check_db(uuid.UUID(payload.intermediate_conviction_id), payload.truthfulness,
+                                                     payload.consistency, payload.usefulness)
+            return "Successfully"
+        else:
+            return "access denied"
+
+    def get_belief_analysis(self, payload: GetBeliefAnalysis, access_token):
+        if not access_token:
+            return "not token"
+        token_data = verify_token(access_token)
+
+        if token_data == 'Token has expired':
+
+            return "Token has expired"
+        elif token_data == 'Invalid token':
+            return "Invalid token"
+
+        role = database_service.check_role(uuid.UUID(token_data['user_id']))
+        if role == 2:
+            result = database_service.get_belief_analysis(uuid.UUID(payload.intermediate_conviction_id))
+            return result
+        else:
+            return "access denied"
+
+    def get_belief_check(self, payload: GetBeliefAnalysis, access_token):
+        if not access_token:
+            return "not token"
+        token_data = verify_token(access_token)
+
+        if token_data == 'Token has expired':
+
+            return "Token has expired"
+        elif token_data == 'Invalid token':
+            return "Invalid token"
+
+        role = database_service.check_role(uuid.UUID(token_data['user_id']))
+        if role == 2:
+            result = database_service.get_belief_check(uuid.UUID(payload.intermediate_conviction_id))
+            return result
+        else:
+            return "access denied"
+
 
     def writing_free_diary(self, payload: WritingFreeDiary, access_token):
         if not access_token:
@@ -349,6 +405,25 @@ class UserServise:
         except(Error):
             return "error"
 
+    def writing_think_diary(self, payload: WritingThinkDiary, access_token):
+        if not access_token:
+            return "not token"
+        token_data = verify_token(access_token)
+
+        if token_data == 'Token has expired':
+
+            return "Token has expired"
+        elif token_data == 'Invalid token':
+            return "Invalid token"
+
+        try:
+            database_service.writing_think_diary_db(token_data['user_id'], payload.deep_conviction_id, payload.situation,
+                                                   payload.mood, payload.level, payload.auto_thought, payload.proofs,
+                                                   payload.refutations, payload.new_mood, payload.new_level, payload.behaviour)
+            return "Successfully"
+        except(Error):
+            return "error"
+
 
     def reading_free_diary(self, access_token):
         if not access_token:
@@ -363,6 +438,23 @@ class UserServise:
 
         try:
             result = database_service.reading_free_diary_db(token_data['user_id'])
+            return result
+        except(Error):
+            return "error"
+
+    def reading_think_diary(self, payload: ReadThinkDiary, access_token):
+        if not access_token:
+            return "not token"
+        token_data = verify_token(access_token)
+
+        if token_data == 'Token has expired':
+
+            return "Token has expired"
+        elif token_data == 'Invalid token':
+            return "Invalid token"
+
+        try:
+            result = database_service.reading_think_diary_db(payload.think_diary_id)
             return result
         except(Error):
             return "error"

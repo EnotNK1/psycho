@@ -89,18 +89,39 @@ class CreateDeepConviction(pydantic.BaseModel):
 
 class BeliefAnalysis(pydantic.BaseModel):
     text: str
-    truthfulness: str
-    consistency: str
-    usefulness: str
     feeling_and_actions: str
     motivation: str
     hindrances: str
     incorrect_victims: str
     results: str
-    deep_conviction_id: str
+    intermediate_conviction_id: str
+
+class CheckBelief(pydantic.BaseModel):
+    truthfulness: str
+    consistency: str
+    usefulness: str
+    intermediate_conviction_id: str
+
+class GetBeliefAnalysis(pydantic.BaseModel):
+    intermediate_conviction_id: str
 
 class WritingFreeDiary(pydantic.BaseModel):
     text: str
 
 class WatchApplication(pydantic.BaseModel):
     app_id: str
+
+class WritingThinkDiary(pydantic.BaseModel):
+    deep_conviction_id: str
+    situation: str
+    mood: str
+    level: int
+    auto_thought: str
+    proofs: str
+    refutations: str
+    new_mood: str
+    new_level: int
+    behaviour: str
+
+class ReadThinkDiary(pydantic.BaseModel):
+    think_diary_id: str

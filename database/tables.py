@@ -41,6 +41,7 @@ class Users(Base):
     like: Mapped[List["Like"]] = relationship()
     token: Mapped["Token"] = relationship()
     free_diary: Mapped[List["FreeDiary"]] = relationship()
+    think_diary: Mapped[List["Diary_record"]] = relationship()
 
 class Token(Base):
     __tablename__ = "token"
@@ -184,6 +185,7 @@ class Diary_record(Base):
 
     id: Mapped[uuid.UUID] = mapped_column(primary_key=True)
     deep_conviction_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("deep_conviction.id", ondelete="CASCADE"))
+    user_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"))
     situation: Mapped[str]
     mood: Mapped[str]
     level: Mapped[int]

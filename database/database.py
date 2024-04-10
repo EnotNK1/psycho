@@ -2,10 +2,10 @@ from psycopg2 import Error
 from sqlalchemy import Integer, String, create_engine, select, func
 from sqlalchemy.orm import sessionmaker, joinedload
 from database.tables import Users, Base, Problem, Message_r_i_dialog, Token, User_inquiries, Test_result, Test, Scale, \
-    Inquiry, Education, Clients, Type_analysis, Intermediate_belief, Deep_conviction, FreeDiary
+    Inquiry, Education, Clients, Type_analysis, Intermediate_belief, Deep_conviction, FreeDiary, Diary_record
 import uuid
 
-# engine = create_engine(url="postgresql://postgres:1111@localhost:5432/psycho", echo=False)
+# engine = create_engine(url="postgresql://postgres:postgresosikati@localhost:5432/psycho", echo=False)
 engine = create_engine(url="postgresql://user:password@db:5432/dbname", echo=False)
 
 session_factory = sessionmaker(engine)
@@ -475,60 +475,65 @@ class DatabaseService:
                 print(error)
                 return -1
 
-    # def save_belief_analysis_db(self, deep_conviction_id, text, truthfulness, consistency, usefulness,
-    #                             feeling_and_actions, motivation, hindrances, incorrect_victims, results):
-    #     with session_factory() as session:
-    #         if  session.query(Intermediate_belief).filter_by(deep_conviction=deep_conviction_id).all():
-    #             dci = session.query(Intermediate_belief).filter_by(deep_conviction=deep_conviction_id).all()
-    #             for obj in dci:
-    #                 type = obj.type
-    #                 session.delete(obj)
-    #             session.commit()
-    #             try:
-    #                 deepcon = session.get(Deep_conviction, deep_conviction_id)
-    #                 intbel = session.get(Intermediate_belief, deepcon.problem_id)
-    #
-    #                 intbel.text = text
-    #                 intbel.truthfulness = truthfulness
-    #                 intbel.consistency = consistency
-    #                 intbel.usefulness = usefulness
-    #                 intbel.feelings_and_actions = feeling_and_actions
-    #                 intbel.motivation = motivation
-    #                 intbel.hindrances = hindrances
-    #                 intbel.incorrect_victims = incorrect_victims
-    #                 intbel.results = results
-    #                 intbel.type = type
-    #                 session.commit()
-    #                 return 0
-    #             except (Exception, Error) as error:
-    #                 print(error)
-    #                 return -1
-    #
-    #         else:
-    #             try:
-    #                 deepcon = session.get(Deep_conviction, deep_conviction_id)
-    #                 intbel = session.get(Intermediate_belief, deepcon.problem_id)
-    #                 temp = Intermediate_belief(
-    #                     id=uuid.uuid4(),
-    #                     text = text,
-    #                     truthfulness=truthfulness,
-    #                     consistency=consistency,
-    #                     usefulness=usefulness,
-    #                     feelings_and_actions=feeling_and_actions,
-    #                     motivation=motivation,
-    #                     hindrances=hindrances,
-    #                     incorrect_victims=incorrect_victims,
-    #                     problem_id=deepcon.problem_id,
-    #                     deep_conviction=deep_conviction_id,
-    #                     results=results,
-    #                     type = 1
-    #                 )
-    #                 session.add(temp)
-    #                 session.commit()
-    #                 return 0
-    #             except (Exception, Error) as error:
-    #                 print(error)
-    #                 return -1
+    def save_belief_analysis_db(self, intermediate_conviction_id, text,
+                                feeling_and_actions, motivation, hindrances, incorrect_victims, results):
+        with session_factory() as session:
+            try:
+                temp = session.get(Intermediate_belief, intermediate_conviction_id)
+                temp.text = text
+                temp.feelings_and_actions = feeling_and_actions
+                temp.motivation = motivation
+                temp.hindrances = hindrances
+                temp.incorrect_victims = incorrect_victims
+                temp.results = results
+                session.commit()
+                return 0
+            except (Exception, Error) as error:
+                print(error)
+                return -1
+
+    def save_belief_check_db(self, intermediate_conviction_id, truthfulness, consistency, usefulness):
+        with session_factory() as session:
+            try:
+                temp = session.get(Intermediate_belief, intermediate_conviction_id)
+                temp.truthfulness = truthfulness
+                temp.consistency = consistency
+                temp.usefulness = usefulness
+                session.commit()
+                return 0
+            except (Exception, Error) as error:
+                print(error)
+                return -1
+
+    def get_belief_analysis(self, intermediate_conviction_id):
+        with session_factory() as session:
+            try:
+                dic = {}
+                temp = session.get(Intermediate_belief, intermediate_conviction_id)
+                dic["feelings_and_actions"] = temp.feelings_and_actions
+                dic["motivation"] = temp.motivation
+                dic["hindrances"] = temp.hindrances
+                dic["incorrect_victims"] = temp.incorrect_victims
+                dic["results"] = temp.results
+
+                return dic
+            except (Exception, Error) as error:
+                print(error)
+                return -1
+
+    def get_belief_check(self, intermediate_conviction_id):
+        with session_factory() as session:
+            try:
+                dic = {}
+                temp = session.get(Intermediate_belief, intermediate_conviction_id)
+                dic["truthfulness"] = temp.truthfulness
+                dic["consistency"] = temp.consistency
+                dic["usefulness"] = temp.usefulness
+
+                return dic
+            except (Exception, Error) as error:
+                print(error)
+                return -1
 
     def writing_free_diary_db(self, user_id, text):
         with session_factory() as session:
@@ -541,6 +546,50 @@ class DatabaseService:
                 session.add(temp)
                 session.commit()
                 return 0
+            except (Exception, Error) as error:
+                print(error)
+                return -1
+
+    def writing_think_diary_db(self, user_id, deep_conviction_id, situation, mood, level, auto_thought, proofs, refutations, new_mood, new_level, behaviour):
+        with session_factory() as session:
+            try:
+                temp = Diary_record(
+                    id=uuid.uuid4(),
+                    user_id=user_id,
+                    deep_conviction_id=deep_conviction_id,
+                    situation=situation,
+                    mood=mood,
+                    level=level,
+                    auto_thought=auto_thought,
+                    proofs=proofs,
+                    refutations=refutations,
+                    new_mood=new_mood,
+                    new_level=new_level,
+                    behavioral=behaviour,
+                )
+                session.add(temp)
+                session.commit()
+                return 0
+            except (Exception, Error) as error:
+                print(error)
+                return -1
+
+    def reading_think_diary_db(self,  think_diary_id):
+        with session_factory() as session:
+            try:
+                dic = {}
+                temp = session.get(Diary_record, think_diary_id)
+
+                dic["situation"] = temp.situation
+                dic["mood"] = temp.mood
+                dic["level"] = temp.level
+                dic["auto_thought"] = temp.auto_thought
+                dic["proofs"] = temp.proofs
+                dic["refutations"] = temp.refutations
+                dic["new_mood"] = temp.new_mood
+                dic["new_level"] = temp.new_level
+                dic["behavioral"] = temp.behavioral
+                return dic
             except (Exception, Error) as error:
                 print(error)
                 return -1
