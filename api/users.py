@@ -243,3 +243,10 @@ def writing_r_i_dialog(data: WritingRIDialog, access_token: str = Cookie(None)):
 )
 def reading_r_i_dialog(data: ReadRIDialog, access_token: str = Cookie(None)):
     return user_service.reading_r_i_dialog(data, access_token)
+
+@router.get(
+    "/tegs/get_list_tegs",
+    response_model=None,
+)
+def get_list_tegs(access_token: str = Cookie(None)):
+    return user_service.get_list_tegs(access_token)

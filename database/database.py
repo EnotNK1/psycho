@@ -5,7 +5,7 @@ from database.tables import Users, Base, Problem, Message_r_i_dialog, Token, Use
     Inquiry, Education, Clients, Type_analysis, Intermediate_belief, Deep_conviction, FreeDiary, Diary_record
 import uuid
 
-# engine = create_engine(url="postgresql://postgres:postgresosikati@localhost:5432/psycho", echo=False)
+# engine = create_engine(url="postgresql://postgres:1111@localhost:5432/psycho", echo=False)
 engine = create_engine(url="postgresql://user:password@db:5432/dbname", echo=False)
 
 session_factory = sessionmaker(engine)
@@ -260,8 +260,11 @@ class DatabaseService:
 
     def create_inquirty(self):
         with session_factory() as session:
-            inquiries = ["Самооценка", "Сон", "Страх", "Секс", "Агрессия", "Стресс", "Выгорание",
-                         "Депрессия", "Вредные привычки", "Семья", "Мысли о суициде", "Панические атаки"]
+            inquiries = ["Неуверенность в себе", "Нарушение сна", "Прокрастинация", "Эмоциональное выгорание",
+                         "Панические аттаки", "Стресс", "Тревоги и страхи", "Пищевое поведение", "Отношения в семье",
+                         "Сексуальные отношения", "Чувство одиночества", "Агрессия, приступы гнева",
+                         "Навязчивое поведение, мысли", "Утрата", "Проблемы в общении", "Трудности в построении отношений",
+                         "Беременность и материнство", "Принятие решения и постановка цели", "Вредные привычки", "Конфликты"]
             for i in range(len(inquiries)):
                 inquiry = Inquiry(id=i + 1,
                                   text=inquiries[i]
@@ -705,7 +708,19 @@ class DatabaseService:
                 print(error)
                 return -1
 
+    def get_list_tegs(self):
+        with session_factory() as session:
+            try:
+                list = []
+                temp = session.query(Inquiry).all()
 
+                for obj in temp:
+                    list.append(obj)
+
+                return list
+            except (Exception, Error) as error:
+                print(error)
+                return -1
 
 database_service = DatabaseService()
 
