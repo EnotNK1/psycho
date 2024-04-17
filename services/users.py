@@ -1,7 +1,7 @@
 from schemas.users import Creds, Reg, ResetPassword, AddProblem, SaveTestRes, CreateTest, GetTestRes, UpdateUser, \
     Psychologist, GetClient, SendАpplication, ConfirmApplication, ProblemAnalysisCreate, CreateDeepConviction, \
     BeliefAnalysis, WritingFreeDiary, WatchApplication, GetBeliefAnalysis, CheckBelief, WritingThinkDiary, \
-    ReadThinkDiary
+    ReadThinkDiary, ProblemAnalysisGet, WritingRIDialog, ReadRIDialog
 from database.database import database_service
 from services.auth import send_email
 from services.auth import generate_token, verify_token
@@ -496,5 +496,57 @@ class UserServise:
             return result
         else:
             return "access denied"
+
+    def get_problem_analysis(self, payload: ProblemAnalysisGet, access_token):
+        if not access_token:
+            return "not token"
+        token_data = verify_token(access_token)
+
+        if token_data == 'Token has expired':
+
+            return "Token has expired"
+        elif token_data == 'Invalid token':
+            return "Invalid token"
+
+        role = database_service.check_role(uuid.UUID(token_data['user_id']))
+        if role == 2:
+            result = database_service.get_problem_analysis_db(payload.problem_id)
+            return result
+        else:
+            return "access denied"
+
+    def writing_r_i_dialog(self, payload: WritingRIDialog, access_token):
+        if not access_token:
+            return "not token"
+        token_data = verify_token(access_token)
+
+        if token_data == 'Token has expired':
+
+            return "Token has expired"
+        elif token_data == 'Invalid token':
+            return "Invalid token"
+
+        try:
+            database_service.writing_r_i_dialog_db(payload.problem_id, payload.text, payload.type)
+            return "Successfully"
+        except(Error):
+            return "error"
+
+    def reading_r_i_dialog(self, payload: ReadRIDialog, access_token):
+        if not access_token:
+            return "not token"
+        token_data = verify_token(access_token)
+
+        if token_data == 'Token has expired':
+
+            return "Token has expired"
+        elif token_data == 'Invalid token':
+            return "Invalid token"
+
+        try:
+            result = database_service.reading_r_i_dialog_db(payload.problem_id)
+            return result
+        except(Error):
+            return "error"
 
 user_service: UserServise = UserServise()

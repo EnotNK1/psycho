@@ -644,6 +644,67 @@ class DatabaseService:
                 print(error)
                 return -1
 
+    def get_problem_analysis_db(self, problem_id):
+        with session_factory() as session:
+            try:
+                temp = session.query(Intermediate_belief).filter_by(problem_id=problem_id).all()
+                list = []
+                dict = {}
+
+                for obj in temp:
+                    dict["id"] = obj.id
+                    dict["text"] = obj.text
+                    dict["truthfulness"] =obj.truthfulness
+                    dict["consistency"] = obj.consistency
+                    dict["usefulness"] = obj.usefulness
+                    dict["feelings_and_actions"] = obj.feelings_and_actions
+                    dict["motivation"] = obj.motivation
+                    dict["hindrances"] = obj.hindrances
+                    dict["incorrect_victims"] = obj.incorrect_victims
+                    dict["results"] = obj.results
+                    dict["problem_id"] = obj.problem_id
+                    dict["deep_conviction_id"] = obj.deep_conviction
+                    dict["type"] = obj.type
+                    list.append(dict)
+                    dict = {}
+
+                return list
+            except (Exception, Error) as error:
+                print(error)
+                return -1
+
+    def writing_r_i_dialog_db(self, problem_id, text, type):
+        with session_factory() as session:
+            try:
+                temp = Message_r_i_dialog(
+                    id=uuid.uuid4(),
+                    problem_id=problem_id,
+                    text=text,
+                    is_rational=type,
+                    date=func.now()
+                )
+                session.add(temp)
+                session.commit()
+                return 0
+            except (Exception, Error) as error:
+                print(error)
+                return -1
+
+    def reading_r_i_dialog_db(self, problem_id):
+        with session_factory() as session:
+            try:
+                list = []
+                temp = session.query(Message_r_i_dialog).filter_by(problem_id=problem_id).all()
+
+                for obj in temp:
+                    list.append(obj)
+
+
+                return list
+            except (Exception, Error) as error:
+                print(error)
+                return -1
+
 
 
 database_service = DatabaseService()

@@ -82,6 +82,9 @@ class ProblemAnalysisCreate(pydantic.BaseModel):
     problem_id: str
     type: int
 
+class ProblemAnalysisGet(pydantic.BaseModel):
+    problem_id: uuid.UUID
+
 class CreateDeepConviction(pydantic.BaseModel):
     disadaptive: str
     adaptive: str
@@ -125,3 +128,11 @@ class WritingThinkDiary(pydantic.BaseModel):
 
 class ReadThinkDiary(pydantic.BaseModel):
     think_diary_id: str
+
+class WritingRIDialog(pydantic.BaseModel):
+    problem_id: uuid.UUID
+    text: str
+    type: bool
+
+class ReadRIDialog(pydantic.BaseModel):
+    problem_id: uuid.UUID

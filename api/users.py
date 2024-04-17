@@ -4,7 +4,7 @@ from fastapi import APIRouter, Cookie
 from schemas.users import Creds, Reg, ResetPassword, AddProblem, SaveTestRes, CreateTest, GetTestRes, UpdateUser, \
     Psychologist, GetClient, SendАpplication, ConfirmApplication, ProblemAnalysisCreate, CreateDeepConviction, \
     BeliefAnalysis, WritingFreeDiary, WatchApplication, GetBeliefAnalysis, CheckBelief, WritingThinkDiary, \
-    ReadThinkDiary
+    ReadThinkDiary, ProblemAnalysisGet, WritingRIDialog, ReadRIDialog
 from services.users import user_service
 from starlette.responses import JSONResponse, Response
 
@@ -222,3 +222,24 @@ def get_list_applications(access_token: str = Cookie(None)):
 )
 def watch_application(data: WatchApplication, access_token: str = Cookie(None)):
     return user_service.watch_application(data, access_token)
+
+@router.post(
+    "/problem/get_analysis",
+    response_model=None,
+)
+def get_analysis(data: ProblemAnalysisGet, access_token: str = Cookie(None)):
+    return user_service.get_problem_analysis(data, access_token)
+
+@router.post(
+    "/dialog/writing_r_i_dialog",
+    response_model=None,
+)
+def writing_r_i_dialog(data: WritingRIDialog, access_token: str = Cookie(None)):
+    return user_service.writing_r_i_dialog(data, access_token)
+
+@router.post(
+    "/diary/reading_r_i_dialog",
+    response_model=None,
+)
+def reading_r_i_dialog(data: ReadRIDialog, access_token: str = Cookie(None)):
+    return user_service.reading_r_i_dialog(data, access_token)
