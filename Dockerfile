@@ -16,5 +16,6 @@ ENV POSTGRES_DB=dbname
 ENV POSTGRES_HOST=db
 
 # Запускаем приложение
-CMD gunicorn main:app --bind=0.0.0.0:8080
+#CMD gunicorn main:app --bind=0.0.0.0:8080
+CMD uvicorn main:app --host 0.0.0.0 --port 8080
 #CMD ["python", "main.py"]
