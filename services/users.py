@@ -46,9 +46,12 @@ class UserServise:
     def register(self, payload: Reg) -> str:
 
         if payload.password == payload.confirm_password:
-            if database_service.register_user(uuid.uuid4(), payload.username, payload.email, payload.password, "",
+            user_id = uuid.uuid4()
+            if database_service.register_user(user_id, payload.username, payload.email, payload.password, "",
                                               False, False, "", "", 1, False) == 0:
-                return "Successfully"
+                token = generate_token(user_id)
+                database_service.add_token_db(user_id, token)
+                return token
             else:
                 return "A user with this email address has already been registered"
         else:
