@@ -5,8 +5,8 @@ from database.tables import Users, Base, Problem, Message_r_i_dialog, Token, Use
     Inquiry, Education, Clients, Type_analysis, Intermediate_belief, Deep_conviction, FreeDiary, Diary_record
 import uuid
 
-# engine = create_engine(url="postgresql://postgres:1111@localhost:5432/psycho", echo=False)
-engine = create_engine(url="postgresql://user:password@db:5432/dbname", echo=False)
+engine = create_engine(url="postgresql://postgres:1111@localhost:5432/psycho", echo=False)
+# engine = create_engine(url="postgresql://user:password@db:5432/dbname", echo=False)
 
 session_factory = sessionmaker(engine)
 
@@ -167,6 +167,20 @@ class DatabaseService:
                 session.add(problem)
                 session.commit()
                 return 0
+            except (Exception, Error) as error:
+                print(error)
+                return -1
+
+    def get_user_by_token(self, token_id):
+        with session_factory() as session:
+            try:
+                token = session.query(Token).filter_by(token=token_id).one()
+                user_id = token.user_id
+                user = session.query(Users).filter_by(id=user_id).one()
+                if user:
+                    return user
+                else:
+                    return 0
             except (Exception, Error) as error:
                 print(error)
                 return -1

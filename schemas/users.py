@@ -10,6 +10,7 @@ class Creds(pydantic.BaseModel):
     password: str
 
 
+
 class Reg(pydantic.BaseModel):
     email: str
     username: str
@@ -47,6 +48,10 @@ class CreateTest(pydantic.BaseModel):
     title: str
     description: str
     short_desc: str
+
+class AuthToken(pydantic.BaseModel):
+    token: str
+
 
 
 class GetTestRes(pydantic.BaseModel):
