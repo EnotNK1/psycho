@@ -34,12 +34,18 @@ class UserServise:
     def authorization(self, payload: Creds, response: Response):
 
         if database_service.check_user(payload.email, payload.password) == 0:
-            user_id = database_service.get_id_user(payload.email)
+            user = database_service.get_user(payload.email)
 
-            token = generate_token(user_id)
+            token = generate_token(user.id)
             response.set_cookie(key="access_token", value=token, httponly=True)
-            database_service.add_token_db(user_id, token)
-            return token
+            database_service.add_token_db(user.id, token)
+            return {
+                "token": token,
+                "user_id": user.id,
+                "role": user.role_id,
+                "email": user.email,
+                "username": user.username
+            }
         else:
             return "error"
 
@@ -51,7 +57,13 @@ class UserServise:
                                               False, False, "", "", 1, False) == 0:
                 token = generate_token(user_id)
                 database_service.add_token_db(user_id, token)
-                return token
+                return {
+                    "token": token,
+                    "user_id": user_id,
+                    "role": 1,
+                    "email": payload.email,
+                    "username": payload.username
+                }
             else:
                 return "A user with this email address has already been registered"
         else:
