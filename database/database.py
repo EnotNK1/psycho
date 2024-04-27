@@ -76,7 +76,19 @@ class DatabaseService:
         with session_factory() as session:
             try:
                 user = session.query(Users).filter_by(email=email).one()
+
                 return user.id
+
+            except (Exception, Error) as error:
+                print(error)
+                return -1
+
+    def get_user(self, email):
+        with session_factory() as session:
+            try:
+                user = session.query(Users).filter_by(email=email).one()
+
+                return user
 
             except (Exception, Error) as error:
                 print(error)
