@@ -171,6 +171,20 @@ class DatabaseService:
                 print(error)
                 return -1
 
+    def get_user_by_token(self, token_id):
+        with session_factory() as session:
+            try:
+                token = session.query(Token).filter_by(token=token_id).one()
+                user_id = token.user_id
+                user = session.query(Users).filter_by(id=user_id).one()
+                if user:
+                    return user
+                else:
+                    return 0
+            except (Exception, Error) as error:
+                print(error)
+                return -1
+
     def add_token_db(self, user_id, token_str):
         with session_factory() as session:
             try:

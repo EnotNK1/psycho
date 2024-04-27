@@ -4,7 +4,7 @@ from fastapi import APIRouter, Cookie
 from schemas.users import Creds, Reg, ResetPassword, AddProblem, SaveTestRes, CreateTest, GetTestRes, UpdateUser, \
     Psychologist, GetClient, SendАpplication, ConfirmApplication, ProblemAnalysisCreate, CreateDeepConviction, \
     BeliefAnalysis, WritingFreeDiary, WatchApplication, GetBeliefAnalysis, CheckBelief, WritingThinkDiary, \
-    ReadThinkDiary, ProblemAnalysisGet, WritingRIDialog, ReadRIDialog
+    ReadThinkDiary, ProblemAnalysisGet, WritingRIDialog, ReadRIDialog, AuthToken
 from services.users import user_service
 from starlette.responses import JSONResponse, Response
 
@@ -26,6 +26,12 @@ def register_user(data: Reg):
 def auth_user(data: Creds, response: Response):
     return user_service.authorization(data, response)
 
+@router.post(
+    "/users/auth_token",
+    response_model=None,
+)
+def auth_token_user(data: AuthToken, response: Response):
+    return user_service.authorization_token(data, response)
 
 @router.get(
     "/users/get",
