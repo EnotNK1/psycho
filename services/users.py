@@ -40,6 +40,7 @@ class UserServise:
             response.set_cookie(key="access_token", value=token, httponly=True)
             database_service.add_token_db(user.id, token)
             return {
+                "token": token,
                 "user_id": user.id,
                 "role": user.role_id,
                 "email": user.email,
@@ -48,16 +49,17 @@ class UserServise:
         else:
             return "error"
 
-    def authorization_token(self, access_token, response: Response):
+    def authorization_token(self, payload, response: Response):
 
 
-        user = database_service.get_user_by_token(access_token)
+        user = database_service.get_user_by_token(payload.token)
         if user == 0:
             return "Error"
         token = generate_token(user.id)
         response.set_cookie(key="access_token", value=token, httponly=True)
         database_service.add_token_db(user.id, token)
         return {
+            "token": token,
             "user_id": user.id,
             "role": user.role_id,
             "email": user.email,
@@ -74,6 +76,7 @@ class UserServise:
                 token = generate_token(user_id)
                 database_service.add_token_db(user_id, token)
                 return {
+                    "token": token,
                     "user_id": user_id,
                     "role": 1,
                     "email": payload.email,

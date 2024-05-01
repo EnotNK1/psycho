@@ -30,8 +30,8 @@ def auth_user(data: Creds, response: Response):
     "/users/auth_token",
     response_model=None,
 )
-def auth_token_user(response: Response, access_token: str = Cookie(None)):
-    return user_service.authorization_token(access_token, response)
+def auth_token_user(data: AuthToken, response: Response):
+    return user_service.authorization_token(data, response)
 
 @router.get(
     "/users/get",
