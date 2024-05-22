@@ -1,6 +1,8 @@
 from psycopg2 import Error
 from sqlalchemy import create_engine, select, func
 from sqlalchemy.orm import sessionmaker, joinedload
+
+from database.inquiries import inquiries
 from database.tables import Users, Base, Problem, Message_r_i_dialog, Token, User_inquiries, Test_result, Test, Scale, \
     Inquiry, Education, Clients, Type_analysis, Intermediate_belief, Deep_conviction, FreeDiary, Diary_record
 import uuid
@@ -286,11 +288,7 @@ class DatabaseService:
 
     def create_inquirty(self):
         with session_factory() as session:
-            inquiries = ["Неуверенность в себе", "Нарушение сна", "Прокрастинация", "Эмоциональное выгорание",
-                         "Панические аттаки", "Стресс", "Тревоги и страхи", "Пищевое поведение", "Отношения в семье",
-                         "Сексуальные отношения", "Чувство одиночества", "Агрессия, приступы гнева",
-                         "Навязчивое поведение, мысли", "Утрата", "Проблемы в общении", "Трудности в построении отношений",
-                         "Беременность и материнство", "Принятие решения и постановка цели", "Вредные привычки", "Конфликты"]
+
             for i in range(len(inquiries)):
                 inquiry = Inquiry(id=i + 1,
                                   text=inquiries[i]
