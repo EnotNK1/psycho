@@ -6,13 +6,13 @@ from api import router
 app = FastAPI()
 app.include_router(router)
 
-# origins = [
-#     "http://localhost:3000",
-# ]
-#
+origins = [
+    "https://психолог.демо-стенд.рф/",
+]
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins="*",
+    allow_origins=origins,
     allow_credentials=True,
     allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"],
     allow_headers=["*"]
