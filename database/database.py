@@ -7,8 +7,8 @@ from database.tables import Users, Base, Problem, Message_r_i_dialog, Token, Use
     Inquiry, Education, Clients, Type_analysis, Intermediate_belief, Deep_conviction, FreeDiary, Diary_record
 import uuid
 
-engine = create_engine(url="postgresql://postgres:1111@localhost:5432/psycho", echo=False)
-# engine = create_engine(url="postgresql://postgres:postgresosikati@localhost:5432/psycho", echo=False)
+# engine = create_engine(url="postgresql://postgres:1111@localhost:5432/psycho", echo=False)
+engine = create_engine(url="postgresql://user:password@db:5432/dbname", echo=False)
 
 session_factory = sessionmaker(engine)
 
@@ -389,23 +389,6 @@ class DatabaseService:
                 print(error)
                 return -1
 
-    # def confirm_application_db(self, psyh_id, client_id, status):
-    #     with session_factory() as session:
-    #         try:
-    #             if status == False:
-    #                 temp = session.query(Clients).filter_by(client_id=client_id, psychologist_id=psyh_id).first()
-    #                 session.delete(temp)
-    #                 session.commit()
-    #
-    #             elif status == True:
-    #                 temp = session.query(Clients).filter_by(client_id=client_id, psychologist_id=psyh_id).first()
-    #                 temp.status = status
-    #                 session.commit()
-    #
-    #             return 0
-    #         except (Exception, Error) as error:
-    #             print(error)
-    #             return -1
     def confirm_application_db(self, psyh_id, client_id, status):
         with session_factory() as session:
             try:
