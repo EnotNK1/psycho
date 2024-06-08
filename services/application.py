@@ -20,8 +20,11 @@ class ApplicationService:
 
         role = database_service.check_role(payload.user_id)
         if role == 2 and token_data['user_id'] != payload.user_id:
-            database_service.send_application_db(token_data['user_id'], payload.user_id, payload.text)
-            return "Successfully"
+            result = database_service.send_application_db(token_data['user_id'], payload.user_id, payload.text)
+            if result == 0:
+                return "Successfully"
+            else:
+                return "Error: no clients found"
         else:
             return "error"
 

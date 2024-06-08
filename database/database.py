@@ -7,8 +7,8 @@ from database.tables import Users, Base, Problem, Message_r_i_dialog, Token, Use
     Inquiry, Education, Clients, Type_analysis, Intermediate_belief, Deep_conviction, FreeDiary, Diary_record
 import uuid
 
-# engine = create_engine(url="postgresql://postgres:1111@localhost:5432/psycho", echo=False)
-engine = create_engine(url="postgresql://user:password@db:5432/dbname", echo=False)
+engine = create_engine(url="postgresql://postgres:1111@localhost:5432/psycho", echo=False)
+# engine = create_engine(url="postgresql://user:password@db:5432/dbname", echo=False)
 
 session_factory = sessionmaker(engine)
 
@@ -655,6 +655,15 @@ class DatabaseService:
 
                     problem = session.query(Problem).filter_by(user_id=user.id).first()
                     if problem is None:
+                        dict_item = {
+                            "client_id": obj.client_id,
+                            "username": user.username,
+                            "text": obj.text,
+                            "online": user.online,
+                            "problem_id": None,
+                            "problem": None
+                        }
+                        result_list.append(dict_item)
                         continue  # Skip if problem not found
 
                     # Create a new dictionary for each iteration
@@ -668,7 +677,6 @@ class DatabaseService:
                     }
 
                     result_list.append(dict_item)
-
                 return result_list
             except (Exception, Error) as error:
                 print(error)
