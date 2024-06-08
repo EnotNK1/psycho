@@ -36,10 +36,13 @@ class ApplicationService:
             return "Invalid token"
         role = database_service.check_role(token_data['user_id'])
         if role == 2:
-            database_service.confirm_application_db(token_data['user_id'], payload.user_id, payload.status)
-            return "Successfully"
+            result = database_service.confirm_application_db(token_data['user_id'], payload.user_id, payload.status)
+            if result == 0:
+                return "Successfully"
+            else:
+                return "database error"
         else:
-            return "error"
+            return "Error: insufficient permissions"
 
     def get_list_applications(self, access_token):
         if not access_token:

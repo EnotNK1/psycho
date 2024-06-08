@@ -7,8 +7,8 @@ from database.tables import Users, Base, Problem, Message_r_i_dialog, Token, Use
     Inquiry, Education, Clients, Type_analysis, Intermediate_belief, Deep_conviction, FreeDiary, Diary_record
 import uuid
 
-# engine = create_engine(url="postgresql://postgres:1111@localhost:5432/psycho", echo=False)
-engine = create_engine(url="postgresql://user:password@db:5432/dbname", echo=False)
+engine = create_engine(url="postgresql://postgres:1111@localhost:5432/psycho", echo=False)
+# engine = create_engine(url="postgresql://postgres:postgresosikati@localhost:5432/psycho", echo=False)
 
 session_factory = sessionmaker(engine)
 
@@ -288,7 +288,6 @@ class DatabaseService:
 
     def create_inquirty(self):
         with session_factory() as session:
-
             for i in range(len(inquiries)):
                 inquiry = Inquiry(id=i + 1,
                                   text=inquiries[i]
@@ -390,22 +389,45 @@ class DatabaseService:
                 print(error)
                 return -1
 
+    # def confirm_application_db(self, psyh_id, client_id, status):
+    #     with session_factory() as session:
+    #         try:
+    #             if status == False:
+    #                 temp = session.query(Clients).filter_by(client_id=client_id, psychologist_id=psyh_id).first()
+    #                 session.delete(temp)
+    #                 session.commit()
+    #
+    #             elif status == True:
+    #                 temp = session.query(Clients).filter_by(client_id=client_id, psychologist_id=psyh_id).first()
+    #                 temp.status = status
+    #                 session.commit()
+    #
+    #             return 0
+    #         except (Exception, Error) as error:
+    #             print(error)
+    #             return -1
     def confirm_application_db(self, psyh_id, client_id, status):
         with session_factory() as session:
             try:
-                if status == False:
-                    temp = session.query(Clients).filter_by(client_id=client_id, psychologist_id=psyh_id).first()
+
+                temp = session.query(Clients).filter_by(client_id=client_id, psychologist_id=psyh_id).first()
+
+                if temp is None:
+                    raise ValueError(f"Клиент с client_id={client_id} и psychologist_id={psyh_id} не найден")
+
+                if status is False:
                     session.delete(temp)
-                    session.commit()
-
-                elif status == True:
-                    temp = session.query(Clients).filter_by(client_id=client_id, psychologist_id=psyh_id).first()
+                elif status is True:
                     temp.status = status
-                    session.commit()
 
+                session.commit()
                 return 0
+            except ValueError as ve:
+                print(f"Ошибка значения: {ve}")
+                return -1
             except (Exception, Error) as error:
-                print(error)
+                print(f"Исключение: {error}")
+                session.rollback()  # Откат в случае ошибки
                 return -1
 
     def get_psycholog(self, user_id):
@@ -577,7 +599,8 @@ class DatabaseService:
                 print(error)
                 return -1
 
-    def writing_think_diary_db(self, user_id, deep_conviction_id, situation, mood, level, auto_thought, proofs, refutations, new_mood, new_level, behaviour):
+    def writing_think_diary_db(self, user_id, deep_conviction_id, situation, mood, level, auto_thought, proofs,
+                               refutations, new_mood, new_level, behaviour):
         with session_factory() as session:
             try:
                 temp = Diary_record(
@@ -601,7 +624,7 @@ class DatabaseService:
                 print(error)
                 return -1
 
-    def reading_think_diary_db(self,  think_diary_id):
+    def reading_think_diary_db(self, think_diary_id):
         with session_factory() as session:
             try:
                 dic = {}
@@ -621,7 +644,7 @@ class DatabaseService:
                 print(error)
                 return -1
 
-    def reading_free_diary_db(self,  user_id):
+    def reading_free_diary_db(self, user_id):
         with session_factory() as session:
             try:
                 list = []
@@ -629,7 +652,6 @@ class DatabaseService:
 
                 for obj in temp:
                     list.append(obj.text)
-
 
                 return list
             except (Exception, Error) as error:
@@ -639,18 +661,32 @@ class DatabaseService:
     def get_list_applications_db(self, user_id):
         with session_factory() as session:
             try:
-                list = []
-                dict = {}
+                result_list = []
+
                 temp = session.query(Clients).filter_by(psychologist_id=user_id, status=False).all()
 
                 for obj in temp:
-                    # user = session.get(Users, obj.client_id)
-                    #
-                    # dict["username"] = user.username
-                    # dict["text"] = obj.text
-                    list.append(obj.id)
+                    user = session.get(Users, obj.client_id)
+                    if user is None:
+                        continue  # Skip if user not found
 
-                return list
+                    problem = session.query(Problem).filter_by(user_id=user.id).first()
+                    if problem is None:
+                        continue  # Skip if problem not found
+
+                    # Create a new dictionary for each iteration
+                    dict_item = {
+                        "client_id": obj.client_id,
+                        "username": user.username,
+                        "text": obj.text,
+                        "online": user.online,
+                        "problem_id": problem.id,
+                        "problem": problem.description
+                    }
+
+                    result_list.append(dict_item)
+
+                return result_list
             except (Exception, Error) as error:
                 print(error)
                 return -1
@@ -664,7 +700,6 @@ class DatabaseService:
 
                 dict["username"] = user.username
                 dict["text"] = app.text
-
 
                 return dict
             except (Exception, Error) as error:
@@ -681,7 +716,7 @@ class DatabaseService:
                 for obj in temp:
                     dict["id"] = obj.id
                     dict["text"] = obj.text
-                    dict["truthfulness"] =obj.truthfulness
+                    dict["truthfulness"] = obj.truthfulness
                     dict["consistency"] = obj.consistency
                     dict["usefulness"] = obj.usefulness
                     dict["feelings_and_actions"] = obj.feelings_and_actions
@@ -726,7 +761,6 @@ class DatabaseService:
                 for obj in temp:
                     list.append(obj)
 
-
                 return list
             except (Exception, Error) as error:
                 print(error)
@@ -745,6 +779,7 @@ class DatabaseService:
             except (Exception, Error) as error:
                 print(error)
                 return -1
+
 
 database_service = DatabaseService()
 

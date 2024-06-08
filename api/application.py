@@ -1,4 +1,4 @@
-from schemas.test import WatchApplication, SendАpplication
+from schemas.test import WatchApplication, SendАpplication, ConfirmApplication
 from services.application import application_service
 
 from fastapi import Cookie, APIRouter
@@ -28,3 +28,11 @@ def watch_application(data: WatchApplication, access_token: str = Cookie(None)):
 )
 def send_application(data: SendАpplication, access_token: str = Cookie(None)):
     return application_service.send_application(data, access_token)
+
+
+@router.post(
+    "/psychologist/confirm_application",
+    response_model=None,
+)
+def confirm_application(data: ConfirmApplication, access_token: str = Cookie(None)):
+    return application_service.confirm_application(data, access_token)

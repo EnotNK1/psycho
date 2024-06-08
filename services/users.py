@@ -67,7 +67,7 @@ class UserServise:
         if payload.password == payload.confirm_password:
             user_id = uuid.uuid4()
             if database_service.register_user(user_id, payload.username, payload.email, payload.password, "",
-                                              False, False, "", "", 1, False) == 0:
+                                              True, False, "", "", 1, False) == 0:
                 token = generate_token(user_id)
                 database_service.add_token_db(user_id, token)
                 return {
