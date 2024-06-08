@@ -8,7 +8,7 @@ from database.tables import Users, Base, Problem, Message_r_i_dialog, Token, Use
 import uuid
 
 # engine = create_engine(url="postgresql://postgres:1111@localhost:5432/psycho", echo=False)
-engine = create_engine(url="postgresql://postgres:postgresosikati@localhost:5432/psycho", echo=False)
+engine = create_engine(url="postgresql://user:password@db:5432/dbname", echo=False)
 
 session_factory = sessionmaker(engine)
 
