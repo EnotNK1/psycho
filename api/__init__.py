@@ -10,7 +10,7 @@ from api.dialog import router as dialog_router
 from api.problem import router as problem_router
 from api.psychologist import router as psychologist_router
 from api.diary import router as diary_router
-
+from api.client import router as client_router
 
 
 router = APIRouter()
@@ -25,3 +25,4 @@ router.include_router(dialog_router)
 router.include_router(problem_router)
 router.include_router(psychologist_router)
 router.include_router(diary_router)
+router.include_router(client_router)

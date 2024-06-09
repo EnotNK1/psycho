@@ -354,6 +354,7 @@ class DatabaseService:
 
                 user_dict["username"] = temp.username
                 user_dict['is_active'] = temp.is_active
+                user_dict['client_id'] = temp.id
 
                 request_id = session.query(User_inquiries).filter_by(user_id=temp.id, type=1).all()
 
