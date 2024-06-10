@@ -7,7 +7,7 @@ app = FastAPI()
 app.include_router(router)
 
 origins = [
-    "https://психолог.демо-стенд.рф/",
+    "https://xn--c1ajjlbco7a.xn----gtbbcb4bjf2ak.xn--p1ai",
 ]
 
 app.add_middleware(
