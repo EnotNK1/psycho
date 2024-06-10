@@ -1,5 +1,5 @@
 import datetime
-from typing import List
+from typing import List, Optional
 
 import pydantic
 import uuid
@@ -27,10 +27,30 @@ class SendАpplication(pydantic.BaseModel):
     text: str
 
 
+class SendАpplication(pydantic.BaseModel):
+        client_id: uuid.UUID
+        username: str
+        text: str
+        online: bool
+        problem_id: None
+        problem: None
+
 class ConfirmApplication(pydantic.BaseModel):
     user_id: str
     status: bool
 
+class ResponseGetClient(pydantic.BaseModel):
+    username: str
+    birth_date: Optional[datetime.date] = None
+    gender: str
+    request: List[str]
+
+
+class ResponseGetListClient(pydantic.BaseModel):
+    username: str
+    is_active: bool
+    client_id: uuid.UUID
+    request: List[str]
 
 class WatchApplication(pydantic.BaseModel):
     app_id: str

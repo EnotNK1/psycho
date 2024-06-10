@@ -2,6 +2,7 @@ import jwt
 from datetime import datetime, timedelta
 import smtplib
 from email.mime.text import MIMEText
+from fastapi import FastAPI, HTTPException
 
 # Функция для генерации JWT токена
 def generate_token(user_id):
@@ -21,10 +22,10 @@ def verify_token(token):
         return payload
     except jwt.ExpiredSignatureError:
         # Обработка исключения при истечении срока действия токена
-        return 'Token has expired'
+        raise HTTPException(status_code=401, detail="Время сессии истекло!")
     except jwt.InvalidTokenError:
         # Обработка других недопустимых токенов
-        return 'Invalid token'
+        raise HTTPException(status_code=401, detail="Вы не авторизованы!")
 
 # Подключение к серверу SMTP для отправки электронных писем
 def send_email(receiver_email: str, subject: str, message: str):

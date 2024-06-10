@@ -1,7 +1,7 @@
 import uuid
 
 from fastapi import APIRouter, Cookie
-from schemas.users import Creds, Reg, ResetPassword, UpdateUser, AuthToken
+from schemas.users import Creds, Reg, ResetPassword, UpdateUser, AuthToken, UserResponse
 from services.users import user_service
 from starlette.responses import JSONResponse, Response
 
@@ -10,7 +10,7 @@ router = APIRouter()
 
 @router.post(
     "/users/reg",
-    response_model=None,
+    response_model=UserResponse,
 )
 def register_user(data: Reg):
     return user_service.register(data)
@@ -18,7 +18,7 @@ def register_user(data: Reg):
 
 @router.post(
     "/users/auth",
-    response_model=None,
+    response_model=UserResponse,
 )
 def auth_user(data: Creds, response: Response):
     return user_service.authorization(data, response)
@@ -26,7 +26,7 @@ def auth_user(data: Creds, response: Response):
 
 @router.post(
     "/users/auth_token",
-    response_model=None,
+    response_model=UserResponse,
 )
 def auth_token_user(data: AuthToken, response: Response):
     return user_service.authorization_token(data, response)

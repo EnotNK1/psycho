@@ -17,6 +17,14 @@ class Reg(pydantic.BaseModel):
     confirm_password: str
 
 
+class UserResponse(pydantic.BaseModel):
+    token: str
+    user_id: uuid.UUID
+    role: int
+    email: str
+    username: str
+
+
 class ResetPassword(pydantic.BaseModel):
     email: str
 

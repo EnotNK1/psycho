@@ -1,4 +1,4 @@
-from schemas.users import Creds, Reg, ResetPassword, UpdateUser
+from schemas.users import Creds, Reg, ResetPassword, UpdateUser, UserResponse
 from database.database import database_service
 from services.auth import send_email
 from services.auth import generate_token, verify_token
@@ -6,6 +6,19 @@ import uuid
 from starlette.responses import Response
 from smtplib import SMTPRecipientsRefused
 from psycopg2 import Error
+from fastapi import FastAPI, HTTPException
+
+
+app = FastAPI()
+
+items = {"foo": "The Foo Wrestlers"}
+
+
+@app.get("/items/{item_id}")
+async def read_item(item_id: str):
+    if item_id not in items:
+        raise HTTPException(status_code=404, detail="Item not found")
+    return {"item": items[item_id]}
 
 
 class UserServise:
@@ -43,8 +56,7 @@ class UserServise:
                 "email": user.email,
                 "username": user.username
             }
-        else:
-            return "error"
+
 
     def authorization_token(self, payload, response: Response):
 
@@ -62,7 +74,7 @@ class UserServise:
             "username": user.username
         }
 
-    def register(self, payload: Reg):
+    def register(self, payload: Reg) -> UserResponse:
 
         if payload.password == payload.confirm_password:
             user_id = uuid.uuid4()
@@ -70,17 +82,13 @@ class UserServise:
                                               True, False, "", "", 1, False) == 0:
                 token = generate_token(user_id)
                 database_service.add_token_db(user_id, token)
-                return {
-                    "token": token,
-                    "user_id": user_id,
-                    "role": 1,
-                    "email": payload.email,
-                    "username": payload.username
-                }
+                new_user = UserResponse(token=token, user_id=user_id, role=1, email=payload.email, username=payload.username)
+                print(new_user)
+                return new_user
             else:
-                return "A user with this email address has already been registered"
+                raise HTTPException(status_code=409, detail="Пользователь с таким адресом электронной почты уже зарегистрирован")
         else:
-            return "Password mismatch"
+            raise HTTPException(status_code=400, detail="Пароли не совпадают!")
 
     def reset_password(self, payload: ResetPassword) -> str:
 
@@ -92,19 +100,19 @@ class UserServise:
                 send_email(payload.email, subject, message)
                 return "The password email has been sent"
             except SMTPRecipientsRefused:
-                return "incorrect email"
+                raise HTTPException(status_code=400, detail="Email введен неверно!")
         else:
-            return "No user with this e-mail account was found"
+            raise HTTPException(status_code=404, detail="Ни один пользователь с этой учетной записью электронной почты не найден!")
 
     def update_user(self, payload: UpdateUser, access_token):
         if not access_token:
-            return "not token"
+            raise HTTPException(status_code=401, detail="Вы не авторизованы!")
         token_data = verify_token(access_token)
 
         if token_data == 'Token has expired':
-            return "Token has expired"
+            raise HTTPException(status_code=401, detail="Время сессии истекло!")
         elif token_data == 'Invalid token':
-            return "Invalid token"
+            raise HTTPException(status_code=401, detail="Вы не авторизованы!")
 
         try:
             if (21 > payload.type) and (payload.type > 0):
@@ -112,9 +120,9 @@ class UserServise:
                                                 payload.request, payload.city, payload.description, payload.type)
                 return "Successfully"
             else:
-                return "error"
+                raise HTTPException(status_code=400, detail="Тип пользователя введен неверно!")
         except(Error):
-            return "error"
+            raise HTTPException(status_code=500, detail="Что-то пошло не так!")
 
 
 user_service: UserServise = UserServise()

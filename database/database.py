@@ -1,14 +1,15 @@
 from psycopg2 import Error
 from sqlalchemy import create_engine, select, func
 from sqlalchemy.orm import sessionmaker, joinedload
+from fastapi import HTTPException
 
 from database.inquiries import inquiries
 from database.tables import Users, Base, Problem, Message_r_i_dialog, Token, User_inquiries, Test_result, Test, Scale, \
     Inquiry, Education, Clients, Type_analysis, Intermediate_belief, Deep_conviction, FreeDiary, Diary_record
 import uuid
 
-# engine = create_engine(url="postgresql://postgres:1111@localhost:5432/psycho", echo=False)
-engine = create_engine(url="postgresql://user:password@db:5432/dbname", echo=False)
+engine = create_engine(url="postgresql://postgres:1111@localhost:5432/psycho", echo=False)
+# engine = create_engine(url="postgresql://user:password@db:5432/dbname", echo=False)
 
 session_factory = sessionmaker(engine)
 
@@ -38,8 +39,7 @@ class DatabaseService:
                 session.commit()
                 return 0
             except (Exception, Error) as error:
-                print(error)
-                return -1
+                raise HTTPException(status_code=409, detail="Пользователь с таким адресом электронной почты уже зарегистрирован")
 
     def check_user(self, email, password):
         with session_factory() as session:
@@ -50,11 +50,11 @@ class DatabaseService:
                 if pas == password:
                     return 0
                 else:
-                    return -1
+                    raise HTTPException(status_code=400, detail="Пользователь не найден!")
 
             except (Exception, Error) as error:
                 print(error)
-                return -1
+                raise HTTPException(status_code=404, detail="Пользователь не найден!")
 
     def check_role(self, id):
         with session_factory() as session:
@@ -205,34 +205,38 @@ class DatabaseService:
 
     def update_user_db(self, user_id, username, gender, birth_date, request, city, description, type):
 
-        with session_factory() as session:
-            inquiry1 = session.query(User_inquiries).filter_by(user_id=user_id, type=type).all()
-            for obj in inquiry1:
-                session.delete(obj)
-            user = session.get(Users, user_id)
-            user.username = username
-            user.gender = gender
-            user.birth_date = birth_date
-            user.city = city
-            if user.role_id == 2:
-                user.description = description
-            session.commit()
-            for i in range(len(request)):
-                try:
-                    user_inquiry = User_inquiries(id=uuid.uuid4(),
-                                                  user_id=user_id,
-                                                  inquiry_id=request[i],
-                                                  type=type
-                                                  )
+        try:
+            with session_factory() as session:
+                inquiry1 = session.query(User_inquiries).filter_by(user_id=user_id, type=type).all()
+                for obj in inquiry1:
+                    session.delete(obj)
+                user = session.get(Users, user_id)
+                user.username = username
+                user.gender = gender
+                user.birth_date = birth_date
+                user.city = city
+                if user.role_id == 2:
+                    user.description = description
+                session.commit()
+                for i in range(len(request)):
+                    try:
+                        user_inquiry = User_inquiries(id=uuid.uuid4(),
+                                                      user_id=user_id,
+                                                      inquiry_id=request[i],
+                                                      type=type
+                                                      )
 
-                    session.add(user_inquiry)
+                        session.add(user_inquiry)
 
-                except (Exception, Error) as error:
-                    print(error)
-                    return -1
+                    except (Exception, Error) as error:
+                        print(error)
+                        raise HTTPException(status_code=500, detail="Что-то пошло не так!")
 
-            session.commit()
-            return 0
+                session.commit()
+                return 0
+        except (Exception, Error) as error:
+            print(error)
+            raise HTTPException(status_code=404, detail="Зарос не найден!")
 
     # def add_message(problem_id):
     #     with session_factory() as session:
@@ -325,21 +329,25 @@ class DatabaseService:
                 return -1
 
     def getClient(self, user_id):
-        with session_factory() as session:
-            user = session.get(Users, user_id)
-            list = []
-            request = session.query(User_inquiries).filter_by(user_id=user_id, type=1).all()
-            for obj in request:
-                list.append(session.get(Inquiry, obj.inquiry_id).text)
+        # print(user_id)
+        try:
+            with session_factory() as session:
+                user = session.get(Users, user_id)
+                list = []
+                request = session.query(User_inquiries).filter_by(user_id=user_id, type=1).all()
+                for obj in request:
+                    list.append(session.get(Inquiry, obj.inquiry_id).text)
 
-            user_dict = {}
-            user_dict['username'] = user.username
-            user_dict['birth_date'] = user.birth_date
-            user_dict['gender'] = user.gender
-            user_dict['request'] = list
+                user_dict = {}
+                user_dict['username'] = user.username
+                user_dict['birth_date'] = user.birth_date
+                user_dict['gender'] = user.gender
+                user_dict['request'] = list
 
-        session.commit()
-        return user_dict
+            session.commit()
+            return user_dict
+        except:
+            raise HTTPException(status_code=404, detail="Пользователь не найден!")
 
     def getListClient(self, psyh_id):
         with session_factory() as session:
