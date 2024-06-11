@@ -60,6 +60,10 @@ class WritingFreeDiary(pydantic.BaseModel):
     text: str
 
 
+class ResponseReadingFreeDiary(pydantic.BaseModel):
+    free_diary_id: uuid.UUID
+    text: str
+
 class WritingThinkDiary(pydantic.BaseModel):
     deep_conviction_id: str
     situation: str

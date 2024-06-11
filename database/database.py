@@ -643,7 +643,7 @@ class DatabaseService:
                 temp = session.query(FreeDiary).filter_by(user_id=user_id).all()
 
                 for obj in temp:
-                    list.append(obj.text)
+                    list.append({ "free_diary_id": obj.id, "text": obj.text})
 
                 return list
             except (Exception, Error) as error:

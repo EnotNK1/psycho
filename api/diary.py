@@ -1,7 +1,9 @@
-from schemas.test import WritingFreeDiary, WritingThinkDiary, ReadThinkDiary, ReadRIDialog
+from schemas.test import WritingFreeDiary, WritingThinkDiary, ReadThinkDiary, ReadRIDialog, ResponseReadingFreeDiary
 from services.diary import diary_service
 
 from fastapi import Cookie, APIRouter
+from typing import List
+
 
 router = APIRouter()
 
@@ -14,7 +16,7 @@ def writing_free_diary(data: WritingFreeDiary, access_token: str = Cookie(None))
 
 @router.get(
     "/diary/reading_free_diary",
-    response_model=None,
+    response_model=List[ResponseReadingFreeDiary],
 )
 def reading_free_diary(access_token: str = Cookie(None)):
     return diary_service.reading_free_diary(access_token)
