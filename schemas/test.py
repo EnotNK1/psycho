@@ -27,7 +27,7 @@ class SendАpplication(pydantic.BaseModel):
     text: str
 
 
-class SendАpplication(pydantic.BaseModel):
+class ResponseSendАpplication(pydantic.BaseModel):
         client_id: uuid.UUID
         username: str
         text: str
