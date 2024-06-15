@@ -13,10 +13,6 @@ def psychologist_sent(data: Psychologist, access_token: str = Cookie(None)):
     return psychologist_service.psychologist_sent(data, access_token)
 
 
-
-
-
-
 @router.post(
     "/client/get_psycholog",
     response_model=None,

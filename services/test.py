@@ -18,9 +18,12 @@ class TestService:
             return "Invalid token"
 
         try:
-            database_service.save_test_result_db(token_data['user_id'], payload.title, uuid.UUID(payload.test_id),
-                                                 payload.date, payload.score)
-            return "Successfully"
+            result = database_service.save_test_result_db(token_data['user_id'], payload.title, uuid.UUID(payload.test_id),
+                                                 payload.date, payload.score, payload.min, payload.max)
+            if result == 0:
+                return "Successfully"
+            else:
+                return "error"
         except(Error):
             return "error"
 
@@ -38,6 +41,7 @@ class TestService:
 
         if role == 0:
             database_service.create_test_db(payload.title, payload.description, payload.short_desc)
+            return "Successfully"
         else:
             return "access denied"
 

@@ -58,3 +58,11 @@ class Psychologist(pydantic.BaseModel):
 
 class GetClient(pydantic.BaseModel):
     user_id: str
+
+class Manager(pydantic.BaseModel):
+    username: str
+    description: str
+    city: str
+    online: bool
+    gender: str
+    birth_date: datetime.date

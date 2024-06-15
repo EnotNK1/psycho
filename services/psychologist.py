@@ -18,11 +18,13 @@ class PsychologistService:
             return "Invalid token"
 
         try:
-            result = database_service.psychologist_sent_db(token_data['user_id'], payload.username, payload.title, payload.document,
-                                                  payload.description,
-                                                  payload.city, payload.online, payload.face_to_face, payload.gender,
-                                                  payload.birth_date,
-                                                  payload.request)
+            result = database_service.psychologist_sent_db(token_data['user_id'], payload.username, payload.title,
+                                                           payload.document,
+                                                           payload.description,
+                                                           payload.city, payload.online, payload.face_to_face,
+                                                           payload.gender,
+                                                           payload.birth_date,
+                                                           payload.request)
             if result != -1:
                 return "Successfully"
             else:

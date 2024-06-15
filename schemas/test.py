@@ -10,13 +10,13 @@ class SaveTestRes(pydantic.BaseModel):
     score: int
     test_id: str
     date: datetime.datetime
-
+    min: int
+    max: int
 
 class CreateTest(pydantic.BaseModel):
     title: str
     description: str
     short_desc: str
-
 
 class GetTestRes(pydantic.BaseModel):
     test_id: str

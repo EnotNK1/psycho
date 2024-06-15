@@ -1,11 +1,11 @@
 from psycopg2 import Error
 from sqlalchemy import create_engine, select, func
 from sqlalchemy.orm import sessionmaker, joinedload
-from fastapi import HTTPException
 
 from database.inquiries import inquiries
 from database.tables import Users, Base, Problem, Message_r_i_dialog, Token, User_inquiries, Test_result, Test, Scale, \
-    Inquiry, Education, Clients, Type_analysis, Intermediate_belief, Deep_conviction, FreeDiary, Diary_record
+    Inquiry, Education, Clients, Type_analysis, Intermediate_belief, Deep_conviction, FreeDiary, Diary_record, \
+    Scale_result
 import uuid
 
 engine = create_engine(url="postgresql://postgres:1111@localhost:5432/psycho", echo=False)
@@ -39,7 +39,8 @@ class DatabaseService:
                 session.commit()
                 return 0
             except (Exception, Error) as error:
-                raise HTTPException(status_code=409, detail="Пользователь с таким адресом электронной почты уже зарегистрирован")
+                print(error)
+                return -1
 
     def check_user(self, email, password):
         with session_factory() as session:
@@ -50,11 +51,11 @@ class DatabaseService:
                 if pas == password:
                     return 0
                 else:
-                    raise HTTPException(status_code=400, detail="Пользователь не найден!")
+                    return -1
 
             except (Exception, Error) as error:
                 print(error)
-                raise HTTPException(status_code=404, detail="Пользователь не найден!")
+                return -1
 
     def check_role(self, id):
         with session_factory() as session:
@@ -140,7 +141,7 @@ class DatabaseService:
         with session_factory() as session:
             try:
                 query = select(Test_result).filter_by(user_id=user_id, test_id=test_id).options(
-                    joinedload(Test_result.scale))
+                    joinedload(Test_result.scale_result))
                 res = session.execute(query)
                 users = res.unique().scalars().all()
 
@@ -148,7 +149,7 @@ class DatabaseService:
                 user_dict = {}
                 for user in users:
                     user_dict['datetime'] = user.date
-                    user_dict['scale'] = user.scale
+                    user_dict['scale_result'] = user.scale_result
 
                     user_list.append(user_dict)
                     user_dict = {}
@@ -205,38 +206,34 @@ class DatabaseService:
 
     def update_user_db(self, user_id, username, gender, birth_date, request, city, description, type):
 
-        try:
-            with session_factory() as session:
-                inquiry1 = session.query(User_inquiries).filter_by(user_id=user_id, type=type).all()
-                for obj in inquiry1:
-                    session.delete(obj)
-                user = session.get(Users, user_id)
-                user.username = username
-                user.gender = gender
-                user.birth_date = birth_date
-                user.city = city
-                if user.role_id == 2:
-                    user.description = description
-                session.commit()
-                for i in range(len(request)):
-                    try:
-                        user_inquiry = User_inquiries(id=uuid.uuid4(),
-                                                      user_id=user_id,
-                                                      inquiry_id=request[i],
-                                                      type=type
-                                                      )
+        with session_factory() as session:
+            inquiry1 = session.query(User_inquiries).filter_by(user_id=user_id, type=type).all()
+            for obj in inquiry1:
+                session.delete(obj)
+            user = session.get(Users, user_id)
+            user.username = username
+            user.gender = gender
+            user.birth_date = birth_date
+            user.city = city
+            if user.role_id == 2:
+                user.description = description
+            session.commit()
+            for i in range(len(request)):
+                try:
+                    user_inquiry = User_inquiries(id=uuid.uuid4(),
+                                                  user_id=user_id,
+                                                  inquiry_id=request[i],
+                                                  type=type
+                                                  )
 
-                        session.add(user_inquiry)
+                    session.add(user_inquiry)
 
-                    except (Exception, Error) as error:
-                        print(error)
-                        raise HTTPException(status_code=500, detail="Что-то пошло не так!")
+                except (Exception, Error) as error:
+                    print(error)
+                    return -1
 
-                session.commit()
-                return 0
-        except (Exception, Error) as error:
-            print(error)
-            raise HTTPException(status_code=404, detail="Зарос не найден!")
+            session.commit()
+            return 0
 
     # def add_message(problem_id):
     #     with session_factory() as session:
@@ -254,21 +251,27 @@ class DatabaseService:
     #             print(error)
     #             return -1
 
-    def save_test_result_db(self, user_id, title, test_id, date, score):
+    def save_test_result_db(self, user_id, title, test_id, date, score, min, max):
         with session_factory() as session:
             try:
                 test_res_id = uuid.uuid4()
+                scale_id = uuid.uuid4()
                 test_res = Test_result(id=test_res_id,
                                        user_id=user_id,
                                        test_id=test_id,
-                                       date=date
-                                       )
-                scale = Scale(id=uuid.uuid4(),
+                                       date=date)
+                scale = Scale(id=scale_id,
                               title=title,
-                              score=score,
-                              test_result_id=test_res_id)
+                              min=min,
+                              max=max,
+                              test_id=test_id)
+                scale_result = Scale_result(id=uuid.uuid4(),
+                                            score=score,
+                                            scale_id=scale_id,
+                                            test_result_id=test_res_id)
                 session.add(test_res)
                 session.add(scale)
+                session.add(scale_result)
                 session.commit()
                 return 0
             except (Exception, Error) as error:
@@ -329,25 +332,21 @@ class DatabaseService:
                 return -1
 
     def getClient(self, user_id):
-        # print(user_id)
-        try:
-            with session_factory() as session:
-                user = session.get(Users, user_id)
-                list = []
-                request = session.query(User_inquiries).filter_by(user_id=user_id, type=1).all()
-                for obj in request:
-                    list.append(session.get(Inquiry, obj.inquiry_id).text)
+        with session_factory() as session:
+            user = session.get(Users, user_id)
+            list = []
+            request = session.query(User_inquiries).filter_by(user_id=user_id, type=1).all()
+            for obj in request:
+                list.append(session.get(Inquiry, obj.inquiry_id).text)
 
-                user_dict = {}
-                user_dict['username'] = user.username
-                user_dict['birth_date'] = user.birth_date
-                user_dict['gender'] = user.gender
-                user_dict['request'] = list
+            user_dict = {}
+            user_dict['username'] = user.username
+            user_dict['birth_date'] = user.birth_date
+            user_dict['gender'] = user.gender
+            user_dict['request'] = list
 
-            session.commit()
-            return user_dict
-        except:
-            raise HTTPException(status_code=404, detail="Пользователь не найден!")
+        session.commit()
+        return user_dict
 
     def getListClient(self, psyh_id):
         with session_factory() as session:
@@ -643,7 +642,7 @@ class DatabaseService:
                 temp = session.query(FreeDiary).filter_by(user_id=user_id).all()
 
                 for obj in temp:
-                    list.append({ "free_diary_id": obj.id, "text": obj.text})
+                    list.append(obj.text)
 
                 return list
             except (Exception, Error) as error:
@@ -776,6 +775,25 @@ class DatabaseService:
                     list.append(obj)
 
                 return list
+            except (Exception, Error) as error:
+                print(error)
+                return -1
+
+    def manager_send_db(self, user_id, username, description, city, online, gender, birth_date):
+        with session_factory() as session:
+            try:
+                user = session.get(Users, user_id)
+                user.username = username
+                user.description = description
+                user.city = city
+                user.gender = gender
+                user.birth_date = birth_date
+                user.online = online
+                user.role_id = 3
+
+                session.commit()
+
+                return 0
             except (Exception, Error) as error:
                 print(error)
                 return -1

@@ -110,15 +110,37 @@ class Test_result(Base):
     test_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("test.id", ondelete="CASCADE"))
     date: Mapped[datetime.datetime]
 
-    scale: Mapped[List["Scale"]] = relationship()
+    scale_result: Mapped[List["Scale_result"]] = relationship()
 
 class Scale(Base):
     __tablename__ = "scale"
 
     id: Mapped[uuid.UUID] = mapped_column(primary_key=True)
     title: Mapped[str]
+    min: Mapped[int]
+    max: Mapped[int]
+    test_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("test.id", ondelete="CASCADE"))
+
+    scale_result: Mapped[List["Scale_result"]] = relationship()
+    borders: Mapped[List["Borders"]] = relationship()
+class Borders(Base):
+    __tablename__ = "borders"
+
+    id: Mapped[uuid.UUID] = mapped_column(primary_key=True)
+    left_border: Mapped[int]
+    right_border: Mapped[int]
+    color: Mapped[str]
+    title: Mapped[str]
+    scale_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("scale.id", ondelete="CASCADE"))
+
+class Scale_result(Base):
+    __tablename__ = "scale_result"
+
+    id: Mapped[uuid.UUID] = mapped_column(primary_key=True)
     score: Mapped[int]
+    scale_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("scale.id", ondelete="CASCADE"))
     test_result_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("test_result.id", ondelete="CASCADE"))
+
 
 class Test(Base):
     __tablename__ = "test"
@@ -130,6 +152,7 @@ class Test(Base):
 
     test_result: Mapped[List["Test_result"]] = relationship()
     question: Mapped[List["Question"]] = relationship()
+    scale: Mapped[List["Scale"]] = relationship()
 
 class Question(Base):
     __tablename__ = "question"
