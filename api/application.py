@@ -1,4 +1,4 @@
-from schemas.test import WatchApplication, SendАpplication, ConfirmApplication, ResponseSendАpplication
+from schemas.test import WatchApplication, SendАpplication, ConfirmApplication, ResponseSendАpplication, ResponseWatchApplication
 from services.application import application_service
 
 from fastapi import Cookie, APIRouter
@@ -17,7 +17,7 @@ def get_list_applications(access_token: str = Cookie(None)):
 
 @router.post(
     "/application/watch_application",
-    response_model=None,
+    response_model=ResponseWatchApplication,
 )
 def watch_application(data: WatchApplication, access_token: str = Cookie(None)):
     return application_service.watch_application(data, access_token)

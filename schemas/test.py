@@ -28,12 +28,14 @@ class SendАpplication(pydantic.BaseModel):
 
 
 class ResponseSendАpplication(pydantic.BaseModel):
-        client_id: uuid.UUID
-        username: str
-        text: str
-        online: bool
-        problem_id: None
-        problem: None
+    app_id: uuid.UUID
+    client_id: uuid.UUID
+    username: str
+    text: str
+    online: bool
+    problem_id: None
+    problem: None
+
 
 class ConfirmApplication(pydantic.BaseModel):
     user_id: str
@@ -41,6 +43,7 @@ class ConfirmApplication(pydantic.BaseModel):
 
 class ResponseGetClient(pydantic.BaseModel):
     username: str
+    client_id: uuid.UUID
     birth_date: Optional[datetime.date] = None
     gender: str
     request: List[str]
@@ -54,6 +57,16 @@ class ResponseGetListClient(pydantic.BaseModel):
 
 class WatchApplication(pydantic.BaseModel):
     app_id: str
+
+
+class ResponseWatchApplication(pydantic.BaseModel):
+    app_id: uuid.UUID
+    client_id: uuid.UUID
+    is_active: bool
+    username: str
+    birth_date: Optional[datetime.date] = None
+    gender: str
+    text: str
 
 
 class WritingFreeDiary(pydantic.BaseModel):

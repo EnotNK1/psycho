@@ -340,6 +340,7 @@ class DatabaseService:
                 list.append(session.get(Inquiry, obj.inquiry_id).text)
 
             user_dict = {}
+            user_dict['client_id'] = user.id
             user_dict['username'] = user.username
             user_dict['birth_date'] = user.birth_date
             user_dict['gender'] = user.gender
@@ -664,6 +665,7 @@ class DatabaseService:
                     problem = session.query(Problem).filter_by(user_id=user.id).first()
                     if problem is None:
                         dict_item = {
+                            "app_id": obj.id,
                             "client_id": obj.client_id,
                             "username": user.username,
                             "text": obj.text,
@@ -676,6 +678,7 @@ class DatabaseService:
 
                     # Create a new dictionary for each iteration
                     dict_item = {
+                        "app_id": obj.id,
                         "client_id": obj.client_id,
                         "username": user.username,
                         "text": obj.text,
@@ -697,7 +700,12 @@ class DatabaseService:
                 user = session.get(Users, app.client_id)
                 dict = {}
 
+                dict["app_id"] = app.id
+                dict["client_id"] = app.client_id
                 dict["username"] = user.username
+                dict["is_active"] = False
+                dict["birth_date"] = user.birth_date
+                dict["gender"] = user.gender
                 dict["text"] = app.text
 
                 return dict
