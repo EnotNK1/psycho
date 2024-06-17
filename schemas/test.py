@@ -102,3 +102,6 @@ class WritingRIDialog(pydantic.BaseModel):
 
 class ReadRIDialog(pydantic.BaseModel):
     problem_id: uuid.UUID
+
+class GetPassTest(pydantic.BaseModel):
+    user_id: uuid.UUID

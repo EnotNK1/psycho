@@ -1,4 +1,4 @@
-from schemas.test import SaveTestRes, CreateTest, GetTestRes
+from schemas.test import SaveTestRes, CreateTest, GetTestRes, GetPassTest
 from database.database import database_service
 from services.auth import verify_token
 import uuid
@@ -57,6 +57,24 @@ class TestService:
 
         res_list = database_service.get_test_res_db(token_data['user_id'], uuid.UUID(payload.test_id))
 
+        return res_list
+
+    def get_passed_tests(self, payload: GetPassTest, access_token):
+        if not access_token:
+            return "not token"
+        token_data = verify_token(access_token)
+
+        if token_data == 'Token has expired':
+            return "Token has expired"
+        elif token_data == 'Invalid token':
+            return "Invalid token"
+
+        res_list = database_service.get_passed_tests_db(payload.user_id)
+
+        return res_list
+
+    def get_all_tests(self):
+        res_list = database_service.get_all_tests_db()
         return res_list
 
 

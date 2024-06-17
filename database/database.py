@@ -1,6 +1,6 @@
 from psycopg2 import Error
 from sqlalchemy import create_engine, select, func
-from sqlalchemy.orm import sessionmaker, joinedload
+from sqlalchemy.orm import sessionmaker, joinedload, selectinload, join
 
 from database.inquiries import inquiries
 from database.tables import Users, Base, Problem, Message_r_i_dialog, Token, User_inquiries, Test_result, Test, Scale, \
@@ -8,8 +8,8 @@ from database.tables import Users, Base, Problem, Message_r_i_dialog, Token, Use
     Scale_result
 import uuid
 
-engine = create_engine(url="postgresql://postgres:1111@localhost:5432/psycho", echo=False)
-# engine = create_engine(url="postgresql://user:password@db:5432/dbname", echo=False)
+# engine = create_engine(url="postgresql://postgres:1111@localhost:5432/psycho", echo=False)
+engine = create_engine(url="postgresql://user:password@db:5432/dbname", echo=False)
 
 session_factory = sessionmaker(engine)
 
@@ -141,7 +141,7 @@ class DatabaseService:
         with session_factory() as session:
             try:
                 query = select(Test_result).filter_by(user_id=user_id, test_id=test_id).options(
-                    joinedload(Test_result.scale_result))
+                    selectinload(Test_result.scale_result))
                 res = session.execute(query)
                 users = res.unique().scalars().all()
 
@@ -150,6 +150,54 @@ class DatabaseService:
                 for user in users:
                     user_dict['datetime'] = user.date
                     user_dict['scale_result'] = user.scale_result
+
+                    user_list.append(user_dict)
+                    user_dict = {}
+                return user_list
+
+            except (Exception, Error) as error:
+                print(error)
+                return -1
+
+    def get_passed_tests_db(self, user_id):
+        with session_factory() as session:
+            try:
+                query = (
+                    select(Test)
+                    .join(Test_result, Test.id == Test_result.test_id)
+                    .filter(Test_result.user_id == user_id)
+                )
+                res = session.execute(query)
+                users = res.unique().scalars().all()
+
+                user_list = []
+                user_dict = {}
+                for user in users:
+                    user_dict['title'] = user.title
+                    user_dict['description'] = user.description
+                    user_dict['test_id'] = user.id
+
+                    user_list.append(user_dict)
+                    user_dict = {}
+                return user_list
+
+            except (Exception, Error) as error:
+                print(error)
+                return -1
+
+    def get_all_tests_db(self):
+        with session_factory() as session:
+            try:
+                query = select(Test)
+                result = session.execute(query)
+                users = result.scalars().all()
+
+                user_list = []
+                user_dict = {}
+                for user in users:
+                    user_dict['title'] = user.title
+                    user_dict['description'] = user.description
+                    user_dict['test_id'] = user.id
 
                     user_list.append(user_dict)
                     user_dict = {}
