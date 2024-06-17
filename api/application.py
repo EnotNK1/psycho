@@ -9,6 +9,7 @@ router = APIRouter()
 
 @router.get(
     "/application/get_list_applications",
+    tags=["Application"],
     response_model=List[ResponseSendАpplication],
 )
 def get_list_applications(access_token: str = Cookie(None)):
@@ -17,6 +18,7 @@ def get_list_applications(access_token: str = Cookie(None)):
 
 @router.post(
     "/application/watch_application",
+    tags=["Application"],
     response_model=ResponseWatchApplication,
 )
 def watch_application(data: WatchApplication, access_token: str = Cookie(None)):
@@ -25,6 +27,7 @@ def watch_application(data: WatchApplication, access_token: str = Cookie(None)):
 
 @router.post(
     "/client/send_application",
+    tags=["Application"],
     response_model=str,
 )
 def send_application(data: SendАpplication, access_token: str = Cookie(None)):
@@ -33,6 +36,7 @@ def send_application(data: SendАpplication, access_token: str = Cookie(None)):
 
 @router.post(
     "/psychologist/confirm_application",
+    tags=["Application"],
     response_model=str,
 )
 def confirm_application(data: ConfirmApplication, access_token: str = Cookie(None)):

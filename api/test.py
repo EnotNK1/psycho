@@ -6,6 +6,7 @@ router = APIRouter()
 
 @router.post(
     "/test/save_test_result",
+    tags=["Test"],
     response_model=None,
 )
 def save_test_result(data: SaveTestRes, access_token: str = Cookie(None)):
@@ -14,6 +15,7 @@ def save_test_result(data: SaveTestRes, access_token: str = Cookie(None)):
 
 @router.post(
     "/test/create_test",
+    tags=["Test"],
     response_model=None,
 )
 def create_test(data: CreateTest, access_token: str = Cookie(None)):
@@ -22,6 +24,7 @@ def create_test(data: CreateTest, access_token: str = Cookie(None)):
 
 @router.post(
     "/test/get_test_result",
+    tags=["Test"],
     response_model=None,
 )
 def get_test_res(data: GetTestRes, access_token: str = Cookie(None)):
@@ -29,6 +32,7 @@ def get_test_res(data: GetTestRes, access_token: str = Cookie(None)):
 
 @router.post(
     "/test/get_passed_tests",
+    tags=["Test"],
     response_model=None,
 )
 def get_passed_tests(data: GetPassTest, access_token: str = Cookie(None)):
@@ -36,6 +40,7 @@ def get_passed_tests(data: GetPassTest, access_token: str = Cookie(None)):
 
 @router.get(
     "/test/get_all_tests",
+    tags=["Test"],
     response_model=None,
 )
 def get_all_tests():

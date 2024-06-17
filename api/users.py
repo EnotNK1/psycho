@@ -10,6 +10,7 @@ router = APIRouter()
 
 @router.post(
     "/users/reg",
+    tags=["Users"],
     response_model=UserResponse,
 )
 def register_user(data: Reg):
@@ -18,6 +19,7 @@ def register_user(data: Reg):
 
 @router.post(
     "/users/auth",
+    tags=["Users"],
     response_model=UserResponse,
 )
 def auth_user(data: Creds, response: Response):
@@ -26,6 +28,7 @@ def auth_user(data: Creds, response: Response):
 
 @router.post(
     "/users/auth_token",
+    tags=["Users"],
     response_model=UserResponse,
 )
 def auth_token_user(data: AuthToken, response: Response):
@@ -34,6 +37,7 @@ def auth_token_user(data: AuthToken, response: Response):
 
 @router.get(
     "/users/get",
+    tags=["Users"],
     status_code=200,
     response_model=None,
 )
@@ -43,6 +47,7 @@ def get_users(access_token: str = Cookie(None)):
 
 @router.post(
     "/users/reset_password",
+    tags=["Users"],
     response_model=None,
 )
 def reset_password(data: ResetPassword):
@@ -51,6 +56,7 @@ def reset_password(data: ResetPassword):
 
 @router.post(
     "/users/update_user",
+    tags=["Users"],
     response_model=None,
 )
 def update_user(data: UpdateUser, access_token: str = Cookie(None)):

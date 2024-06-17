@@ -6,6 +6,7 @@ router = APIRouter()
 
 @router.post(
     "/problem/new_problem",
+    tags=["Problem"],
     response_model=None,
 )
 def add_problem(data: AddProblem, access_token: str = Cookie(None)):
@@ -13,6 +14,7 @@ def add_problem(data: AddProblem, access_token: str = Cookie(None)):
 
 @router.post(
     "/problem/save_problem_analysis",
+    tags=["Problem"],
     response_model=None,
 )
 def save_problem_analysis(data: ProblemAnalysisCreate, access_token: str = Cookie(None)):
@@ -20,6 +22,7 @@ def save_problem_analysis(data: ProblemAnalysisCreate, access_token: str = Cooki
 
 @router.post(
     "/problem/get_analysis",
+    tags=["Problem"],
     response_model=None,
 )
 def get_analysis(data: ProblemAnalysisGet, access_token: str = Cookie(None)):

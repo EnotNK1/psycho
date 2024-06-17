@@ -11,6 +11,7 @@ router = APIRouter()
 
 @router.post(
     "/psychologist/get_client",
+    tags=["Client"],
     response_model=ResponseGetClient,
 )
 def get_client(data: GetClient, access_token: str = Cookie(None)):
@@ -19,6 +20,7 @@ def get_client(data: GetClient, access_token: str = Cookie(None)):
 
 @router.get(
     "/psychologist/get_list_client",
+    tags=["Client"],
     response_model=List[ResponseGetListClient],
 )
 def get_list_client(access_token: str = Cookie(None)):
@@ -26,6 +28,7 @@ def get_list_client(access_token: str = Cookie(None)):
 
 @router.post(
     "/client/get_tasks",
+    tags=["Client"],
     response_model=None,
 )
 def get_tasks(access_token: str = Cookie(None)):
@@ -33,6 +36,7 @@ def get_tasks(access_token: str = Cookie(None)):
 
 @router.post(
     "/client/complete_task",
+    tags=["Client"],
     response_model=None,
 )
 def complete_task(data: TaskId, access_token: str = Cookie(None)):
@@ -40,6 +44,7 @@ def complete_task(data: TaskId, access_token: str = Cookie(None)):
 
 @router.post(
     "/client/unfulfilled_task",
+    tags=["Client"],
     response_model=None,
 )
 def unfulfilled_task(data: TaskId, access_token: str = Cookie(None)):

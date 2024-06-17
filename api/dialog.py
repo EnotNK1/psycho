@@ -6,6 +6,7 @@ router = APIRouter()
 
 @router.post(
     "/dialog/writing_r_i_dialog",
+    tags=["Dialog"],
     response_model=None,
 )
 def writing_r_i_dialog(data: WritingRIDialog, access_token: str = Cookie(None)):

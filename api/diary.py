@@ -9,6 +9,7 @@ router = APIRouter()
 
 @router.post(
     "/diary/writing_free_diary",
+    tags=["Diary"],
     response_model=None,
 )
 def writing_free_diary(data: WritingFreeDiary, access_token: str = Cookie(None)):
@@ -16,6 +17,7 @@ def writing_free_diary(data: WritingFreeDiary, access_token: str = Cookie(None))
 
 @router.get(
     "/diary/reading_free_diary",
+    tags=["Diary"],
     response_model=List[ResponseReadingFreeDiary],
 )
 def reading_free_diary(access_token: str = Cookie(None)):
@@ -23,6 +25,7 @@ def reading_free_diary(access_token: str = Cookie(None)):
 
 @router.post(
     "/diary/writing_think_diary",
+    tags=["Diary"],
     response_model=None,
 )
 def writing_think_diary(data: WritingThinkDiary, access_token: str = Cookie(None)):
@@ -30,6 +33,7 @@ def writing_think_diary(data: WritingThinkDiary, access_token: str = Cookie(None
 
 @router.post(
     "/diary/reading_think_diary",
+    tags=["Diary"],
     response_model=None,
 )
 def reading_think_diary(data: ReadThinkDiary, access_token: str = Cookie(None)):
@@ -37,6 +41,7 @@ def reading_think_diary(data: ReadThinkDiary, access_token: str = Cookie(None)):
 
 @router.post(
     "/diary/reading_r_i_dialog",
+    tags=["Diary"],
     response_model=None,
 )
 def reading_r_i_dialog(data: ReadRIDialog, access_token: str = Cookie(None)):

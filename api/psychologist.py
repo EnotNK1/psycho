@@ -7,6 +7,7 @@ router = APIRouter()
 
 @router.post(
     "/psychologist/send_psychologist",
+    tags=["Psychologist"],
     response_model=None,
 )
 def psychologist_sent(data: Psychologist, access_token: str = Cookie(None)):
@@ -15,6 +16,7 @@ def psychologist_sent(data: Psychologist, access_token: str = Cookie(None)):
 
 @router.post(
     "/client/get_psycholog",
+    tags=["Psychologist"],
     response_model=None,
 )
 def get_psycholog(data: GetClient, access_token: str = Cookie(None)):
@@ -23,6 +25,7 @@ def get_psycholog(data: GetClient, access_token: str = Cookie(None)):
 
 @router.get(
     "/client/get_list_get_psycholog",
+    tags=["Psychologist"],
     response_model=None,
 )
 def get_list_get_psycholog(access_token: str = Cookie(None)):

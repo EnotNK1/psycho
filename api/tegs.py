@@ -7,6 +7,7 @@ router = APIRouter()
 
 @router.get(
     "/tegs/get_list_tegs",
+    tags=["Tegs"],
     response_model=None,
 )
 def get_list_tegs(access_token: str = Cookie(None)):

@@ -7,6 +7,7 @@ router = APIRouter()
 
 @router.post(
     "/manager/send_manager",
+    tags=["Manager"],
     response_model=None,
 )
 def manager_send(data: Manager, access_token: str = Cookie(None)):
@@ -14,6 +15,7 @@ def manager_send(data: Manager, access_token: str = Cookie(None)):
 
 @router.post(
     "/manager/give_task",
+    tags=["Manager"],
     response_model=None,
 )
 def give_task(data: GiveTask, access_token: str = Cookie(None)):
