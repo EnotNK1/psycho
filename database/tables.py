@@ -296,6 +296,8 @@ class Task(Base):
 
     id: Mapped[uuid.UUID] = mapped_column(primary_key=True)
     text: Mapped[str]
+    test_title: Mapped[str] = mapped_column(nullable=True)
+    test_id: Mapped[uuid.UUID] = mapped_column(nullable=True)
     psychologist_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"))
     client_id: Mapped[uuid.UUID]
     is_complete: Mapped[bool]

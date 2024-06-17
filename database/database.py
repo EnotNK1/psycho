@@ -5,7 +5,7 @@ from sqlalchemy.orm import sessionmaker, joinedload, selectinload, join
 from database.inquiries import inquiries
 from database.tables import Users, Base, Problem, Message_r_i_dialog, Token, User_inquiries, Test_result, Test, Scale, \
     Inquiry, Education, Clients, Type_analysis, Intermediate_belief, Deep_conviction, FreeDiary, Diary_record, \
-    Scale_result
+    Scale_result, Task
 import uuid
 
 # engine = create_engine(url="postgresql://postgres:1111@localhost:5432/psycho", echo=False)
@@ -68,6 +68,8 @@ class DatabaseService:
                     return 1
                 elif role_id == 2:
                     return 2
+                elif role_id == 3:
+                    return 3
                 else:
                     return -1
 
@@ -850,6 +852,39 @@ class DatabaseService:
                 session.commit()
 
                 return 0
+            except (Exception, Error) as error:
+                print(error)
+                return -1
+
+    def give_task_db(self, psychologist_id, text, test_title, test_id, client_id):
+        with session_factory() as session:
+            try:
+                temp = Task(
+                    id=uuid.uuid4(),
+                    psychologist_id=psychologist_id,
+                    text=text,
+                    test_title=test_title,
+                    test_id=test_id,
+                    client_id=client_id,
+                    is_complete=False
+                )
+                session.add(temp)
+                session.commit()
+                return 0
+            except (Exception, Error) as error:
+                print(error)
+                return -1
+
+    def get_tasks_db(self, client_id):
+        with session_factory() as session:
+            try:
+                list = []
+                temp = session.query(Task).filter_by(client_id=client_id).all()
+
+                for obj in temp:
+                    list.append(obj)
+
+                return list
             except (Exception, Error) as error:
                 print(error)
                 return -1

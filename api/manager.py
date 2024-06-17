@@ -1,4 +1,4 @@
-from schemas.users import Manager
+from schemas.users import Manager, GiveTask
 from services.manager import manager_service
 from fastapi import Cookie, APIRouter
 
@@ -11,3 +11,11 @@ router = APIRouter()
 )
 def manager_send(data: Manager, access_token: str = Cookie(None)):
     return manager_service.manager_send(data, access_token)
+
+@router.post(
+    "/manager/give_task",
+    response_model=None,
+)
+def give_task(data: GiveTask, access_token: str = Cookie(None)):
+    return manager_service.give_task(data, access_token)
+

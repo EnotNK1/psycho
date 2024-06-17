@@ -66,3 +66,9 @@ class Manager(pydantic.BaseModel):
     online: bool
     gender: str
     birth_date: datetime.date
+
+class GiveTask(pydantic.BaseModel):
+    text: str
+    user_id: uuid.UUID
+    test_title: str
+    test_id: uuid.UUID

@@ -23,3 +23,10 @@ def get_client(data: GetClient, access_token: str = Cookie(None)):
 )
 def get_list_client(access_token: str = Cookie(None)):
     return client_service.get_list_client(access_token)
+
+@router.post(
+    "/client/get_tasks",
+    response_model=None,
+)
+def get_tasks(access_token: str = Cookie(None)):
+    return client_service.get_tasks(access_token)
