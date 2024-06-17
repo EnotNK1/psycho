@@ -20,7 +20,7 @@ class ManagerService:
         try:
             result = database_service.manager_send_db(token_data['user_id'], payload.username,
                                                       payload.description,
-                                                      payload.city, payload.online, payload.gender,
+                                                      payload.city, payload.company, payload.online, payload.gender,
                                                       payload.birth_date)
             if result != -1:
                 return "Successfully"

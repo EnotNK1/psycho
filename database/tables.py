@@ -19,6 +19,7 @@ class Users(Base):
     email: Mapped[str] = mapped_column(unique=True)
     password: Mapped[str]
     city: Mapped[str]
+    company: Mapped[str] = mapped_column(nullable=True)
     online: Mapped[bool]
     face_to_face: Mapped[bool]
     gender: Mapped[str]

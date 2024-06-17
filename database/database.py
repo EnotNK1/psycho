@@ -837,13 +837,14 @@ class DatabaseService:
                 print(error)
                 return -1
 
-    def manager_send_db(self, user_id, username, description, city, online, gender, birth_date):
+    def manager_send_db(self, user_id, username, description, company, city, online, gender, birth_date):
         with session_factory() as session:
             try:
                 user = session.get(Users, user_id)
                 user.username = username
                 user.description = description
                 user.city = city
+                user.company = company
                 user.gender = gender
                 user.birth_date = birth_date
                 user.online = online

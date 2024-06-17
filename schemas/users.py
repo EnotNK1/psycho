@@ -63,6 +63,7 @@ class Manager(pydantic.BaseModel):
     username: str
     description: str
     city: str
+    company: str
     online: bool
     gender: str
     birth_date: datetime.date
