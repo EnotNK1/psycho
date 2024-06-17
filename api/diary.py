@@ -38,11 +38,3 @@ def writing_think_diary(data: WritingThinkDiary, access_token: str = Cookie(None
 )
 def reading_think_diary(data: ReadThinkDiary, access_token: str = Cookie(None)):
     return diary_service.reading_think_diary(data, access_token)
-
-@router.post(
-    "/diary/reading_r_i_dialog",
-    tags=["Diary"],
-    response_model=None,
-)
-def reading_r_i_dialog(data: ReadRIDialog, access_token: str = Cookie(None)):
-    return diary_service.reading_r_i_dialog(data, access_token)
