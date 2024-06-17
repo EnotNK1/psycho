@@ -889,6 +889,38 @@ class DatabaseService:
                 print(error)
                 return -1
 
+    def complete_task_db(self, client_id, task_id):
+        with session_factory() as session:
+            try:
+                temp = session.get(Task, task_id)
+
+                if temp.client_id == uuid.UUID(client_id):
+                    temp.is_complete = True
+                    session.commit()
+                    return 1
+                else:
+                    return 2
+
+            except (Exception, Error) as error:
+                print(error)
+                return -1
+
+    def unfulfilled_task_db(self, client_id, task_id):
+        with session_factory() as session:
+            try:
+                temp = session.get(Task, task_id)
+
+                if temp.client_id == uuid.UUID(client_id):
+                    temp.is_complete = False
+                    session.commit()
+                    return 1
+                else:
+                    return 2
+
+            except (Exception, Error) as error:
+                print(error)
+                return -1
+
 
 database_service = DatabaseService()
 

@@ -1,5 +1,5 @@
 from database.database import database_service
-from schemas.users import GetClient
+from schemas.users import GetClient, TaskId
 from services.auth import verify_token
 from fastapi import FastAPI, HTTPException
 import uuid
@@ -57,6 +57,50 @@ class ClientService:
             result = database_service.get_tasks_db(token_data['user_id'])
             if result != -1:
                 return result
+            else:
+                return "error"
+        except(Error):
+            return "error"
+
+    def complete_task(self, payload: TaskId, access_token):
+        if not access_token:
+            return "not token"
+        token_data = verify_token(access_token)
+
+        if token_data == 'Token has expired':
+            return "Token has expired"
+        elif token_data == 'Invalid token':
+            return "Invalid token"
+
+        try:
+            result = database_service.complete_task_db(token_data['user_id'], payload.task_id)
+            if result != -1:
+                if result == 1:
+                    return "Successfully"
+                else:
+                    return "задача не того пользователя"
+            else:
+                return "error"
+        except(Error):
+            return "error"
+
+    def unfulfilled_task(self, payload: TaskId, access_token):
+        if not access_token:
+            return "not token"
+        token_data = verify_token(access_token)
+
+        if token_data == 'Token has expired':
+            return "Token has expired"
+        elif token_data == 'Invalid token':
+            return "Invalid token"
+
+        try:
+            result = database_service.unfulfilled_task_db(token_data['user_id'], payload.task_id)
+            if result != -1:
+                if result == 1:
+                    return "Successfully"
+                else:
+                    return "задача не того пользователя"
             else:
                 return "error"
         except(Error):

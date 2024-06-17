@@ -2,7 +2,7 @@ import uuid
 
 from fastapi import APIRouter, Cookie
 
-from schemas.users import GetClient
+from schemas.users import GetClient, TaskId
 from schemas.test import ResponseGetClient, ResponseGetListClient
 from services.client import client_service
 from typing import List
@@ -30,3 +30,17 @@ def get_list_client(access_token: str = Cookie(None)):
 )
 def get_tasks(access_token: str = Cookie(None)):
     return client_service.get_tasks(access_token)
+
+@router.post(
+    "/client/complete_task",
+    response_model=None,
+)
+def complete_task(data: TaskId, access_token: str = Cookie(None)):
+    return client_service.complete_task(data, access_token)
+
+@router.post(
+    "/client/unfulfilled_task",
+    response_model=None,
+)
+def unfulfilled_task(data: TaskId, access_token: str = Cookie(None)):
+    return client_service.unfulfilled_task(data, access_token)

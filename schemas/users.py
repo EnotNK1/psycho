@@ -72,3 +72,6 @@ class GiveTask(pydantic.BaseModel):
     user_id: uuid.UUID
     test_title: str
     test_id: uuid.UUID
+
+class TaskId(pydantic.BaseModel):
+    task_id: uuid.UUID
