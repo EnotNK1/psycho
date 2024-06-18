@@ -20,7 +20,7 @@ class ClientService:
             raise HTTPException(status_code=401, detail="Вы не авторизованы!")
 
         role = database_service.check_role(uuid.UUID(token_data['user_id']))
-        if role == 0 or role == 2:
+        if role == 0 or role == 2 or role == 3:
             items = database_service.getClient(payload.user_id)
             return items
         else:
@@ -37,7 +37,7 @@ class ClientService:
             raise HTTPException(status_code=401, detail="Вы не авторизованы!")
 
         role = database_service.check_role(uuid.UUID(token_data['user_id']))
-        if role == 0 or role == 2:
+        if role == 0 or role == 2 or role == 3:
             items = database_service.getListClient(token_data['user_id'])
             return items
         else:

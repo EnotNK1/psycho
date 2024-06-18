@@ -20,7 +20,7 @@ class ApplicationService:
             raise HTTPException(status_code=401, detail="Вы не авторизованы!")
 
         role = database_service.check_role(payload.user_id)
-        if role == 2 and token_data['user_id'] != payload.user_id:
+        if (role == 2 or role == 3) and token_data['user_id'] != payload.user_id:
             result = database_service.send_application_db(token_data['user_id'], payload.user_id, payload.text)
             if result == 0:
                 return "Successfully"
@@ -39,7 +39,7 @@ class ApplicationService:
         elif token_data == 'Invalid token':
             raise HTTPException(status_code=401, detail="Вы не авторизованы!")
         role = database_service.check_role(token_data['user_id'])
-        if role == 2:
+        if role == 2 or role == 3:
             result = database_service.confirm_application_db(token_data['user_id'], payload.user_id, payload.status)
             if result == 0:
                 return "Successfully"
@@ -60,7 +60,7 @@ class ApplicationService:
 
 
         role = database_service.check_role(uuid.UUID(token_data['user_id']))
-        if role == 2:
+        if role == 2 or role == 3:
             result = database_service.get_list_applications_db(token_data['user_id'])
             return result
         else:
@@ -78,7 +78,7 @@ class ApplicationService:
 
 
         role = database_service.check_role(uuid.UUID(token_data['user_id']))
-        if role == 2:
+        if role == 2 or role == 3:
             result = database_service.watch_application_db(token_data['user_id'], payload.app_id)
             return result
         else:
