@@ -25,13 +25,13 @@ class UserServise:
 
     def get_users(self, access_token) -> list or str:
         if not access_token:
-            return "not token"
+            raise HTTPException(status_code=401, detail="Вы не авторизованы!")
         token_data = verify_token(access_token)
 
         if token_data == 'Token has expired':
-            return "Token has expired"
+            raise HTTPException(status_code=401, detail="Время сессии истекло!")
         elif token_data == 'Invalid token':
-            return "Invalid token"
+            raise HTTPException(status_code=401, detail="Вы не авторизованы!")
 
         role = database_service.check_role(uuid.UUID(token_data['user_id']))
 
@@ -39,13 +39,15 @@ class UserServise:
             items = database_service.get_all_users()
             return items
         else:
-            return "access denied"
+            raise HTTPException(status_code=403, detail="У вас недостаточно прав для выполнения данной операции!")
 
     def authorization(self, payload: Creds, response: Response):
-
-        if database_service.check_user(payload.email, payload.password) == 0:
+         if database_service.check_user(payload.email, payload.password) == 0:
             user = database_service.get_user(payload.email)
-
+            if user == -1:
+                raise HTTPException(status_code=404,
+                                    detail="Пользователя с такими данными не найдено!")
+            print(user)
             token = generate_token(user.id)
             response.set_cookie(key="access_token", value=token, httponly=True)
             database_service.add_token_db(user.id, token)
@@ -56,13 +58,14 @@ class UserServise:
                 "email": user.email,
                 "username": user.username
             }
+         else: raise HTTPException(status_code=404, detail="Пользователя с такими данными не найдено!")
 
 
     def authorization_token(self, payload, response: Response):
 
         user = database_service.get_user_by_token(payload.token)
         if user == 0:
-            return "Error"
+            raise HTTPException(status_code=400, detail="Не валидный токен!")
         token = generate_token(user.id)
         response.set_cookie(key="access_token", value=token, httponly=True)
         database_service.add_token_db(user.id, token)

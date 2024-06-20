@@ -6,10 +6,11 @@ from database.inquiries import inquiries
 from database.tables import Users, Base, Problem, Message_r_i_dialog, Token, User_inquiries, Test_result, Test, Scale, \
     Inquiry, Education, Clients, Type_analysis, Intermediate_belief, Deep_conviction, FreeDiary, Diary_record, \
     Scale_result, Task
+from fastapi import FastAPI, HTTPException
 import uuid
 
-# engine = create_engine(url="postgresql://postgres:1111@localhost:5432/psycho", echo=False)
-engine = create_engine(url="postgresql://user:password@db:5432/dbname", echo=False)
+engine = create_engine(url="postgresql://postgres:1111@localhost:5432/psycho", echo=False)
+# engine = create_engine(url="postgresql://user:password@db:5432/dbname", echo=False)
 
 session_factory = sessionmaker(engine)
 
@@ -251,8 +252,7 @@ class DatabaseService:
                 session.commit()
                 return 0
             except (Exception, Error) as error:
-                print(error)
-                return -1
+                raise HTTPException(status_code=403, detail="У вас недостаточно прав для выполнения данной операции!")
 
     def update_user_db(self, user_id, username, gender, birth_date, request, city, description, type):
 
@@ -693,7 +693,10 @@ class DatabaseService:
                 temp = session.query(FreeDiary).filter_by(user_id=user_id).all()
 
                 for obj in temp:
-                    list.append(obj.text)
+                    list.append({
+                        "text": obj.text,
+                        "free_diary_id": obj.id
+                    })
 
                 return list
             except (Exception, Error) as error:

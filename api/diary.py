@@ -21,7 +21,10 @@ def writing_free_diary(data: WritingFreeDiary, access_token: str = Cookie(None))
     response_model=List[ResponseReadingFreeDiary],
 )
 def reading_free_diary(access_token: str = Cookie(None)):
-    return diary_service.reading_free_diary(access_token)
+    try:
+        return diary_service.reading_free_diary(access_token)
+    except:
+        print("x")
 
 @router.post(
     "/diary/writing_think_diary",
