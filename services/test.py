@@ -3,47 +3,45 @@ from database.database import database_service
 from services.auth import verify_token
 import uuid
 from psycopg2 import Error
+from fastapi import FastAPI, HTTPException
 
 
 class TestService:
 
     def save_test_result(self, payload: SaveTestRes, access_token):
         if not access_token:
-            return "not token"
+            raise HTTPException(status_code=401, detail="Вы не авторизованы!")
         token_data = verify_token(access_token)
 
         if token_data == 'Token has expired':
-            return "Token has expired"
+            raise HTTPException(status_code=401, detail="Время сессии истекло!")
         elif token_data == 'Invalid token':
-            return "Invalid token"
+            raise HTTPException(status_code=401, detail="Вы не авторизованы!")
 
         try:
-            result = database_service.save_test_result_db(token_data['user_id'], payload.title, uuid.UUID(payload.test_id),
-                                                 payload.date, payload.score, payload.min, payload.max)
-            if result == 0:
-                return "Successfully"
-            else:
-                return "error"
+            return database_service.save_test_result_db(token_data['user_id'], uuid.UUID(payload.test_id),
+                                                 payload.date, payload.results)
+
         except(Error):
             return "error"
 
+
     def create_test(self, payload: CreateTest, access_token) -> str:
         if not access_token:
-            return "not token"
+            raise HTTPException(status_code=401, detail="Вы не авторизованы!")
         token_data = verify_token(access_token)
 
         if token_data == 'Token has expired':
-            return "Token has expired"
+            raise HTTPException(status_code=401, detail="Время сессии истекло!")
         elif token_data == 'Invalid token':
-            return "Invalid token"
+            raise HTTPException(status_code=401, detail="Вы не авторизованы!")
 
         role = database_service.check_role(uuid.UUID(token_data['user_id']))
 
         if role == 0:
-            database_service.create_test_db(payload.title, payload.description, payload.short_desc)
-            return "Successfully"
+            return database_service.create_test_db(payload.title, payload.description, payload.short_desc, payload.scales)
         else:
-            return "access denied"
+            raise HTTPException(status_code=403, detail="У вас недостаточно прав для выполнения данной операции!")
 
     def get_test_res(self, payload: GetTestRes, access_token):
         if not access_token:
@@ -76,6 +74,10 @@ class TestService:
     def get_all_tests(self):
         res_list = database_service.get_all_tests_db()
         return res_list
+
+    def get_test_info(self, id):
+        result = database_service.get_test_info(id)
+        return result
 
 
 test_service: TestService = TestService()

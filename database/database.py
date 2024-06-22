@@ -1,11 +1,14 @@
 from psycopg2 import Error
 from sqlalchemy import create_engine, select, func
 from sqlalchemy.orm import sessionmaker, joinedload, selectinload, join
+from schemas.test import ResScale, ReqBorder, ReqScale
+from typing import List
+from sqlalchemy.exc import NoResultFound
 
 from database.inquiries import inquiries
 from database.tables import Users, Base, Problem, Message_r_i_dialog, Token, User_inquiries, Test_result, Test, Scale, \
     Inquiry, Education, Clients, Type_analysis, Intermediate_belief, Deep_conviction, FreeDiary, Diary_record, \
-    Scale_result, Task
+    Scale_result, Task, Borders
 from fastapi import FastAPI, HTTPException
 import uuid
 
@@ -146,17 +149,29 @@ class DatabaseService:
                 query = select(Test_result).filter_by(user_id=user_id, test_id=test_id).options(
                     selectinload(Test_result.scale_result))
                 res = session.execute(query)
-                users = res.unique().scalars().all()
+                test_results = res.unique().scalars().all()
 
-                user_list = []
-                user_dict = {}
-                for user in users:
-                    user_dict['datetime'] = user.date
-                    user_dict['scale_result'] = user.scale_result
+                results_list = []
+                for test_result in test_results:
+                    result_dict = {
+                        "test_id": test_result.test_id,
+                        "datetime": test_result.date,
+                    }
 
-                    user_list.append(user_dict)
-                    user_dict = {}
-                return user_list
+                    scale_results = []
+
+                    for scale_result in test_result.scale_result:
+                        new_scale_result = {
+                            "scale_id": scale_result.scale_id,
+                            "score": scale_result.score
+                        }
+
+                        scale_results.append(new_scale_result)
+
+                    result_dict["scale_results"] = scale_results
+                    results_list.append(result_dict)
+
+                return results_list
 
             except (Exception, Error) as error:
                 print(error)
@@ -209,6 +224,52 @@ class DatabaseService:
             except (Exception, Error) as error:
                 print(error)
                 return -1
+
+
+    def get_test_info(self, test_id):
+        with session_factory() as session:
+            try:
+                test = session.query(Test).filter_by(id=test_id).one()
+                result = {
+                    "test_id": test.id,
+                    "title": test.title,
+                    "description": test.description,
+                    "short_desc": test.short_desc
+                }
+
+                scales = session.query(Scale).filter_by(test_id=test_id)
+                list_scales = []
+
+                for scale in scales:
+                    new_scale = {
+                        "scale_id": scale.id,
+                        "title": scale.title,
+                        "min": scale.min,
+                        "max": scale.max
+                    }
+
+                    list_borders = []
+                    borders = session.query(Borders).filter_by(scale_id=scale.id)
+
+                    for border in borders:
+                        new_border = {
+                            "left_border": border.left_border,
+                            "right_border": border.right_border,
+                            "color": border.color,
+                            "title": border.title
+                        }
+
+                        list_borders.append(new_border)
+
+                    new_scale["borders"] = list_borders
+                    list_scales.append(new_scale)
+
+                result["scales"] = list_scales
+                return result
+
+            except (Exception, Error) as error:
+                print(error)
+                raise HTTPException(status_code=404, detail="Такой тест не найден!")
 
     def add_problem_db(self, user_id, description, goal):
         with session_factory() as session:
@@ -301,47 +362,114 @@ class DatabaseService:
     #             print(error)
     #             return -1
 
-    def save_test_result_db(self, user_id, title, test_id, date, score, min, max):
-        with session_factory() as session:
+    def save_test_result_db(self, user_id, test_id, date, results: List[ResScale]):
+        with (session_factory() as session):
             try:
+                if not session.query(Test).filter_by(id=test_id).one():
+                    raise HTTPException(status_code=404, detail="Тест не найден!")
+
                 test_res_id = uuid.uuid4()
-                scale_id = uuid.uuid4()
                 test_res = Test_result(id=test_res_id,
                                        user_id=user_id,
                                        test_id=test_id,
                                        date=date)
-                scale = Scale(id=scale_id,
-                              title=title,
-                              min=min,
-                              max=max,
-                              test_id=test_id)
-                scale_result = Scale_result(id=uuid.uuid4(),
-                                            score=score,
-                                            scale_id=scale_id,
-                                            test_result_id=test_res_id)
-                session.add(test_res)
-                session.add(scale)
-                session.add(scale_result)
-                session.commit()
-                return 0
-            except (Exception, Error) as error:
-                print(error)
-                return -1
 
-    def create_test_db(self, title, description, short_desc):
+                session.add(test_res)
+
+                for result in results:
+                    scale = session.query(Scale).filter_by(id=result.scale_id).one()
+
+                    if result.score < scale.min:
+                        raise HTTPException(status_code=400, detail="Результат не может быть меньше минимального значения шкалы!")
+
+                    if result.score > scale.max:
+                        raise HTTPException(status_code=400, detail="Результат не может быть больше максимального значения шкалы!")
+
+                    scale_result = Scale_result(id=uuid.uuid4(),
+                                                score=result.score,
+                                                scale_id=result.scale_id,
+                                                test_result_id=test_res_id)
+
+                    session.add(scale_result)
+
+                session.commit()
+                return "Successfully!"
+
+            except NoResultFound:
+                raise HTTPException(status_code=404, detail="Тест или шкалы не были найдены!")
+            except (Exception, Error) as error:
+                raise error
+
+
+
+    def create_test_db(self, title, description, short_desc, scales: List[ReqScale]):
         with session_factory() as session:
             try:
-                test = Test(id=uuid.uuid4(),
+                test_id = uuid.uuid4()
+                test = Test(id=test_id,
                             title=title,
                             description=description,
                             short_desc=short_desc
                             )
+
+                if len(scales) < 1:
+                    raise HTTPException(status_code=400, detail="Введите хотя бы одну шкалу!")
+
+                for scale in scales:
+                    if scale.min >= scale.max:
+                        raise HTTPException(status_code=400, detail="Максимальное значение шкалы должно быть больше минимального!")
+
+                    if scale.min < 0:
+                        raise HTTPException(status_code=400, detail="Минимальное значение шкалы должно быть больше нуля!")
+                    scale_id = uuid.uuid4()
+                    new_scale = Scale(id=scale_id,
+                                      title=scale.title,
+                                      min=scale.min,
+                                      max=scale.max,
+                                      test_id=test_id)
+
+                    session.add(new_scale)
+
+                    if len(scale.borders) < 1:
+                        raise HTTPException(status_code=400, detail="Введите границы шкал!")
+
+                    sorted_borders = sorted(scale.borders, key=lambda obj: obj.left_border)
+                    print(sorted_borders)
+                    if sorted_borders[0].left_border != scale.min:
+                        raise HTTPException(status_code=400, detail="Левая граница первого интервала должна быть равна минимальному значению шкалы!")
+
+                    if sorted_borders[-1].right_border != scale.max:
+                        raise HTTPException(status_code=400, detail="Правая граница последнего интервала должна быть равна максимальному значению шкалы!")
+
+                    for i in range(0, len(sorted_borders)):
+                        if i > 0 and (sorted_borders[i].left_border - sorted_borders[i-1].right_border) != 1:
+                            raise HTTPException(status_code=400,
+                                                detail="Границы интервалов в шкале введены неправильно!")
+
+                        if sorted_borders[i].left_border < 0:
+                            raise HTTPException(status_code=400,
+                                                detail="Минимальное значение шкалы должно быть больше нуля!")
+
+                        if sorted_borders[i].right_border <= sorted_borders[i].left_border:
+                            raise HTTPException(status_code=400,
+                                                detail="Правая граница должна быть больше левой!")
+
+                    for border in sorted_borders:
+                        border_id = uuid.uuid4()
+
+                        new_border = Borders(id=border_id,
+                                             left_border=border.left_border,
+                                             right_border=border.right_border,
+                                             color=border.color,
+                                             title=border.title,
+                                             scale_id=scale_id)
+                        session.add(new_border)
+
                 session.add(test)
                 session.commit()
-                return 0
+                return "Successfully!"
             except (Exception, Error) as error:
-                print(error)
-                return -1
+                raise error
 
     def create_inquirty(self):
         with session_factory() as session:

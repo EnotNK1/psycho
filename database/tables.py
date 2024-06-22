@@ -124,6 +124,7 @@ class Scale(Base):
 
     scale_result: Mapped[List["Scale_result"]] = relationship()
     borders: Mapped[List["Borders"]] = relationship()
+
 class Borders(Base):
     __tablename__ = "borders"
 

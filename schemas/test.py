@@ -5,18 +5,53 @@ import pydantic
 import uuid
 
 
-class SaveTestRes(pydantic.BaseModel):
-    title: str
+class ResScale(pydantic.BaseModel):
+    scale_id: str
     score: int
+
+
+class SaveTestRes(pydantic.BaseModel):
     test_id: str
     date: datetime.datetime
+    results: List[ResScale]
+
+
+class ReqBorder(pydantic.BaseModel):
+    left_border: int
+    right_border: int
+    color: str
+    title: str
+
+
+class ReqScale(pydantic.BaseModel):
+    title: str
     min: int
     max: int
+    borders: List[ReqBorder]
+
 
 class CreateTest(pydantic.BaseModel):
     title: str
     description: str
     short_desc: str
+    scales: List[ReqScale]
+
+
+class ResponseScale(pydantic.BaseModel):
+    scale_id: uuid.UUID
+    title: str
+    min: int
+    max: int
+    borders: List[ReqBorder]
+
+
+class GetTestInfo(pydantic.BaseModel):
+    test_id: uuid.UUID
+    title: str
+    description: str
+    short_desc: str
+    scales: List[ResponseScale]
+
 
 class GetTestRes(pydantic.BaseModel):
     test_id: str
