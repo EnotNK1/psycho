@@ -2,20 +2,20 @@ import uuid
 
 from fastapi import APIRouter, Cookie
 
-from schemas.users import GetClient, TaskId
+from schemas.users import TaskId
 from schemas.test import ResponseGetClient, ResponseGetListClient
 from services.client import client_service
 from typing import List
 
 router = APIRouter()
 
-@router.post(
-    "/psychologist/get_client",
+@router.get(
+    "/psychologist/get_client/{client_id}",
     tags=["Client"],
     response_model=ResponseGetClient,
 )
-def get_client(data: GetClient, access_token: str = Cookie(None)):
-    return client_service.get_client(data, access_token)
+def get_client(client_id: str, access_token: str = Cookie(None)):
+    return client_service.get_client(client_id, access_token)
 
 
 @router.get(
@@ -26,7 +26,7 @@ def get_client(data: GetClient, access_token: str = Cookie(None)):
 def get_list_client(access_token: str = Cookie(None)):
     return client_service.get_list_client(access_token)
 
-@router.post(
+@router.get(
     "/client/get_tasks",
     tags=["Client"],
     response_model=None,

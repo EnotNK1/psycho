@@ -1,4 +1,4 @@
-from schemas.users import Psychologist, GetClient
+from schemas.users import Psychologist
 from services.psychologist import psychologist_service
 from fastapi import Cookie, APIRouter
 
@@ -14,13 +14,13 @@ def psychologist_sent(data: Psychologist, access_token: str = Cookie(None)):
     return psychologist_service.psychologist_sent(data, access_token)
 
 
-@router.post(
-    "/client/get_psycholog",
+@router.get(
+    "/client/get_psycholog/{psycholog_id}",
     tags=["Psychologist"],
     response_model=None,
 )
-def get_psycholog(data: GetClient, access_token: str = Cookie(None)):
-    return psychologist_service.get_psycholog(data, access_token)
+def get_psycholog(psycholog_id: str, access_token: str = Cookie(None)):
+    return psychologist_service.get_psycholog(psycholog_id, access_token)
 
 
 @router.get(

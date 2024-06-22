@@ -1,6 +1,7 @@
-from schemas.test import SaveTestRes, CreateTest, GetTestRes, GetPassTest, GetTestInfo
+from schemas.test import SaveTestRes, CreateTest, GetTestInfo, ResponseGetPassedTests, ResponseGetTestResult
 from services.test import test_service
 from fastapi import Cookie, APIRouter
+from typing import List
 
 router = APIRouter()
 
@@ -20,21 +21,21 @@ def save_test_result(data: SaveTestRes, access_token: str = Cookie(None)):
 def create_test(data: CreateTest, access_token: str = Cookie(None)):
     return test_service.create_test(data, access_token)
 
-@router.post(
-    "/test/get_test_result",
+@router.get(
+    "/test/get_test_result/{test_id}",
     tags=["Test"],
-    response_model=None,
+    response_model=List[ResponseGetTestResult],
 )
-def get_test_res(data: GetTestRes, access_token: str = Cookie(None)):
-    return test_service.get_test_res(data, access_token)
+def get_test_res(test_id: str, access_token: str = Cookie(None)):
+    return test_service.get_test_res(test_id, access_token)
 
-@router.post(
-    "/test/get_passed_tests",
+@router.get(
+    "/test/get_passed_tests/{user_id}",
     tags=["Test"],
-    response_model=None,
+    response_model=List[ResponseGetPassedTests],
 )
-def get_passed_tests(data: GetPassTest, access_token: str = Cookie(None)):
-    return test_service.get_passed_tests(data, access_token)
+def get_passed_tests(user_id: str, access_token: str = Cookie(None)):
+    return test_service.get_passed_tests(user_id, access_token)
 
 @router.get(
     "/test/get_all_tests",

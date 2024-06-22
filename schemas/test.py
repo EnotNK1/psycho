@@ -53,10 +53,6 @@ class GetTestInfo(pydantic.BaseModel):
     scales: List[ResponseScale]
 
 
-class GetTestRes(pydantic.BaseModel):
-    test_id: str
-
-
 class SendАpplication(pydantic.BaseModel):
     user_id: str
     text: str
@@ -138,5 +134,19 @@ class WritingRIDialog(pydantic.BaseModel):
 class ReadRIDialog(pydantic.BaseModel):
     problem_id: uuid.UUID
 
-class GetPassTest(pydantic.BaseModel):
-    user_id: uuid.UUID
+
+class ScaleResult(pydantic.BaseModel):
+    scale_id: uuid.UUID
+    score: int
+
+
+class ResponseGetTestResult(pydantic.BaseModel):
+    test_id: uuid.UUID
+    datetime: datetime.datetime
+    scale_results: List[ScaleResult]
+
+
+class ResponseGetPassedTests(pydantic.BaseModel):
+    title: str
+    description: str
+    test_id: uuid.UUID

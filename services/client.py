@@ -1,5 +1,5 @@
 from database.database import database_service
-from schemas.users import GetClient, TaskId
+from schemas.users import TaskId
 from services.auth import verify_token
 from fastapi import FastAPI, HTTPException
 import uuid
@@ -9,7 +9,7 @@ from psycopg2 import Error
 
 class ClientService:
 
-    def get_client(self, payload: GetClient, access_token):
+    def get_client(self, client_id: str, access_token):
         if not access_token:
             raise HTTPException(status_code=401, detail="Время сессии истекло!")
         token_data = verify_token(access_token)
@@ -21,7 +21,7 @@ class ClientService:
 
         role = database_service.check_role(uuid.UUID(token_data['user_id']))
         if role == 0 or role == 2 or role == 3:
-            items = database_service.getClient(payload.user_id)
+            items = database_service.getClient(client_id)
             return items
         else:
             raise HTTPException(status_code=403, detail="У вас недостаточно прав для выполнения данной операции!")

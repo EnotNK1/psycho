@@ -15,10 +15,6 @@ class ProblemAnalysisCreate(pydantic.BaseModel):
     type: int
 
 
-class ProblemAnalysisGet(pydantic.BaseModel):
-    problem_id: uuid.UUID
-
-
 class CreateDeepConviction(pydantic.BaseModel):
     disadaptive: str
     adaptive: str
@@ -39,8 +35,4 @@ class CheckBelief(pydantic.BaseModel):
     truthfulness: str
     consistency: str
     usefulness: str
-    intermediate_conviction_id: str
-
-
-class GetBeliefAnalysis(pydantic.BaseModel):
     intermediate_conviction_id: str

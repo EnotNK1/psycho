@@ -56,8 +56,6 @@ class Psychologist(pydantic.BaseModel):
     request: List[int]
 
 
-class GetClient(pydantic.BaseModel):
-    user_id: str
 
 class Manager(pydantic.BaseModel):
     username: str

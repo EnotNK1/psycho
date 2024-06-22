@@ -1,5 +1,5 @@
 from database.database import database_service
-from schemas.problem import ProblemAnalysisGet, ProblemAnalysisCreate, AddProblem
+from schemas.problem import ProblemAnalysisCreate, AddProblem
 from services.auth import verify_token
 import uuid
 from psycopg2 import Error
@@ -41,7 +41,7 @@ class ProblemService:
         else:
             return "access denied"
 
-    def get_problem_analysis(self, payload: ProblemAnalysisGet, access_token):
+    def get_problem_analysis(self, problem_id: str, access_token):
         if not access_token:
             return "not token"
         token_data = verify_token(access_token)
@@ -54,7 +54,7 @@ class ProblemService:
 
         role = database_service.check_role(uuid.UUID(token_data['user_id']))
         if role == 2:
-            result = database_service.get_problem_analysis_db(payload.problem_id)
+            result = database_service.get_problem_analysis_db(uuid.UUID(problem_id))
             return result
         else:
             return "access denied"

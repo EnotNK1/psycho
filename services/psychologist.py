@@ -1,5 +1,5 @@
 from database.database import database_service
-from schemas.users import GetClient, Psychologist
+from schemas.users import Psychologist
 from services.auth import verify_token
 import uuid
 from psycopg2 import Error
@@ -32,7 +32,7 @@ class PsychologistService:
         except(Error):
             return "error"
 
-    def get_psycholog(self, payload: GetClient, access_token):
+    def get_psycholog(self, psycholog_id: str, access_token):
         if not access_token:
             return "not token"
         token_data = verify_token(access_token)
@@ -42,13 +42,9 @@ class PsychologistService:
         elif token_data == 'Invalid token':
             return "Invalid token"
 
-        role = database_service.check_role(uuid.UUID(token_data['user_id']))
-        role1 = database_service.check_role(uuid.UUID(payload.user_id))
-        if role == 1 and role1 == 2:
-            items = database_service.get_psycholog(payload.user_id)
-            return items
-        else:
-            return "access denied"
+        items = database_service.get_psycholog(psycholog_id)
+        return items
+
 
     def get_list_psycholog(self, access_token):
         if not access_token:
@@ -60,12 +56,9 @@ class PsychologistService:
         elif token_data == 'Invalid token':
             return "Invalid token"
 
-        role = database_service.check_role(uuid.UUID(token_data['user_id']))
-        if role == 1 or role == 2:
-            items = database_service.get_list_psycholog(token_data['user_id'])
-            return items
-        else:
-            return "access denied"
+        items = database_service.get_list_psycholog(token_data['user_id'])
+        return items
+
 
 
 psychologist_service: PsychologistService = PsychologistService()

@@ -1,4 +1,4 @@
-from schemas.problem import AddProblem, ProblemAnalysisCreate, ProblemAnalysisGet
+from schemas.problem import AddProblem, ProblemAnalysisCreate
 from services.problem import problem_service
 from fastapi import Cookie, APIRouter
 
@@ -20,10 +20,10 @@ def add_problem(data: AddProblem, access_token: str = Cookie(None)):
 def save_problem_analysis(data: ProblemAnalysisCreate, access_token: str = Cookie(None)):
     return problem_service.save_problem_analysis(data, access_token)
 
-@router.post(
-    "/problem/get_analysis",
+@router.get(
+    "/problem/get_analysis/{problem_id}",
     tags=["Problem"],
     response_model=None,
 )
-def get_analysis(data: ProblemAnalysisGet, access_token: str = Cookie(None)):
-    return problem_service.get_problem_analysis(data, access_token)
+def get_analysis(problem_id: str, access_token: str = Cookie(None)):
+    return problem_service.get_problem_analysis(problem_id, access_token)

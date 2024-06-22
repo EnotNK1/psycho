@@ -1,4 +1,4 @@
-from schemas.problem import CreateDeepConviction, BeliefAnalysis, CheckBelief, GetBeliefAnalysis
+from schemas.problem import CreateDeepConviction, BeliefAnalysis, CheckBelief
 from services.belief import belief_service
 
 from fastapi import Cookie, APIRouter
@@ -31,18 +31,18 @@ def save_belief_analysis(data: BeliefAnalysis, access_token: str = Cookie(None))
 )
 def save_belief_check(data: CheckBelief, access_token: str = Cookie(None)):
     return belief_service.save_belief_check(data, access_token)
-@router.post(
-    "/belief/get_belief_analysis",
+@router.get(
+    "/belief/get_belief_analysis/{intermediate_conviction_id}",
     tags=["Belief"],
     response_model=None,
 )
-def get_belief_analysis(data: GetBeliefAnalysis, access_token: str = Cookie(None)):
-    return belief_service.get_belief_analysis(data, access_token)
+def get_belief_analysis(intermediate_conviction_id: str, access_token: str = Cookie(None)):
+    return belief_service.get_belief_analysis(intermediate_conviction_id, access_token)
 
-@router.post(
-    "/belief/get_belief_check",
+@router.get(
+    "/belief/get_belief_check/{intermediate_conviction_id}",
     tags=["Belief"],
     response_model=None,
 )
-def get_belief_check(data: GetBeliefAnalysis, access_token: str = Cookie(None)):
-    return belief_service.get_belief_check(data, access_token)
+def get_belief_check(intermediate_conviction_id: str, access_token: str = Cookie(None)):
+    return belief_service.get_belief_check(intermediate_conviction_id, access_token)

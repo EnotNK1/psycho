@@ -1,5 +1,5 @@
 from database.database import database_service
-from schemas.problem import GetBeliefAnalysis, CheckBelief, BeliefAnalysis, CreateDeepConviction
+from schemas.problem import CheckBelief, BeliefAnalysis, CreateDeepConviction
 from services.auth import verify_token
 import uuid
 
@@ -66,7 +66,7 @@ class BeliefService:
         else:
             return "access denied"
 
-    def get_belief_analysis(self, payload: GetBeliefAnalysis, access_token):
+    def get_belief_analysis(self, intermediate_conviction_id: str, access_token):
         if not access_token:
             return "not token"
         token_data = verify_token(access_token)
@@ -79,12 +79,12 @@ class BeliefService:
 
         role = database_service.check_role(uuid.UUID(token_data['user_id']))
         if role == 2:
-            result = database_service.get_belief_analysis(uuid.UUID(payload.intermediate_conviction_id))
+            result = database_service.get_belief_analysis(uuid.UUID(intermediate_conviction_id))
             return result
         else:
             return "access denied"
 
-    def get_belief_check(self, payload: GetBeliefAnalysis, access_token):
+    def get_belief_check(self, intermediate_conviction_id: str, access_token):
         if not access_token:
             return "not token"
         token_data = verify_token(access_token)
@@ -97,7 +97,7 @@ class BeliefService:
 
         role = database_service.check_role(uuid.UUID(token_data['user_id']))
         if role == 2:
-            result = database_service.get_belief_check(uuid.UUID(payload.intermediate_conviction_id))
+            result = database_service.get_belief_check(uuid.UUID(intermediate_conviction_id))
             return result
         else:
             return "access denied"
