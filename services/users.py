@@ -1,12 +1,13 @@
 from schemas.users import Creds, Reg, ResetPassword, UpdateUser, UserResponse
 from database.database import database_service
 from services.auth import send_email
-from services.auth import generate_token, verify_token
+from services.auth import generate_token
 import uuid
 from starlette.responses import Response
 from smtplib import SMTPRecipientsRefused
 from psycopg2 import Error
 from fastapi import FastAPI, HTTPException
+from utils.token_utils import check_token
 
 
 app = FastAPI()
@@ -24,14 +25,7 @@ async def read_item(item_id: str):
 class UserServise:
 
     def get_users(self, access_token) -> list or str:
-        if not access_token:
-            raise HTTPException(status_code=401, detail="Вы не авторизованы!")
-        token_data = verify_token(access_token)
-
-        if token_data == 'Token has expired':
-            raise HTTPException(status_code=401, detail="Время сессии истекло!")
-        elif token_data == 'Invalid token':
-            raise HTTPException(status_code=401, detail="Вы не авторизованы!")
+        token_data = check_token(access_token)
 
         role = database_service.check_role(uuid.UUID(token_data['user_id']))
 
@@ -108,14 +102,7 @@ class UserServise:
             raise HTTPException(status_code=404, detail="Ни один пользователь с этой учетной записью электронной почты не найден!")
 
     def update_user(self, payload: UpdateUser, access_token):
-        if not access_token:
-            raise HTTPException(status_code=401, detail="Вы не авторизованы!")
-        token_data = verify_token(access_token)
-
-        if token_data == 'Token has expired':
-            raise HTTPException(status_code=401, detail="Время сессии истекло!")
-        elif token_data == 'Invalid token':
-            raise HTTPException(status_code=401, detail="Вы не авторизованы!")
+        token_data = check_token(access_token)
 
         try:
             if (21 > payload.type) and (payload.type > 0):

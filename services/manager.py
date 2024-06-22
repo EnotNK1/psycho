@@ -1,21 +1,14 @@
 from database.database import database_service
 from schemas.users import Manager, GiveTask
-from services.auth import verify_token
 import uuid
 from psycopg2 import Error
+from utils.token_utils import check_token
 
 
 class ManagerService:
 
     def manager_send(self, payload: Manager, access_token):
-        if not access_token:
-            return "not token"
-        token_data = verify_token(access_token)
-
-        if token_data == 'Token has expired':
-            return "Token has expired"
-        elif token_data == 'Invalid token':
-            return "Invalid token"
+        token_data = check_token(access_token)
 
         try:
             result = database_service.manager_send_db(token_data['user_id'], payload.username,
@@ -30,14 +23,7 @@ class ManagerService:
             return "error"
 
     def give_task(self, payload: GiveTask, access_token):
-        if not access_token:
-            return "not token"
-        token_data = verify_token(access_token)
-
-        if token_data == 'Token has expired':
-            return "Token has expired"
-        elif token_data == 'Invalid token':
-            return "Invalid token"
+        token_data = check_token(access_token)
 
         try:
             role = database_service.check_role(token_data['user_id'])

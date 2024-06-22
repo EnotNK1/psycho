@@ -1,6 +1,6 @@
 from schemas.test import WatchApplication, ConfirmApplication, SendАpplication
 from database.database import database_service
-from services.auth import verify_token
+from utils.token_utils import check_token
 import uuid
 from fastapi import FastAPI, HTTPException
 
@@ -10,14 +10,7 @@ from fastapi import FastAPI, HTTPException
 class ApplicationService:
 
     def send_application(self, payload: SendАpplication, access_token):
-        if not access_token:
-            raise HTTPException(status_code=401, detail="Вы не авторизованы!")
-        token_data = verify_token(access_token)
-
-        if token_data == 'Token has expired':
-            raise HTTPException(status_code=401, detail="Время сессии истекло!")
-        elif token_data == 'Invalid token':
-            raise HTTPException(status_code=401, detail="Вы не авторизованы!")
+        token_data = check_token(access_token)
 
         role = database_service.check_role(payload.user_id)
         if (role == 2 or role == 3) and token_data['user_id'] != payload.user_id:
@@ -30,14 +23,8 @@ class ApplicationService:
             raise HTTPException(status_code=404, detail="Психолог не найден!")
 
     def confirm_application(self, payload: ConfirmApplication, access_token):
-        if not access_token:
-            raise HTTPException(status_code=401, detail="Вы не авторизованы!")
-        token_data = verify_token(access_token)
+        token_data = check_token(access_token)
 
-        if token_data == 'Token has expired':
-            raise HTTPException(status_code=401, detail="Время сессии истекло!")
-        elif token_data == 'Invalid token':
-            raise HTTPException(status_code=401, detail="Вы не авторизованы!")
         role = database_service.check_role(token_data['user_id'])
         if role == 2 or role == 3:
             result = database_service.confirm_application_db(token_data['user_id'], payload.user_id, payload.status)
@@ -49,14 +36,7 @@ class ApplicationService:
             raise HTTPException(status_code=403, detail="У вас недостаточно прав для выполнения данной операции!")
 
     def get_list_applications(self, access_token):
-        if not access_token:
-            raise HTTPException(status_code=401, detail="Вы не авторизованы!")
-        token_data = verify_token(access_token)
-
-        if token_data == 'Token has expired':
-            raise HTTPException(status_code=401, detail="Время сессии истекло!")
-        elif token_data == 'Invalid token':
-            raise HTTPException(status_code=401, detail="Вы не авторизованы!")
+        token_data = check_token(access_token)
 
 
         role = database_service.check_role(uuid.UUID(token_data['user_id']))
@@ -67,14 +47,7 @@ class ApplicationService:
             raise HTTPException(status_code=403, detail="У вас недостаточно прав для выполнения данной операции!")
 
     def watch_application(self, payload: WatchApplication, access_token):
-        if not access_token:
-            raise HTTPException(status_code=401, detail="Вы не авторизованы!")
-        token_data = verify_token(access_token)
-
-        if token_data == 'Token has expired':
-            raise HTTPException(status_code=401, detail="Время сессии истекло!")
-        elif token_data == 'Invalid token':
-            raise HTTPException(status_code=401, detail="Вы не авторизованы!")
+        token_data = check_token(access_token)
 
 
         role = database_service.check_role(uuid.UUID(token_data['user_id']))
