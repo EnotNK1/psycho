@@ -86,9 +86,6 @@ class ResponseGetListClient(pydantic.BaseModel):
     client_id: uuid.UUID
     request: List[str]
 
-class WatchApplication(pydantic.BaseModel):
-    app_id: str
-
 
 class ResponseWatchApplication(pydantic.BaseModel):
     app_id: uuid.UUID
@@ -142,6 +139,7 @@ class ScaleResult(pydantic.BaseModel):
 
 class ResponseGetTestResult(pydantic.BaseModel):
     test_id: uuid.UUID
+    test_result_id: uuid.UUID
     datetime: datetime.datetime
     scale_results: List[ScaleResult]
 

@@ -1,4 +1,4 @@
-from schemas.test import WatchApplication, ConfirmApplication, SendАpplication
+from schemas.test import ConfirmApplication, SendАpplication
 from database.database import database_service
 from utils.token_utils import check_token
 import uuid
@@ -46,13 +46,13 @@ class ApplicationService:
         else:
             raise HTTPException(status_code=403, detail="У вас недостаточно прав для выполнения данной операции!")
 
-    def watch_application(self, payload: WatchApplication, access_token):
+    def watch_application(self, app_id: str, access_token):
         token_data = check_token(access_token)
 
 
         role = database_service.check_role(uuid.UUID(token_data['user_id']))
         if role == 2 or role == 3:
-            result = database_service.watch_application_db(token_data['user_id'], payload.app_id)
+            result = database_service.watch_application_db(token_data['user_id'], app_id)
             return result
         else:
             raise HTTPException(status_code=403, detail="У вас недостаточно прав для выполнения данной операции!")

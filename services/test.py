@@ -29,12 +29,28 @@ class TestService:
         else:
             raise HTTPException(status_code=403, detail="У вас недостаточно прав для выполнения данной операции!")
 
-    def get_test_res(self, id: str, access_token):
+    def get_test_res(self, id: str, access_token, user_id):
         token_data = check_token(access_token)
 
-        res_list = database_service.get_test_res_db(token_data['user_id'], uuid.UUID(id))
+        if database_service.get_user_by_id(user_id) == -1:
+            raise HTTPException(status_code=404, detail="Пользователя с такими данными не найдено!")
 
-        return res_list
+        if user_id != None:
+            return database_service.get_test_res_db(user_id, uuid.UUID(id))
+        else:
+            return database_service.get_test_res_db(token_data['user_id'], uuid.UUID(id))
+
+
+    def get_test_result(self, test_result_id: str, access_token):
+        token_data = check_token(access_token)
+
+        res = database_service.get_test_result_db(token_data['user_id'], uuid.UUID(test_result_id))
+
+        if res == -1:
+            raise HTTPException(status_code=404, detail="Результат теста не найден!")
+
+        return res
+
 
     def get_passed_tests(self, user_id: str, access_token):
         token_data = check_token(access_token)

@@ -103,6 +103,18 @@ class DatabaseService:
                 print(error)
                 return -1
 
+
+    def get_user_by_id(self, id):
+        with session_factory() as session:
+            try:
+                user = session.query(Users).filter_by(id=id).one()
+
+                return user
+
+            except (Exception, Error) as error:
+                print(error)
+                return -1
+
     def get_password_user(self, email):
         with session_factory() as session:
             try:
@@ -155,6 +167,7 @@ class DatabaseService:
                 for test_result in test_results:
                     result_dict = {
                         "test_id": test_result.test_id,
+                        "test_result_id": test_result.id,
                         "datetime": test_result.date,
                     }
 
@@ -176,6 +189,39 @@ class DatabaseService:
             except (Exception, Error) as error:
                 print(error)
                 return -1
+
+    def get_test_result_db(self, user_id, test_result_id):
+        with session_factory() as session:
+            try:
+                query = select(Test_result).filter_by(user_id=user_id, id=test_result_id).options(
+                    selectinload(Test_result.scale_result))
+                res = session.execute(query)
+                test_result = res.unique().scalars().one()
+
+                result_dict = {
+                    "test_id": test_result.test_id,
+                    "test_result_id": test_result.id,
+                    "datetime": test_result.date,
+                }
+
+                scale_results = []
+
+                for scale_result in test_result.scale_result:
+                    new_scale_result = {
+                        "scale_id": scale_result.scale_id,
+                        "score": scale_result.score
+                    }
+
+                    scale_results.append(new_scale_result)
+
+                result_dict["scale_results"] = scale_results
+
+                return result_dict
+
+            except (Exception, Error) as error:
+                print(error)
+                return -1
+
 
     def get_passed_tests_db(self, user_id):
         with session_factory() as session:
