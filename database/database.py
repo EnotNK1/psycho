@@ -1125,6 +1125,25 @@ class DatabaseService:
                 print(error)
                 return -1
 
+    def get_all_think_diary_db(self, user_id):
+        with session_factory() as session:
+            try:
+                list = []
+                dict = {}
+                temp = session.query(Diary_record).filter_by(user_id=user_id).all()
+
+                for obj in temp:
+                    dict["id"] = obj.id
+                    dict["situation"] = obj.situation
+
+                    list.append(dict)
+                    dict = {}
+
+                return list
+            except (Exception, Error) as error:
+                print(error)
+                return -1
+
 
 database_service = DatabaseService()
 

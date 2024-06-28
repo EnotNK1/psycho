@@ -1,6 +1,7 @@
 from schemas.test import ReadThinkDiary, WritingThinkDiary, WritingFreeDiary
 from database.database import database_service
 from psycopg2 import Error
+import uuid
 from fastapi import FastAPI, HTTPException
 from utils.token_utils import check_token
 
@@ -46,5 +47,11 @@ class DiaryService:
             return result
         except(Error):
             raise HTTPException(status_code=500, detail="Что-то пошло не так!")
+
+    def get_all_think_diary(self, user_id: str, access_token):
+        token_data = check_token(access_token)
+
+        result = database_service.get_all_think_diary_db(uuid.UUID(user_id))
+        return result
 
 diary_service: DiaryService = DiaryService()

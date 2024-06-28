@@ -41,3 +41,11 @@ def writing_think_diary(data: WritingThinkDiary, access_token: str = Cookie(None
 )
 def reading_think_diary(data: ReadThinkDiary, access_token: str = Cookie(None)):
     return diary_service.reading_think_diary(data, access_token)
+
+@router.get(
+    "/problem/get_all_think_diary/{user_id}",
+    tags=["Diary"],
+    response_model=None,
+)
+def get_all_think_diary(user_id: str, access_token: str = Cookie(None)):
+    return diary_service.get_all_think_diary(user_id, access_token)
