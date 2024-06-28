@@ -27,3 +27,11 @@ def save_problem_analysis(data: ProblemAnalysisCreate, access_token: str = Cooki
 )
 def get_analysis(problem_id: str, access_token: str = Cookie(None)):
     return problem_service.get_problem_analysis(problem_id, access_token)
+
+@router.get(
+    "/problem/get_all_problems/{user_id}",
+    tags=["Problem"],
+    response_model=None,
+)
+def get_all_problems(user_id: str, access_token: str = Cookie(None)):
+    return problem_service.get_all_problems(user_id, access_token)

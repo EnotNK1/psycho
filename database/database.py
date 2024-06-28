@@ -1111,6 +1111,20 @@ class DatabaseService:
                 print(error)
                 return -1
 
+    def get_all_problems(self, user_id):
+        with session_factory() as session:
+            try:
+                list = []
+                temp = session.query(Problem).filter_by(user_id=user_id).all()
+
+                for obj in temp:
+                    list.append(obj)
+
+                return list
+            except (Exception, Error) as error:
+                print(error)
+                return -1
+
 
 database_service = DatabaseService()
 

@@ -37,5 +37,11 @@ class ProblemService:
         else:
             return "access denied"
 
+    def get_all_problems(self, user_id: str, access_token):
+        token_data = check_token(access_token)
+
+        result = database_service.get_all_problems(uuid.UUID(user_id))
+        return result
+
 
 problem_service: ProblemService = ProblemService()
