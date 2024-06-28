@@ -12,8 +12,8 @@ from database.tables import Users, Base, Problem, Message_r_i_dialog, Token, Use
 from fastapi import FastAPI, HTTPException
 import uuid
 
-engine = create_engine(url="postgresql://postgres:1111@localhost:5432/psycho", echo=False)
-# engine = create_engine(url="postgresql://user:password@db:5432/dbname", echo=False)
+# engine = create_engine(url="postgresql://postgres:1111@localhost:5432/psycho", echo=False)
+engine = create_engine(url="postgresql://user:password@db:5432/dbname", echo=False)
 
 session_factory = sessionmaker(engine)
 
@@ -190,15 +190,16 @@ class DatabaseService:
                 print(error)
                 return -1
 
-    def get_test_result_db(self, user_id, test_result_id):
+    def get_test_result_db(self, test_result_id):
         with session_factory() as session:
             try:
-                query = select(Test_result).filter_by(user_id=user_id, id=test_result_id).options(
+                query = select(Test_result).filter_by(id=test_result_id).options(
                     selectinload(Test_result.scale_result))
                 res = session.execute(query)
                 test_result = res.unique().scalars().one()
 
                 result_dict = {
+                    "user_id": test_result.user_id,
                     "test_id": test_result.test_id,
                     "test_result_id": test_result.id,
                     "datetime": test_result.date,
@@ -299,6 +300,7 @@ class DatabaseService:
 
                     for border in borders:
                         new_border = {
+                            "border_id": border.id,
                             "left_border": border.left_border,
                             "right_border": border.right_border,
                             "color": border.color,
@@ -422,8 +424,18 @@ class DatabaseService:
 
                 session.add(test_res)
 
+                scale_info = session.query(Scale).filter_by(test_id=test_id).all()
+
                 for result in results:
                     scale = session.query(Scale).filter_by(id=result.scale_id).one()
+
+                    if scale.test_id != test_id:
+                        raise HTTPException(status_code=400,
+                                            detail="Шкала не принадлежит переданному тесту!")
+
+                    if len(scale_info) != len(results):
+                        raise HTTPException(status_code=400,
+                                            detail="Количество переданных шкал не совпадают с количеством шкал в базе данных!")
 
                     if result.score < scale.min:
                         raise HTTPException(status_code=400, detail="Результат не может быть меньше минимального значения шкалы!")

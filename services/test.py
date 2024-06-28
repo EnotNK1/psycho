@@ -32,24 +32,33 @@ class TestService:
     def get_test_res(self, id: str, access_token, user_id):
         token_data = check_token(access_token)
 
-        if database_service.get_user_by_id(user_id) == -1:
-            raise HTTPException(status_code=404, detail="Пользователя с такими данными не найдено!")
+        role = database_service.check_role(token_data['user_id'])
 
-        if user_id != None:
-            return database_service.get_test_res_db(user_id, uuid.UUID(id))
+        if token_data["user_id"] == user_id or role == 2 or role == 3 or role == 0:
+            if user_id != None:
+                if database_service.get_user_by_id(user_id) == -1:
+                    raise HTTPException(status_code=404, detail="Пользователя с такими данными не найдено!")
+
+                return database_service.get_test_res_db(user_id, uuid.UUID(id))
+            else:
+                return database_service.get_test_res_db(token_data['user_id'], uuid.UUID(id))
         else:
-            return database_service.get_test_res_db(token_data['user_id'], uuid.UUID(id))
+            raise HTTPException(status_code=403, detail="У вас недостаточно прав для выполнения данной операции!")
 
 
     def get_test_result(self, test_result_id: str, access_token):
         token_data = check_token(access_token)
 
-        res = database_service.get_test_result_db(token_data['user_id'], uuid.UUID(test_result_id))
+        res = database_service.get_test_result_db(uuid.UUID(test_result_id))
 
-        if res == -1:
-            raise HTTPException(status_code=404, detail="Результат теста не найден!")
+        role = database_service.check_role(token_data['user_id'])
 
-        return res
+        if token_data["user_id"] == res["user_id"] or role == 2 or role == 3 or role == 0:
+            if res == -1:
+                raise HTTPException(status_code=404, detail="Результат теста не найден!")
+            return res
+        else:
+            raise HTTPException(status_code=403, detail="У вас недостаточно прав для выполнения данной операции!")
 
 
     def get_passed_tests(self, user_id: str, access_token):

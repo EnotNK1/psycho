@@ -13,8 +13,8 @@ router = APIRouter()
     tags=["Users"],
     response_model=UserResponse,
 )
-def register_user(data: Reg):
-    return user_service.register(data)
+def register_user(data: Reg, response: Response):
+    return user_service.register(data, response)
 
 
 @router.post(

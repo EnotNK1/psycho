@@ -71,7 +71,7 @@ class UserServise:
             "username": user.username
         }
 
-    def register(self, payload: Reg) -> UserResponse:
+    def register(self, payload: Reg, response: Response) -> UserResponse:
 
         if payload.password == payload.confirm_password:
             user_id = uuid.uuid4()
@@ -80,7 +80,7 @@ class UserServise:
                 token = generate_token(user_id)
                 database_service.add_token_db(user_id, token)
                 new_user = UserResponse(token=token, user_id=user_id, role=1, email=payload.email, username=payload.username)
-                print(new_user)
+                response.set_cookie(key="access_token", value=token, httponly=True)
                 return new_user
             else:
                 raise HTTPException(status_code=409, detail="Пользователь с таким адресом электронной почты уже зарегистрирован")
