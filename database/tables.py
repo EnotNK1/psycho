@@ -75,7 +75,7 @@ class Deep_conviction(Base):
     problem_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("problem.id", ondelete="CASCADE"))
 
     intermediate_belief: Mapped[List["Intermediate_belief"]] = relationship()
-    diary_record: Mapped[List["Diary_record"]] = relationship()
+
 
 class Message_r_i_dialog(Base):
     __tablename__ = "message_r_i_dialog"
@@ -209,7 +209,6 @@ class Diary_record(Base):
     __tablename__ = "diary_record"
 
     id: Mapped[uuid.UUID] = mapped_column(primary_key=True)
-    deep_conviction_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("deep_conviction.id", ondelete="CASCADE"))
     user_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"))
     situation: Mapped[str]
     mood: Mapped[str]
@@ -218,6 +217,7 @@ class Diary_record(Base):
     proofs: Mapped[str]
     refutations: Mapped[str]
     new_mood: Mapped[str]
+    alternativeThought: Mapped[str]
     new_level: Mapped[int]
     behavioral: Mapped[str]
 

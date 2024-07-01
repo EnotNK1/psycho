@@ -827,14 +827,13 @@ class DatabaseService:
                 print(error)
                 return -1
 
-    def writing_think_diary_db(self, user_id, deep_conviction_id, situation, mood, level, auto_thought, proofs,
-                               refutations, new_mood, new_level, behaviour):
+    def writing_think_diary_db(self, user_id, situation, mood, level, auto_thought, proofs,
+                               refutations, new_mood, alternativeThought, new_level, behaviour):
         with session_factory() as session:
             try:
                 temp = Diary_record(
                     id=uuid.uuid4(),
                     user_id=user_id,
-                    deep_conviction_id=deep_conviction_id,
                     situation=situation,
                     mood=mood,
                     level=level,
@@ -842,6 +841,7 @@ class DatabaseService:
                     proofs=proofs,
                     refutations=refutations,
                     new_mood=new_mood,
+                    alternativeThought=alternativeThought,
                     new_level=new_level,
                     behavioral=behaviour,
                 )

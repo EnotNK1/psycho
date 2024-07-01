@@ -106,7 +106,6 @@ class ResponseReadingFreeDiary(pydantic.BaseModel):
     text: str
 
 class WritingThinkDiary(pydantic.BaseModel):
-    deep_conviction_id: str
     situation: str
     mood: str
     level: int
@@ -114,6 +113,7 @@ class WritingThinkDiary(pydantic.BaseModel):
     proofs: str
     refutations: str
     new_mood: str
+    alternativeThought: str
     new_level: int
     behaviour: str
 
