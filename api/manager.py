@@ -21,3 +21,10 @@ def manager_send(data: Manager, access_token: str = Cookie(None)):
 def give_task(data: GiveTask, access_token: str = Cookie(None)):
     return manager_service.give_task(data, access_token)
 
+@router.get(
+    "/manager/get_all_manager",
+    tags=["Manager"],
+    response_model=None,
+)
+def get_all_manager(access_token: str = Cookie(None)):
+    return manager_service.get_all_manager(access_token)

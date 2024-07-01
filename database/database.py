@@ -12,8 +12,8 @@ from database.tables import Users, Base, Problem, Message_r_i_dialog, Token, Use
 from fastapi import FastAPI, HTTPException
 import uuid
 
-# engine = create_engine(url="postgresql://postgres:1111@localhost:5432/psycho", echo=False)
-engine = create_engine(url="postgresql://user:password@db:5432/dbname", echo=False)
+engine = create_engine(url="postgresql://postgres:postgresosikati@localhost:5432/psycho", echo=False)
+# engine = create_engine(url="postgresql://user:password@db:5432/dbname", echo=False)
 
 session_factory = sessionmaker(engine)
 
@@ -1143,6 +1143,36 @@ class DatabaseService:
             except (Exception, Error) as error:
                 print(error)
                 return -1
+
+    def get_all_psycholog_db(self):
+        with session_factory() as session:
+            try:
+                list = []
+                temp = session.query(Users).filter_by(role_id=2).all()
+
+                for obj in temp:
+                    list.append(obj)
+
+                return list
+            except (Exception, Error) as error:
+                print(error)
+                return -1
+
+    def get_all_manager_db(self):
+        with session_factory() as session:
+            try:
+                list = []
+                temp = session.query(Users).filter_by(role_id=3).all()
+
+                for obj in temp:
+                    list.append(obj)
+
+                return list
+            except (Exception, Error) as error:
+                print(error)
+                return -1
+
+
 
 
 database_service = DatabaseService()

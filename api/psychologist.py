@@ -30,3 +30,11 @@ def get_psycholog(psycholog_id: str, access_token: str = Cookie(None)):
 )
 def get_list_get_psycholog(access_token: str = Cookie(None)):
     return psychologist_service.get_list_psycholog(access_token)
+
+@router.get(
+    "/client/get_all_psycholog",
+    tags=["Psychologist"],
+    response_model=None,
+)
+def get_all_psycholog(access_token: str = Cookie(None)):
+    return psychologist_service.get_all_psycholog(access_token)

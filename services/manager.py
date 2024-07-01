@@ -40,6 +40,12 @@ class ManagerService:
         except(Error):
             return "error"
 
+    def get_all_manager(self, access_token):
+        token_data = check_token(access_token)
+
+        items = database_service.get_all_manager_db()
+        return items
+
 
 
 manager_service: ManagerService = ManagerService()
