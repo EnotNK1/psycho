@@ -1180,6 +1180,9 @@ class DatabaseService:
                 dic = {}
                 temp = session.query(Question).filter_by(test_id=test_id).all()
 
+                if temp == []:
+                    return "тест не найден"
+
                 for obj in temp:
                     dic["number"] = obj.number
                     dic["text"] = obj.text
