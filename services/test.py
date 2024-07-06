@@ -76,5 +76,11 @@ class TestService:
         result = database_service.get_test_info(id)
         return result
 
+    def get_test_questions(self, test_id, access_token):
+        token_data = check_token(access_token)
+
+        result = database_service.get_test_questions_db(test_id)
+        return result
+
 
 test_service: TestService = TestService()

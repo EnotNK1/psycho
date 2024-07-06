@@ -1173,6 +1173,25 @@ class DatabaseService:
                 print(error)
                 return -1
 
+    def get_test_questions_db(self, test_id):
+        with session_factory() as session:
+            try:
+                list = []
+                dic = {}
+                temp = session.query(Question).filter_by(test_id=test_id).all()
+
+                for obj in temp:
+                    dic["number"] = obj.number
+                    dic["text"] = obj.text
+
+                    list.append(dic)
+                    dic = {}
+
+                return list
+            except (Exception, Error) as error:
+                print(error)
+                return -1
+
     def create_test(self, test_info):
         with session_factory() as session:
             try:

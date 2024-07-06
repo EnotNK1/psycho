@@ -1,3 +1,5 @@
+import uuid
+
 from schemas.test import SaveTestRes, CreateTest, GetTestInfo, ResponseGetPassedTests, ResponseGetTestResult
 from services.test import test_service
 from fastapi import Cookie, APIRouter, Query
@@ -61,4 +63,12 @@ def get_all_tests():
 )
 def get_test_info(id: str):
     return test_service.get_test_info(id)
+
+@router.get(
+    "/test/get_test_questions/{test_id}",
+    tags=["Test"],
+    response_model=None,
+)
+def get_test_questions(test_id: uuid.UUID, access_token: str = Cookie(None)):
+    return test_service.get_test_questions(test_id, access_token)
 
