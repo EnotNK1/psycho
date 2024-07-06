@@ -5,10 +5,11 @@ from schemas.test import ResScale, ReqBorder, ReqScale
 from typing import List
 from sqlalchemy.exc import NoResultFound
 
+from database.test_info import Test_maslach
 from database.inquiries import inquiries
 from database.tables import Users, Base, Problem, Message_r_i_dialog, Token, User_inquiries, Test_result, Test, Scale, \
     Inquiry, Education, Clients, Type_analysis, Intermediate_belief, Deep_conviction, FreeDiary, Diary_record, \
-    Scale_result, Task, Borders
+    Scale_result, Task, Borders, Question, Answer_choice
 from fastapi import FastAPI, HTTPException
 import uuid
 
@@ -1172,6 +1173,43 @@ class DatabaseService:
                 print(error)
                 return -1
 
+    def create_test(self, test_info):
+        with session_factory() as session:
+            try:
+                test_id = uuid.uuid4()
+                test = Test(
+                    id=test_id,
+                    title=test_info.title,
+                    description=test_info.description,
+                    short_desc=test_info.short_desc
+                )
+                session.add(test)
+
+                for i in range(len(test_info.questions)):
+                    question_id = uuid.uuid4()
+                    question = Question(
+                        id=question_id,
+                        text=test_info.questions[i],
+                        number=i+1,
+                        test_id=test_id
+                    )
+                    session.add(question)
+
+                    for j in range(len(test_info.answers)):
+                        answer = Answer_choice(
+                            id=uuid.uuid4(),
+                            text=test_info.answers[j],
+                            question_id=question_id,
+                            score=j
+                        )
+                        session.add(answer)
+
+                session.commit()
+                return 0
+            except (Exception, Error) as error:
+                print(error)
+                return -1
+
 
 
 
@@ -1182,4 +1220,5 @@ database_service.create_tables()
 if database_service.check_user("admin", "admin") == -1:
     database_service.create_inquirty()
     database_service.create_type_analysis()
+    database_service.create_test(Test_maslach)
     database_service.register_user(uuid.uuid4(), "admin", "admin", "admin", "", True, True, "", "", 0, True)
