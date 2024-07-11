@@ -1226,6 +1226,35 @@ class DatabaseService:
                         )
                         session.add(answer)
 
+                k = 0
+                for i in range(len(test_info.scales)):
+                    scale_id = uuid.uuid4()
+                    scale = Scale(
+                        id=scale_id,
+                        test_id=test_id,
+                        title=test_info.scales[i],
+                        min=test_info.scale_limitation[k],
+                        max=test_info.scale_limitation[k+1],
+                    )
+                    k += 2
+                    session.add(scale)
+
+                    k = 0
+                    for j in range(test_info.borders_cnt):
+
+                        border = Borders(
+                            id=uuid.uuid4(),
+                            scale_id=scale_id,
+                            left_border=test_info.scale_border[i][j],
+                            right_border=test_info.scale_border[i][j+1],
+                            color=test_info.scale_color[i][k],
+                            title=test_info.scale_title[i][k]
+                        )
+                        j += 1
+                        k += 1
+                        session.add(border)
+
+
                 session.commit()
                 return 0
             except (Exception, Error) as error:
