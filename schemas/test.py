@@ -64,8 +64,8 @@ class ResponseSendАpplication(pydantic.BaseModel):
     username: str
     text: str
     online: bool
-    problem_id: None
-    problem: None
+    problem_id: Optional[uuid.UUID] = None
+    problem: Optional[str] = None
 
 
 class ConfirmApplication(pydantic.BaseModel):

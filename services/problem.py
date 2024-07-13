@@ -31,7 +31,7 @@ class ProblemService:
         token_data = check_token(access_token)
 
         role = database_service.check_role(uuid.UUID(token_data['user_id']))
-        if role == 2 or role == 3:
+        if role == 1 or role == 2 or role == 3:
             result = database_service.get_problem_analysis_db(uuid.UUID(problem_id))
             return result
         else:
