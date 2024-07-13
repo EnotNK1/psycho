@@ -8,7 +8,7 @@ services:
     expose:
       - "8080"
     networks:
-      - gpo
+      - demo
     depends_on:
       - db
     mac_address: 02:42:ac:18:00:01
@@ -19,7 +19,7 @@ services:
       POSTGRES_PASSWORD: password
       POSTGRES_DB: dbname
     networks:
-      - gpo
+      - demo
     mac_address: 02:42:ac:18:00:02
   nginx:
     image: nginx
@@ -30,7 +30,7 @@ services:
     volumes:
       - ./nginx.conf:/etc/nginx/nginx.conf:ro
     networks:
-      - gpo
+      - demo
     depends_on:
       - app
     mac_address: 02:42:ac:18:00:03
@@ -39,12 +39,12 @@ services:
     volumes:
       - .:/app
     networks:
-      - gpo
+      - demo
     depends_on:
       - app
     entrypoint: [ "alembic" ]
     command: [ "upgrade", "head" ]
 
 networks:
-  gpo:
+  demo:
     external: true
