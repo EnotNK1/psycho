@@ -44,7 +44,7 @@ class DatabaseService:
                 session.commit()
                 return 0
             except (Exception, Error) as error:
-                print(error)
+                # print(error)
                 return -1
 
     def check_user(self, email, password):
@@ -532,11 +532,15 @@ class DatabaseService:
 
     def create_inquirty(self):
         with session_factory() as session:
-            for i in range(len(inquiries)):
-                inquiry = Inquiry(id=i + 1,
-                                  text=inquiries[i]
-                                  )
-                session.add(inquiry)
+            temp = session.query(Inquiry).all()
+
+            if not temp:
+                for i in range(len(inquiries)):
+                    inquiry = Inquiry(id=i + 1,
+                                      text=inquiries[i]
+                                      )
+                    session.add(inquiry)
+
             session.commit()
 
     def psychologist_sent_db(self, user_id, username, title, document, description, city, online, face_to_face, gender,
@@ -713,13 +717,15 @@ class DatabaseService:
 
     def create_type_analysis(self):
         with session_factory() as session:
-            type = ["догматическое требование", "Драматизация", "НПФ", "Гибкое предпочтение", "Унизительные замечание",
-                    "Перспектива", "Высокий порог фрустрации", "Безусловное принятие"]
-            for i in range(len(type)):
-                tanalys = Type_analysis(id=i + 1,
-                                        text=type[i]
-                                        )
-                session.add(tanalys)
+            temp = session.query(Type_analysis).all()
+            if not temp:
+                type = ["догматическое требование", "Драматизация", "НПФ", "Гибкое предпочтение", "Унизительные замечание",
+                        "Перспектива", "Высокий порог фрустрации", "Безусловное принятие"]
+                for i in range(len(type)):
+                    tanalys = Type_analysis(id=i + 1,
+                                            text=type[i]
+                                            )
+                    session.add(tanalys)
             session.commit()
 
     def save_problem_analysis_db(self, problem_id, type):
@@ -1198,61 +1204,63 @@ class DatabaseService:
     def create_test(self, test_info):
         with session_factory() as session:
             try:
-                test_id = uuid.uuid4()
-                test = Test(
-                    id=test_id,
-                    title=test_info.title,
-                    description=test_info.description,
-                    short_desc=test_info.short_desc
-                )
-                session.add(test)
-
-                for i in range(len(test_info.questions)):
-                    question_id = uuid.uuid4()
-                    question = Question(
-                        id=question_id,
-                        text=test_info.questions[i],
-                        number=i+1,
-                        test_id=test_id
+                temp = session.query(Test).filter_by(title=test_info.title).first()
+                if not temp:
+                    test_id = uuid.uuid4()
+                    test = Test(
+                        id=test_id,
+                        title=test_info.title,
+                        description=test_info.description,
+                        short_desc=test_info.short_desc
                     )
-                    session.add(question)
+                    session.add(test)
 
-                    for j in range(len(test_info.answers)):
-                        answer = Answer_choice(
-                            id=uuid.uuid4(),
-                            text=test_info.answers[j],
-                            question_id=question_id,
-                            score=j
+                    for i in range(len(test_info.questions)):
+                        question_id = uuid.uuid4()
+                        question = Question(
+                            id=question_id,
+                            text=test_info.questions[i],
+                            number=i+1,
+                            test_id=test_id
                         )
-                        session.add(answer)
+                        session.add(question)
 
-                k = 0
-                for i in range(len(test_info.scales)):
-                    scale_id = uuid.uuid4()
-                    scale = Scale(
-                        id=scale_id,
-                        test_id=test_id,
-                        title=test_info.scales[i],
-                        min=test_info.scale_limitation[k],
-                        max=test_info.scale_limitation[k+1],
-                    )
-                    k += 2
-                    session.add(scale)
+                        for j in range(len(test_info.answers)):
+                            answer = Answer_choice(
+                                id=uuid.uuid4(),
+                                text=test_info.answers[j],
+                                question_id=question_id,
+                                score=j
+                            )
+                            session.add(answer)
 
                     k = 0
-                    for j in range(test_info.borders_cnt):
-
-                        border = Borders(
-                            id=uuid.uuid4(),
-                            scale_id=scale_id,
-                            left_border=test_info.scale_border[i][j],
-                            right_border=test_info.scale_border[i][j+1],
-                            color=test_info.scale_color[i][k],
-                            title=test_info.scale_title[i][k]
+                    for i in range(len(test_info.scales)):
+                        scale_id = uuid.uuid4()
+                        scale = Scale(
+                            id=scale_id,
+                            test_id=test_id,
+                            title=test_info.scales[i],
+                            min=test_info.scale_limitation[k],
+                            max=test_info.scale_limitation[k+1],
                         )
-                        j += 1
-                        k += 1
-                        session.add(border)
+                        k += 2
+                        session.add(scale)
+
+                        k = 0
+                        for j in range(test_info.borders_cnt):
+
+                            border = Borders(
+                                id=uuid.uuid4(),
+                                scale_id=scale_id,
+                                left_border=test_info.scale_border[i][j],
+                                right_border=test_info.scale_border[i][j+1],
+                                color=test_info.scale_color[i][k],
+                                title=test_info.scale_title[i][k]
+                            )
+                            j += 1
+                            k += 1
+                            session.add(border)
 
 
                 session.commit()
@@ -1267,9 +1275,3 @@ class DatabaseService:
 database_service = DatabaseService()
 
 database_service.create_tables()
-
-if database_service.check_user("admin", "admin") == -1:
-    database_service.create_inquirty()
-    database_service.create_type_analysis()
-    database_service.create_test(Test_maslach)
-    database_service.register_user(uuid.uuid4(), "admin", "admin", "admin", "", True, True, "", "", 0, True)

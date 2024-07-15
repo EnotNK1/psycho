@@ -34,16 +34,6 @@ services:
     depends_on:
       - app
     mac_address: 02:42:ac:18:00:03
-  alembic:
-    build: .
-    volumes:
-      - .:/app
-    networks:
-      - demo
-    depends_on:
-      - app
-    entrypoint: [ "alembic" ]
-    command: [ "upgrade", "head" ]
 
 networks:
   demo:
