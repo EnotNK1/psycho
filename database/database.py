@@ -1225,10 +1225,10 @@ class DatabaseService:
                         )
                         session.add(question)
 
-                        for j in range(len(test_info.answers)):
+                        for j in range(test_info.answers_cnt):
                             answer = Answer_choice(
                                 id=uuid.uuid4(),
-                                text=test_info.answers[j],
+                                text=test_info.answers[i][j],
                                 question_id=question_id,
                                 score=j
                             )
@@ -1247,7 +1247,7 @@ class DatabaseService:
                         k += 2
                         session.add(scale)
 
-                        k = 0
+                        d = 0
                         for j in range(test_info.borders_cnt):
 
                             border = Borders(
@@ -1255,11 +1255,11 @@ class DatabaseService:
                                 scale_id=scale_id,
                                 left_border=test_info.scale_border[i][j],
                                 right_border=test_info.scale_border[i][j+1],
-                                color=test_info.scale_color[i][k],
-                                title=test_info.scale_title[i][k]
+                                color=test_info.scale_color[i][d],
+                                title=test_info.scale_title[i][d]
                             )
                             j += 1
-                            k += 1
+                            d += 1
                             session.add(border)
 
 
