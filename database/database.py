@@ -1249,17 +1249,18 @@ class DatabaseService:
                         session.add(scale)
 
                         d = 0
+                        p = 0
                         for j in range(test_info.borders_cnt):
 
                             border = Borders(
                                 id=uuid.uuid4(),
                                 scale_id=scale_id,
-                                left_border=test_info.scale_border[i][j],
-                                right_border=test_info.scale_border[i][j+1],
+                                left_border=test_info.scale_border[i][p],
+                                right_border=test_info.scale_border[i][p+1],
                                 color=test_info.scale_color[i][d],
                                 title=test_info.scale_title[i][d]
                             )
-                            j += 1
+                            p += 2
                             d += 1
                             session.add(border)
 
