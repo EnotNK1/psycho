@@ -5,7 +5,6 @@ from schemas.test import ResScale, ReqBorder, ReqScale
 from typing import List
 from sqlalchemy.exc import NoResultFound
 
-from database.test_info import Test_maslach
 from database.inquiries import inquiries
 from database.tables import Users, Base, Problem, Message_r_i_dialog, Token, User_inquiries, Test_result, Test, Scale, \
     Inquiry, Education, Clients, Type_analysis, Intermediate_belief, Deep_conviction, FreeDiary, Diary_record, \
@@ -1198,6 +1197,20 @@ class DatabaseService:
                     dic = {}
 
                 return list
+            except (Exception, Error) as error:
+                print(error)
+                return -1
+
+    def delete_test_db(self, test_id):
+        with session_factory() as session:
+            try:
+                temp = session.query(Test).get(test_id)
+                session.delete(temp)
+                session.commit()
+                dic = {}
+                dic['status'] = "OK"
+
+                return dic
             except (Exception, Error) as error:
                 print(error)
                 return -1

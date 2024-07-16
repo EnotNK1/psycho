@@ -28,21 +28,21 @@ class Users(Base):
     role_id: Mapped[int]
     is_active: Mapped[bool]
 
-    problem: Mapped[List["Problem"]] = relationship()
-    test_result: Mapped[List["Test_result"]] = relationship()
-    behavioral_experiment: Mapped[List["Behavioral_experiment"]] = relationship()
+    problem: Mapped[List["Problem"]] = relationship(cascade="all, delete-orphan")
+    test_result: Mapped[List["Test_result"]] = relationship(cascade="all, delete-orphan")
+    behavioral_experiment: Mapped[List["Behavioral_experiment"]] = relationship(cascade="all, delete-orphan")
     educational_material: Mapped[List["Educational_material"]] = relationship(back_populates="users", secondary="educational_progress")
-    record: Mapped[List["Record"]] = relationship()
-    education: Mapped[List["Education"]] = relationship()
-    task: Mapped[List["Task"]] = relationship()
-    message: Mapped[List["Message"]] = relationship()
-    job_application: Mapped[List["Job_application"]] = relationship()
+    record: Mapped[List["Record"]] = relationship(cascade="all, delete-orphan")
+    education: Mapped[List["Education"]] = relationship(cascade="all, delete-orphan")
+    task: Mapped[List["Task"]] = relationship(cascade="all, delete-orphan")
+    message: Mapped[List["Message"]] = relationship(cascade="all, delete-orphan")
+    job_application: Mapped[List["Job_application"]] = relationship(cascade="all, delete-orphan")
     inquiry: Mapped[List["Inquiry"]] = relationship(back_populates="users", secondary="user_inquiries")
-    post_in_feed: Mapped[List["Post_in_feed"]] = relationship()
-    like: Mapped[List["Like"]] = relationship()
-    token: Mapped["Token"] = relationship()
-    free_diary: Mapped[List["FreeDiary"]] = relationship()
-    think_diary: Mapped[List["Diary_record"]] = relationship()
+    post_in_feed: Mapped[List["Post_in_feed"]] = relationship(cascade="all, delete-orphan")
+    like: Mapped[List["Like"]] = relationship(cascade="all, delete-orphan")
+    token: Mapped["Token"] = relationship(cascade="all, delete-orphan")
+    free_diary: Mapped[List["FreeDiary"]] = relationship(cascade="all, delete-orphan")
+    think_diary: Mapped[List["Diary_record"]] = relationship(cascade="all, delete-orphan")
 
 class Token(Base):
     __tablename__ = "token"
@@ -61,10 +61,10 @@ class Problem(Base):
     goal: Mapped[str]
     user_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"))
 
-    plan_point: Mapped[List["Plan_point"]] = relationship()
-    ladder_of_fear_rung: Mapped[List["Ladder_of_fear_rung"]] = relationship()
-    message_r_i_dialog: Mapped[List["Message_r_i_dialog"]] = relationship()
-    intermediate_belief: Mapped[List["Intermediate_belief"]] = relationship()
+    plan_point: Mapped[List["Plan_point"]] = relationship(cascade="all, delete-orphan")
+    ladder_of_fear_rung: Mapped[List["Ladder_of_fear_rung"]] = relationship(cascade="all, delete-orphan")
+    message_r_i_dialog: Mapped[List["Message_r_i_dialog"]] = relationship(cascade="all, delete-orphan")
+    intermediate_belief: Mapped[List["Intermediate_belief"]] = relationship(cascade="all, delete-orphan")
 
 class Deep_conviction(Base):
     __tablename__ = "deep_conviction"
@@ -74,7 +74,7 @@ class Deep_conviction(Base):
     adaptive: Mapped[str]
     problem_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("problem.id", ondelete="CASCADE"))
 
-    intermediate_belief: Mapped[List["Intermediate_belief"]] = relationship()
+    intermediate_belief: Mapped[List["Intermediate_belief"]] = relationship(cascade="all, delete-orphan")
 
 
 class Message_r_i_dialog(Base):
@@ -111,7 +111,7 @@ class Test_result(Base):
     test_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("test.id", ondelete="CASCADE"))
     date: Mapped[datetime.datetime]
 
-    scale_result: Mapped[List["Scale_result"]] = relationship()
+    scale_result: Mapped[List["Scale_result"]] = relationship(cascade="all, delete-orphan")
 
 class Scale(Base):
     __tablename__ = "scale"
@@ -122,8 +122,8 @@ class Scale(Base):
     max: Mapped[int]
     test_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("test.id", ondelete="CASCADE"))
 
-    scale_result: Mapped[List["Scale_result"]] = relationship()
-    borders: Mapped[List["Borders"]] = relationship()
+    scale_result: Mapped[List["Scale_result"]] = relationship(cascade="all, delete-orphan")
+    borders: Mapped[List["Borders"]] = relationship(cascade="all, delete-orphan")
 
 class Borders(Base):
     __tablename__ = "borders"
@@ -152,9 +152,9 @@ class Test(Base):
     description: Mapped[str]
     short_desc: Mapped[str]
 
-    test_result: Mapped[List["Test_result"]] = relationship()
-    question: Mapped[List["Question"]] = relationship()
-    scale: Mapped[List["Scale"]] = relationship()
+    test_result: Mapped[List["Test_result"]] = relationship(cascade="all, delete-orphan")
+    question: Mapped[List["Question"]] = relationship(cascade="all, delete-orphan")
+    scale: Mapped[List["Scale"]] = relationship(cascade="all, delete-orphan")
 
 class Question(Base):
     __tablename__ = "question"
@@ -164,7 +164,7 @@ class Question(Base):
     number: Mapped[int]
     test_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("test.id", ondelete="CASCADE"))
 
-    answer_choice: Mapped[List["Answer_choice"]] = relationship()
+    answer_choice: Mapped[List["Answer_choice"]] = relationship(cascade="all, delete-orphan")
 
 class Answer_choice(Base):
     __tablename__ = "answer_choice"
@@ -192,7 +192,7 @@ class Behavioral_experiment(Base):
     alternative_belief_confidence: Mapped[str]
     user_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"))
 
-    result_experiment: Mapped[List["Result_experiment"]] = relationship()
+    result_experiment: Mapped[List["Result_experiment"]] = relationship(cascade="all, delete-orphan")
 
 class Result_experiment(Base):
     __tablename__ = "result_experiment"
@@ -240,7 +240,7 @@ class Plan_point(Base):
     number: Mapped[int]
     term: Mapped[datetime.datetime]
 
-    trouble: Mapped[List["Trouble"]] = relationship()
+    trouble: Mapped[List["Trouble"]] = relationship(cascade="all, delete-orphan")
 
 class Ladder_of_fear_rung(Base):
     __tablename__ = "ladder_of_fear_rung"
@@ -336,7 +336,7 @@ class Type_analysis(Base):
     id: Mapped[int] = mapped_column(primary_key=True)
     text: Mapped[str]
 
-    intermediate_belief: Mapped[List["Intermediate_belief"]] = relationship()
+    intermediate_belief: Mapped[List["Intermediate_belief"]] = relationship(cascade="all, delete-orphan")
 
 class User_inquiries(Base):
     __tablename__ = "user_inquiries"

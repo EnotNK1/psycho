@@ -82,5 +82,18 @@ class TestService:
         result = database_service.get_test_questions_db(test_id)
         return result
 
+    def delete_test(self, test_id: uuid.UUID, access_token):
+        token_data = check_token(access_token)
+
+        role = database_service.check_role(token_data['user_id'])
+
+        if role == 0:
+            res = database_service.delete_test_db(test_id)
+            if res == -1:
+                raise HTTPException(status_code=404, detail="Tест не найден!")
+            return res
+        else:
+            raise HTTPException(status_code=403, detail="У вас недостаточно прав для выполнения данной операции!")
+
 
 test_service: TestService = TestService()
