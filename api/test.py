@@ -73,7 +73,7 @@ def get_test_questions(test_id: uuid.UUID, access_token: str = Cookie(None)):
     return test_service.get_test_questions(test_id, access_token)
 
 @router.delete(
-    "/test/delete_test/{test_id}",
+    "/test/delete_test",
     tags=["Test"],
     response_model=None,
 )
