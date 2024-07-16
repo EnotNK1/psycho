@@ -80,3 +80,11 @@ def get_test_questions(test_id: uuid.UUID, access_token: str = Cookie(None)):
 def delete_test(test_id: uuid.UUID, access_token: str = Cookie(None)):
     return test_service.delete_test(test_id, access_token)
 
+@router.post(
+    "/test/auto_create",
+    tags=["Test"],
+    response_model=None,
+)
+def auto_create(access_token: str = Cookie(None)):
+    return test_service.auto_create(access_token)
+

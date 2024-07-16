@@ -1,3 +1,4 @@
+from database.test_info import *
 from schemas.test import SaveTestRes, CreateTest
 from database.database import database_service
 import uuid
@@ -92,6 +93,23 @@ class TestService:
             if res == -1:
                 raise HTTPException(status_code=404, detail="Tест не найден!")
             return res
+        else:
+            raise HTTPException(status_code=403, detail="У вас недостаточно прав для выполнения данной операции!")
+
+    def auto_create(self, access_token):
+        token_data = check_token(access_token)
+
+        role = database_service.check_role(token_data['user_id'])
+
+        if role == 0:
+            database_service.create_test(Test_maslach)
+            database_service.create_test(Test_DASS)
+            database_service.create_test(Test_STAI)
+            database_service.create_test(Test_coling_strategy)
+            database_service.create_test(Test_cmq)
+            database_service.create_test(Test_jas)
+            database_service.create_test(Test_bek21)
+            return "ok"
         else:
             raise HTTPException(status_code=403, detail="У вас недостаточно прав для выполнения данной операции!")
 
