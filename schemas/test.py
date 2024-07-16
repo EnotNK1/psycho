@@ -115,7 +115,7 @@ class WritingThinkDiary(pydantic.BaseModel):
     new_mood: str
     alternativeThought: str
     new_level: int
-    behaviour: str
+    behavioral: str
 
 
 class ReadThinkDiary(pydantic.BaseModel):

@@ -13,7 +13,7 @@ from database.tables import Users, Base, Problem, Message_r_i_dialog, Token, Use
 from fastapi import FastAPI, HTTPException
 import uuid
 
-# engine = create_engine(url="postgresql://postgres:postgresosikati@localhost:5432/psycho", echo=False)
+# engine = create_engine(url="postgresql://postgres:1111@localhost:5432/psycho", echo=False)
 engine = create_engine(url="postgresql://user:password@db:5432/dbname", echo=False)
 
 session_factory = sessionmaker(engine)
@@ -835,7 +835,7 @@ class DatabaseService:
                 return -1
 
     def writing_think_diary_db(self, user_id, situation, mood, level, auto_thought, proofs,
-                               refutations, new_mood, alternativeThought, new_level, behaviour):
+                               refutations, new_mood, alternativeThought, new_level, behavioral):
         with session_factory() as session:
             try:
                 temp = Diary_record(
@@ -850,7 +850,7 @@ class DatabaseService:
                     new_mood=new_mood,
                     alternativeThought=alternativeThought,
                     new_level=new_level,
-                    behavioral=behaviour,
+                    behavioral=behavioral,
                 )
                 session.add(temp)
                 session.commit()
@@ -872,6 +872,7 @@ class DatabaseService:
                 dic["proofs"] = temp.proofs
                 dic["refutations"] = temp.refutations
                 dic["new_mood"] = temp.new_mood
+                dic["alternative_thought"] = temp.alternativeThought
                 dic["new_level"] = temp.new_level
                 dic["behavioral"] = temp.behavioral
                 return dic

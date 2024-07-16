@@ -25,7 +25,7 @@ class DiaryService:
                                                     payload.situation,
                                                     payload.mood, payload.level, payload.auto_thought, payload.proofs,
                                                     payload.refutations, payload.new_mood, payload.alternativeThought,
-                                                    payload.new_level, payload.behaviour)
+                                                    payload.new_level, payload.behavioral)
             return "Successfully"
         except(Error):
             raise HTTPException(status_code=500, detail="Что-то пошло не так!")
