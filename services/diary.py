@@ -24,7 +24,7 @@ class DiaryService:
             database_service.writing_think_diary_db(token_data['user_id'],
                                                     payload.situation,
                                                     payload.mood, payload.level, payload.auto_thought, payload.proofs,
-                                                    payload.refutations, payload.new_mood, payload.alternativeThought,
+                                                    payload.refutations, payload.new_mood, payload.alternative_thought,
                                                     payload.new_level, payload.behavioral)
             return "Successfully"
         except(Error):

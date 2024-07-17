@@ -113,7 +113,7 @@ class WritingThinkDiary(pydantic.BaseModel):
     proofs: str
     refutations: str
     new_mood: str
-    alternativeThought: str
+    alternative_thought: str
     new_level: int
     behavioral: str
 
