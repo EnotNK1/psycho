@@ -3,7 +3,7 @@ from schemas.users import Manager, GiveTask
 import uuid
 from psycopg2 import Error
 from utils.token_utils import check_token
-
+from fastapi import HTTPException
 
 class ManagerService:
 
@@ -31,7 +31,11 @@ class ManagerService:
                 result = database_service.give_task_db(token_data['user_id'], payload.text,
                                                           payload.test_title,
                                                           payload.test_id, payload.user_id)
-                if result != -1:
+                if result == -2:
+                    raise HTTPException(status_code=404, detail="Пользователя с такими данными не найдено!")
+                if result == -3:
+                    raise HTTPException(status_code=404, detail="Тест с такими данными не найден!")
+                elif result != -1:
                     return "Successfully"
                 else:
                     return "error"

@@ -35,7 +35,7 @@ class TestService:
 
         role = database_service.check_role(token_data['user_id'])
 
-        if token_data["user_id"] == user_id or role == 2 or role == 3 or role == 0:
+        if token_data["user_id"] == user_id or role == 2 or role == 3 or role == 0 or role == 1:
             if user_id != None:
                 if database_service.get_user_by_id(user_id) == -1:
                     raise HTTPException(status_code=404, detail="Пользователя с такими данными не найдено!")

@@ -833,7 +833,7 @@ class DatabaseService:
                 print(error)
                 return -1
 
-    def reading_think_diary_db(self, user_id, situation, mood, level, auto_thought, proofs,
+    def writing_think_diary_db(self, user_id, situation, mood, level, auto_thought, proofs,
                                refutations, new_mood, alternative_thought, new_level, behavioral):
         with session_factory() as session:
             try:
@@ -1056,6 +1056,12 @@ class DatabaseService:
     def give_task_db(self, psychologist_id, text, test_title, test_id, client_id):
         with session_factory() as session:
             try:
+                user = session.get(Users, client_id)
+                test = session.get(Test, test_id)
+                if user is None:
+                    return -2
+                elif test is None:
+                    return -3
                 temp = Task(
                     id=uuid.uuid4(),
                     psychologist_id=psychologist_id,
@@ -1076,10 +1082,15 @@ class DatabaseService:
         with session_factory() as session:
             try:
                 list = []
+                dic = {}
                 temp = session.query(Task).filter_by(client_id=client_id).all()
 
                 for obj in temp:
-                    list.append(obj)
+                    desc = session.get(Test, obj.test_id)
+                    dic["Task"] = obj
+                    dic["Test description"] = desc.description
+                    list.append(dic)
+                    dic = {}
 
                 return list
             except (Exception, Error) as error:
@@ -1135,18 +1146,18 @@ class DatabaseService:
     def get_all_think_diary_db(self, user_id):
         with session_factory() as session:
             try:
-                list = []
-                dict = {}
+                lis = []
+                dic = {}
                 temp = session.query(Diary_record).filter_by(user_id=user_id).all()
 
                 for obj in temp:
-                    dict["id"] = obj.id
-                    dict["situation"] = obj.situation
+                    dic["id"] = obj.id
+                    dic["situation"] = obj.situation
 
-                    list.append(dict)
-                    dict = {}
+                    lis.append(dic)
+                    dic = {}
 
-                return list
+                return lis
             except (Exception, Error) as error:
                 print(error)
                 return -1
