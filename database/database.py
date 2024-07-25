@@ -262,6 +262,7 @@ class DatabaseService:
                 for user in users:
                     user_dict['title'] = user.title
                     user_dict['description'] = user.description
+                    user_dict['short_desc'] = user.short_desc
                     user_dict['test_id'] = user.id
 
                     user_list.append(user_dict)
