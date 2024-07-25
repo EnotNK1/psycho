@@ -69,6 +69,13 @@ class TestService:
 
         return res_list
 
+    def get_your_passed_tests(self, access_token):
+        token_data = check_token(access_token)
+
+        res_list = database_service.get_passed_tests_db(token_data['user_id'])
+
+        return res_list
+
     def get_all_tests(self):
         res_list = database_service.get_all_tests_db()
         return res_list
@@ -112,6 +119,7 @@ class TestService:
             return "ok"
         else:
             raise HTTPException(status_code=403, detail="У вас недостаточно прав для выполнения данной операции!")
+
 
 
 test_service: TestService = TestService()
