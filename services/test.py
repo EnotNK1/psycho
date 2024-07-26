@@ -72,7 +72,7 @@ class TestService:
     def get_your_passed_tests(self, access_token):
         token_data = check_token(access_token)
 
-        res_list = database_service.get_passed_tests_db(token_data['user_id'])
+        res_list = database_service.get_passed_tests_db(uuid.UUID(token_data['user_id']))
 
         return res_list
 
