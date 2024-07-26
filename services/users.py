@@ -38,11 +38,9 @@ class UserServise:
 
     def get_data_user(self, access_token: str) -> UserData:
         try:
-            # Проверяем токен и получаем данные из него
             token_data = check_token(access_token)
-            user_id = uuid.UUID(token_data['user_id'])  # Извлекаем user_id из токена
+            user_id = uuid.UUID(token_data['user_id'])
 
-            # Получаем данные пользователя
             user_data = database_service.get_data_user(user_id)
             if user_data is None:
                 raise HTTPException(status_code=404, detail="Пользователь не найден")
@@ -50,23 +48,11 @@ class UserServise:
             return UserData(**user_data)
 
         except ValueError as ve:
-            # Логируем деталь ошибки
             raise HTTPException(status_code=400, detail=f"Некорректный токен: {ve}")
         except HTTPException as he:
-            # Логируем деталь ошибки
             raise he
         except Exception as e:
-            # Логируем деталь ошибки
             raise HTTPException(status_code=500, detail=f"Внутренняя ошибка сервера: {e}")
-        # token_data = check_token(access_token)
-        #
-        # role = database_service.check_role(uuid.UUID(token_data['user_id']))
-        #
-        # if role == 0 or role == 1 or role == 2:
-        #     items = database_service.get_all_users()
-        #     return items
-        # else:
-        #     raise HTTPException(status_code=403, detail="У вас недостаточно прав для выполнения данной операции!")
 
 
     def authorization(self, payload: Creds, response: Response):
