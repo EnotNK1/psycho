@@ -45,6 +45,16 @@ def get_users(access_token: str = Cookie(None)):
     return user_service.get_users(access_token)
 
 
+@router.get(
+    "/users/user_data",
+    tags=["Users"],
+    status_code=200,
+    response_model=None,
+)
+def get_data_user(access_token: str = Cookie(None)):
+    return user_service.get_data_user(access_token)
+
+
 @router.post(
     "/users/reset_password",
     tags=["Users"],

@@ -155,6 +155,31 @@ class DatabaseService:
                 print(error)
                 return -1
 
+
+    def get_data_user(self, user_id: uuid.UUID):
+        with session_factory() as session:
+            try:
+                user = session.query(Users).filter_by(id=user_id).one()
+
+                inquiries = session.query(User_inquiries).filter_by(user_id=user_id).all()
+                request_list = [inq.inquiry_id for inq in inquiries]
+                type_value = inquiries[0].type if inquiries else 0
+
+                return {
+                    "birth_date": user.birth_date,
+                    "gender": user.gender,
+                    "username": user.username,
+                    "request": request_list,
+                    "city": user.city,
+                    "description": user.description,
+                    "type": type_value
+                }
+            except NoResultFound:
+                return None
+            except Exception as e:
+                raise RuntimeError(f"Database query error: {e}")
+
+
     def get_test_res_db(self, user_id, test_id):
         with session_factory() as session:
             try:

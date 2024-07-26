@@ -39,6 +39,16 @@ class UpdateUser(pydantic.BaseModel):
     type: int
 
 
+class UserData(pydantic.BaseModel):
+    birth_date: datetime.date
+    gender: str
+    username: str
+    request: List[int]
+    city: str
+    description: str
+    type: int
+
+
 class AuthToken(pydantic.BaseModel):
     token: str
 
