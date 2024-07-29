@@ -1188,6 +1188,17 @@ class DatabaseService:
                 print(error)
                 return -1
 
+    def rename_column(self, class_name, old_name, new_name):
+        with session_factory() as session:
+            try:
+                temp = session.query(class_name).first()
+                temp.rename_column(old_name, new_name)
+                session.commit()
+
+            except (Exception, Error) as error:
+                print(error)
+                return -1
+
     def get_all_psycholog_db(self):
         with session_factory() as session:
             try:
