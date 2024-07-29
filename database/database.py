@@ -1123,6 +1123,25 @@ class DatabaseService:
                 print(error)
                 return -1
 
+    def get_given_tasks_db(self, psychologist_id):
+        with session_factory() as session:
+            try:
+                list = []
+                dic = {}
+                temp = session.query(Task).filter_by(psychologist_id=psychologist_id).all()
+
+                for obj in temp:
+                    desc = session.get(Test, obj.test_id)
+                    dic["Task"] = obj
+                    dic["Test description"] = desc.description
+                    list.append(dic)
+                    dic = {}
+
+                return list
+            except (Exception, Error) as error:
+                print(error)
+                return -1
+
     def complete_task_db(self, client_id, task_id):
         with session_factory() as session:
             try:

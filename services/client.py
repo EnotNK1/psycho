@@ -41,6 +41,22 @@ class ClientService:
         except(Error):
             return "error"
 
+    def get_given_tasks(self, access_token):
+        token_data = check_token(access_token)
+
+        try:
+            role = database_service.check_role(uuid.UUID(token_data['user_id']))
+            if role == 0 or role == 2 or role == 3:
+                result = database_service.get_given_tasks_db(token_data['user_id'])
+                if result != -1:
+                    return result
+                else:
+                    return "error"
+            else:
+                raise HTTPException(status_code=403, detail="У вас недостаточно прав для выполнения данной операции!")
+        except(Error):
+            return "error"
+
     def complete_task(self, payload: TaskId, access_token):
         token_data = check_token(access_token)
 

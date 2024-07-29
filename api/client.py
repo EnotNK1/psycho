@@ -34,6 +34,14 @@ def get_list_client(access_token: str = Cookie(None)):
 def get_tasks(access_token: str = Cookie(None)):
     return client_service.get_tasks(access_token)
 
+@router.get(
+    "/client/get_given_tasks",
+    tags=["Client"],
+    response_model=None,
+)
+def get_given_tasks(access_token: str = Cookie(None)):
+    return client_service.get_given_tasks(access_token)
+
 @router.post(
     "/client/complete_task",
     tags=["Client"],
