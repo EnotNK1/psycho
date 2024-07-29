@@ -42,6 +42,14 @@ def get_tasks(access_token: str = Cookie(None)):
 def complete_task(data: TaskId, access_token: str = Cookie(None)):
     return client_service.complete_task(data, access_token)
 
+@router.delete(
+    "/client/delete_task",
+    tags=["Client"],
+    response_model=None,
+)
+def delete_task(data: TaskId, access_token: str = Cookie(None)):
+    return client_service.delete_task(data, access_token)
+
 @router.post(
     "/client/unfulfilled_task",
     tags=["Client"],

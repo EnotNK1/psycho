@@ -56,6 +56,25 @@ class ClientService:
         except(Error):
             return "error"
 
+    def delete_task(self, payload: TaskId, access_token):
+        token_data = check_token(access_token)
+
+        try:
+            role = database_service.check_role(uuid.UUID(token_data['user_id']))
+            if role == 0 or role == 2 or role == 3:
+                result = database_service.delete_task_db(payload.task_id)
+                if result != -1:
+                    if result == 1:
+                        return "Successfully"
+                    else:
+                        return "Задача не найдена"
+                else:
+                    return "error"
+            else:
+                raise HTTPException(status_code=403, detail="У вас недостаточно прав для выполнения данной операции!")
+        except(Error):
+            return "error"
+
     def unfulfilled_task(self, payload: TaskId, access_token):
         token_data = check_token(access_token)
 
