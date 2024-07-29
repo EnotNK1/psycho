@@ -1266,6 +1266,24 @@ class DatabaseService:
                 print(error)
                 return -1
 
+    def delete_incorrect_tasks_db(self):
+        with session_factory() as session:
+            try:
+                correct_id = []
+                test_id = session.query(Test).all()
+                for obj in test_id:
+                    correct_id.append(obj.id)
+
+                task = session.query(Task).all()
+                for obj in task:
+                    if obj.test_id not in correct_id:
+                        session.delete(obj)
+                session.commit()
+
+            except (Exception, Error) as error:
+                print(error)
+                return -1
+
     def create_test(self, test_info):
         with session_factory() as session:
             try:
