@@ -1332,7 +1332,7 @@ class DatabaseService:
                                 id=uuid.uuid4(),
                                 text=test_info.answers[i][j],
                                 question_id=question_id,
-                                score=j
+                                score=test_info.answer_score[i][j]
                             )
                             session.add(answer)
 
