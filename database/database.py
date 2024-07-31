@@ -1241,13 +1241,20 @@ class DatabaseService:
                 list = []
                 dic = {}
                 temp = session.query(Question).filter_by(test_id=test_id).all()
-
                 if temp == []:
                     return "тест не найден"
 
+                answer = session.query(Answer_choice).all()
+
                 for obj in temp:
+                    answer_options = []
+                    for ans in answer:
+                        if obj.id == ans.question_id:
+                            answer_options.append({"id": ans.id, "text": ans.text, "score": ans.score})
+
                     dic["number"] = obj.number
                     dic["text"] = obj.text
+                    dic["answer_options"] = answer_options
 
                     list.append(dic)
                     dic = {}
