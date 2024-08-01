@@ -495,6 +495,19 @@ class DatabaseService:
 
                 if test.title == "Профессиональное выгорание":
                     result = database_service.save_test_res_maslach_db(test_id, user_id, date, results)
+                elif test.title == "Шкала профессиональной апатии":
+                    result = database_service.save_test_res_jas_db(test_id, user_id, date, results)
+                elif test.title == "DASS-21":
+                    result = database_service.save_test_res_dass21_db(test_id, user_id, date, results)
+                elif test.title == "Шкала тревоги Спилбергера-Ханина, STAI":
+                    result = database_service.save_test_res_stai_db(test_id, user_id, date, results)
+                elif test.title == "Опросник когнтитвных ошибок CMQ":
+                    result = database_service.save_test_res_cmq_db(test_id, user_id, date, results)
+                elif test.title == "Индикатор копинг-стратегий":
+                    result = database_service.save_test_res_coling_db(test_id, user_id, date, results)
+                elif test.title == "Шкала депрессии Бека":
+                    result = database_service.save_test_res_back_db(test_id, user_id, date, results)
+
 
                 return result
 
@@ -570,6 +583,672 @@ class DatabaseService:
                         dic = {}
                         session.add(scale_result)
                     elif scale.title == "Редукция проф. достижений":
+                        if scale_3_sum < scale.min or scale_3_sum > scale.max:
+                            raise HTTPException(status_code=400,
+                                                detail="Результат не может быть меньше или больше границ шкалы!")
+                        scale_result = Scale_result(id=uuid.uuid4(),
+                                                    score=scale_3_sum,
+                                                    scale_id=scale.id,
+                                                    test_result_id=test_res_id)
+                        for bord in borders:
+                            if scale_3_sum >= bord.left_border and scale_3_sum <= bord.right_border:
+                                color = bord.color
+                                conclusion = bord.title
+                                break
+
+                        dic["scale_id"] = scale.id
+                        dic["scale_title"] = scale.title
+                        dic["score"] = scale_3_sum
+                        dic["conclusion"] = conclusion
+                        dic["color"] = color
+                        result.append(dic)
+                        dic = {}
+                        session.add(scale_result)
+
+                session.commit()
+                return result
+
+
+            except (Exception, Error) as error:
+                raise error
+
+    def save_test_res_jas_db(self, test_id, user_id, date, results: List[int]):
+        with session_factory() as session:
+            try:
+                if len(results) != 21:
+                    raise HTTPException(status_code=400,
+                                        detail="Передано неверное количество ответов")
+
+                result = []
+                dic = {}
+
+                test_res_id = uuid.uuid4()
+                test_res = Test_result(id=test_res_id,
+                                       user_id=user_id,
+                                       test_id=test_id,
+                                       date=date)
+                session.add(test_res)
+
+                scale_info = session.query(Scale).filter_by(test_id=test_id).all()
+                scale_1_sum, scale_2_sum = calculator_service.test_jas_calculate_results(results)
+                for scale in scale_info:
+                    borders = session.query(Borders).filter_by(scale_id=scale.id).all()
+                    if scale.title == "Апатичные мысли":
+                        if scale_1_sum < scale.min or scale_1_sum > scale.max:
+                            raise HTTPException(status_code=400,
+                                                detail="Результат не может быть меньше или больше границ шкалы!")
+                        scale_result = Scale_result(id=uuid.uuid4(),
+                                                    score=scale_1_sum,
+                                                    scale_id=scale.id,
+                                                    test_result_id=test_res_id)
+
+                        for bord in borders:
+                            if scale_1_sum >= bord.left_border and scale_1_sum <= bord.right_border:
+                                color = bord.color
+                                conclusion = bord.title
+                                break
+
+                        dic["scale_id"] = scale.id
+                        dic["scale_title"] = scale.title
+                        dic["score"] = scale_1_sum
+                        dic["conclusion"] = conclusion
+                        dic["color"] = color
+                        result.append(dic)
+                        dic = {}
+                        session.add(scale_result)
+                    elif scale.title == "Апатичные действия":
+                        if scale_2_sum < scale.min or scale_2_sum > scale.max:
+                            raise HTTPException(status_code=400,
+                                                detail="Результат не может быть меньше или больше границ шкалы!")
+                        scale_result = Scale_result(id=uuid.uuid4(),
+                                                    score=scale_2_sum,
+                                                    scale_id=scale.id,
+                                                    test_result_id=test_res_id)
+                        for bord in borders:
+                            if scale_2_sum >= bord.left_border and scale_2_sum <= bord.right_border:
+                                color = bord.color
+                                conclusion = bord.title
+                                break
+
+                        dic["scale_id"] = scale.id
+                        dic["scale_title"] = scale.title
+                        dic["score"] = scale_2_sum
+                        dic["conclusion"] = conclusion
+                        dic["color"] = color
+                        result.append(dic)
+                        dic = {}
+                        session.add(scale_result)
+
+                session.commit()
+                return result
+
+
+            except (Exception, Error) as error:
+                raise error
+
+#Это ужасно, простите, мне очень стыдно за такую реализацию
+    def save_test_res_dass21_db(self, test_id, user_id, date, results: List[int]):
+        with session_factory() as session:
+            try:
+                if len(results) != 21:
+                    raise HTTPException(status_code=400,
+                                        detail="Передано неверное количество ответов")
+
+                result = []
+                dic = {}
+
+                test_res_id = uuid.uuid4()
+                test_res = Test_result(id=test_res_id,
+                                       user_id=user_id,
+                                       test_id=test_id,
+                                       date=date)
+                session.add(test_res)
+
+                scale_info = session.query(Scale).filter_by(test_id=test_id).all()
+                scale_1_sum, scale_2_sum, scale_3_sum = calculator_service.test_dass21_calculate_results(results)
+                for scale in scale_info:
+                    borders = session.query(Borders).filter_by(scale_id=scale.id).all()
+                    if scale.title == "Тревога":
+                        if scale_1_sum < scale.min or scale_1_sum > scale.max:
+                            raise HTTPException(status_code=400,
+                                                detail="Результат не может быть меньше или больше границ шкалы!")
+                        scale_result = Scale_result(id=uuid.uuid4(),
+                                                    score=scale_1_sum,
+                                                    scale_id=scale.id,
+                                                    test_result_id=test_res_id)
+
+                        for bord in borders:
+                            if scale_1_sum >= bord.left_border and scale_1_sum <= bord.right_border:
+                                color = bord.color
+                                conclusion = bord.title
+                                break
+
+                        dic["scale_id"] = scale.id
+                        dic["scale_title"] = scale.title
+                        dic["score"] = scale_1_sum
+                        dic["conclusion"] = conclusion
+                        dic["color"] = color
+                        result.append(dic)
+                        dic = {}
+                        session.add(scale_result)
+                    elif scale.title == "Депрессия":
+                        if scale_2_sum < scale.min or scale_2_sum > scale.max:
+                            raise HTTPException(status_code=400,
+                                                detail="Результат не может быть меньше или больше границ шкалы!")
+                        scale_result = Scale_result(id=uuid.uuid4(),
+                                                    score=scale_2_sum,
+                                                    scale_id=scale.id,
+                                                    test_result_id=test_res_id)
+                        for bord in borders:
+                            if scale_2_sum >= bord.left_border and scale_2_sum <= bord.right_border:
+                                color = bord.color
+                                conclusion = bord.title
+                                break
+
+                        dic["scale_id"] = scale.id
+                        dic["scale_title"] = scale.title
+                        dic["score"] = scale_2_sum
+                        dic["conclusion"] = conclusion
+                        dic["color"] = color
+                        result.append(dic)
+                        dic = {}
+                        session.add(scale_result)
+                    elif scale.title == "Стресс":
+                        if scale_3_sum < scale.min or scale_3_sum > scale.max:
+                            raise HTTPException(status_code=400,
+                                                detail="Результат не может быть меньше или больше границ шкалы!")
+                        scale_result = Scale_result(id=uuid.uuid4(),
+                                                    score=scale_3_sum,
+                                                    scale_id=scale.id,
+                                                    test_result_id=test_res_id)
+                        for bord in borders:
+                            if scale_3_sum >= bord.left_border and scale_3_sum <= bord.right_border:
+                                color = bord.color
+                                conclusion = bord.title
+                                break
+
+                        dic["scale_id"] = scale.id
+                        dic["scale_title"] = scale.title
+                        dic["score"] = scale_3_sum
+                        dic["conclusion"] = conclusion
+                        dic["color"] = color
+                        result.append(dic)
+                        dic = {}
+                        session.add(scale_result)
+
+                session.commit()
+                return result
+
+
+            except (Exception, Error) as error:
+                raise error
+
+    def save_test_res_stai_db(self, test_id, user_id, date, results: List[int]):
+        with session_factory() as session:
+            try:
+                if len(results) != 40:
+                    raise HTTPException(status_code=400,
+                                        detail="Передано неверное количество ответов")
+
+                result = []
+                dic = {}
+
+                test_res_id = uuid.uuid4()
+                test_res = Test_result(id=test_res_id,
+                                       user_id=user_id,
+                                       test_id=test_id,
+                                       date=date)
+                session.add(test_res)
+
+                scale_info = session.query(Scale).filter_by(test_id=test_id).all()
+                scale_1_sum, scale_2_sum = calculator_service.test_stai_calculate_results(results)
+                for scale in scale_info:
+                    borders = session.query(Borders).filter_by(scale_id=scale.id).all()
+                    if scale.title == "Шкала ситуативной тревожности":
+                        if scale_1_sum < scale.min or scale_1_sum > scale.max:
+                            raise HTTPException(status_code=400,
+                                                detail="Результат не может быть меньше или больше границ шкалы!")
+                        scale_result = Scale_result(id=uuid.uuid4(),
+                                                    score=scale_1_sum,
+                                                    scale_id=scale.id,
+                                                    test_result_id=test_res_id)
+
+                        for bord in borders:
+                            if scale_1_sum >= bord.left_border and scale_1_sum <= bord.right_border:
+                                color = bord.color
+                                conclusion = bord.title
+                                break
+
+                        dic["scale_id"] = scale.id
+                        dic["scale_title"] = scale.title
+                        dic["score"] = scale_1_sum
+                        dic["conclusion"] = conclusion
+                        dic["color"] = color
+                        result.append(dic)
+                        dic = {}
+                        session.add(scale_result)
+                    elif scale.title == "Шкала личностной тревожности":
+                        if scale_2_sum < scale.min or scale_2_sum > scale.max:
+                            raise HTTPException(status_code=400,
+                                                detail="Результат не может быть меньше или больше границ шкалы!")
+                        scale_result = Scale_result(id=uuid.uuid4(),
+                                                    score=scale_2_sum,
+                                                    scale_id=scale.id,
+                                                    test_result_id=test_res_id)
+                        for bord in borders:
+                            if scale_2_sum >= bord.left_border and scale_2_sum <= bord.right_border:
+                                color = bord.color
+                                conclusion = bord.title
+                                break
+
+                        dic["scale_id"] = scale.id
+                        dic["scale_title"] = scale.title
+                        dic["score"] = scale_2_sum
+                        dic["conclusion"] = conclusion
+                        dic["color"] = color
+                        result.append(dic)
+                        dic = {}
+                        session.add(scale_result)
+
+                session.commit()
+                return result
+
+
+            except (Exception, Error) as error:
+                raise error
+
+    def save_test_res_cmq_db(self, test_id, user_id, date, results: List[int]):
+        with session_factory() as session:
+            try:
+                if len(results) != 45:
+                    raise HTTPException(status_code=400,
+                                        detail="Передано неверное количество ответов")
+
+                result = []
+                dic = {}
+
+                test_res_id = uuid.uuid4()
+                test_res = Test_result(id=test_res_id,
+                                       user_id=user_id,
+                                       test_id=test_id,
+                                       date=date)
+                session.add(test_res)
+
+                scale_info = session.query(Scale).filter_by(test_id=test_id).all()
+                scale_1_sum, scale_2_sum, scale_3_sum, scale_4_sum, scale_5_sum, scale_6_sum, scale_7_sum, scale_8_sum,\
+                scale_9_sum = calculator_service.test_cmq_calculate_results(results)
+                for scale in scale_info:
+                    borders = session.query(Borders).filter_by(scale_id=scale.id).all()
+                    if scale.title == "Персонализация":
+                        if scale_1_sum < scale.min or scale_1_sum > scale.max:
+                            raise HTTPException(status_code=400,
+                                                detail="Результат не может быть меньше или больше границ шкалы!")
+                        scale_result = Scale_result(id=uuid.uuid4(),
+                                                    score=scale_1_sum,
+                                                    scale_id=scale.id,
+                                                    test_result_id=test_res_id)
+
+                        for bord in borders:
+                            if scale_1_sum >= bord.left_border and scale_1_sum <= bord.right_border:
+                                color = bord.color
+                                conclusion = bord.title
+                                break
+
+                        dic["scale_id"] = scale.id
+                        dic["scale_title"] = scale.title
+                        dic["score"] = scale_1_sum
+                        dic["conclusion"] = conclusion
+                        dic["color"] = color
+                        result.append(dic)
+                        dic = {}
+                        session.add(scale_result)
+                    elif scale.title == "Чтение мыслей":
+                        if scale_2_sum < scale.min or scale_2_sum > scale.max:
+                            raise HTTPException(status_code=400,
+                                                detail="Результат не может быть меньше или больше границ шкалы!")
+                        scale_result = Scale_result(id=uuid.uuid4(),
+                                                    score=scale_2_sum,
+                                                    scale_id=scale.id,
+                                                    test_result_id=test_res_id)
+                        for bord in borders:
+                            if scale_2_sum >= bord.left_border and scale_2_sum <= bord.right_border:
+                                color = bord.color
+                                conclusion = bord.title
+                                break
+
+                        dic["scale_id"] = scale.id
+                        dic["scale_title"] = scale.title
+                        dic["score"] = scale_2_sum
+                        dic["conclusion"] = conclusion
+                        dic["color"] = color
+                        result.append(dic)
+                        dic = {}
+                        session.add(scale_result)
+                    elif scale.title == "Упрямство":
+                        if scale_3_sum < scale.min or scale_3_sum > scale.max:
+                            raise HTTPException(status_code=400,
+                                                detail="Результат не может быть меньше или больше границ шкалы!")
+                        scale_result = Scale_result(id=uuid.uuid4(),
+                                                    score=scale_3_sum,
+                                                    scale_id=scale.id,
+                                                    test_result_id=test_res_id)
+                        for bord in borders:
+                            if scale_3_sum >= bord.left_border and scale_3_sum <= bord.right_border:
+                                color = bord.color
+                                conclusion = bord.title
+                                break
+
+                        dic["scale_id"] = scale.id
+                        dic["scale_title"] = scale.title
+                        dic["score"] = scale_3_sum
+                        dic["conclusion"] = conclusion
+                        dic["color"] = color
+                        result.append(dic)
+                        dic = {}
+                        session.add(scale_result)
+                    elif scale.title == "Морализация":
+                        if scale_4_sum < scale.min or scale_4_sum > scale.max:
+                            raise HTTPException(status_code=400,
+                                                detail="Результат не может быть меньше или больше границ шкалы!")
+                        scale_result = Scale_result(id=uuid.uuid4(),
+                                                    score=scale_4_sum,
+                                                    scale_id=scale.id,
+                                                    test_result_id=test_res_id)
+                        for bord in borders:
+                            if scale_4_sum >= bord.left_border and scale_4_sum <= bord.right_border:
+                                color = bord.color
+                                conclusion = bord.title
+                                break
+
+                        dic["scale_id"] = scale.id
+                        dic["scale_title"] = scale.title
+                        dic["score"] = scale_4_sum
+                        dic["conclusion"] = conclusion
+                        dic["color"] = color
+                        result.append(dic)
+                        dic = {}
+                        session.add(scale_result)
+                    elif scale.title == "Катастрофизация":
+                        if scale_5_sum < scale.min or scale_5_sum > scale.max:
+                            raise HTTPException(status_code=400,
+                                                detail="Результат не может быть меньше или больше границ шкалы!")
+                        scale_result = Scale_result(id=uuid.uuid4(),
+                                                    score=scale_5_sum,
+                                                    scale_id=scale.id,
+                                                    test_result_id=test_res_id)
+                        for bord in borders:
+                            if scale_5_sum >= bord.left_border and scale_5_sum <= bord.right_border:
+                                color = bord.color
+                                conclusion = bord.title
+                                break
+
+                        dic["scale_id"] = scale.id
+                        dic["scale_title"] = scale.title
+                        dic["score"] = scale_5_sum
+                        dic["conclusion"] = conclusion
+                        dic["color"] = color
+                        result.append(dic)
+                        dic = {}
+                        session.add(scale_result)
+                    elif scale.title == "Выученная беспомощность":
+                        if scale_6_sum < scale.min or scale_6_sum > scale.max:
+                            raise HTTPException(status_code=400,
+                                                detail="Результат не может быть меньше или больше границ шкалы!")
+                        scale_result = Scale_result(id=uuid.uuid4(),
+                                                    score=scale_6_sum,
+                                                    scale_id=scale.id,
+                                                    test_result_id=test_res_id)
+                        for bord in borders:
+                            if scale_6_sum >= bord.left_border and scale_6_sum <= bord.right_border:
+                                color = bord.color
+                                conclusion = bord.title
+                                break
+
+                        dic["scale_id"] = scale.id
+                        dic["scale_title"] = scale.title
+                        dic["score"] = scale_6_sum
+                        dic["conclusion"] = conclusion
+                        dic["color"] = color
+                        result.append(dic)
+                        dic = {}
+                        session.add(scale_result)
+                    elif scale.title == "Максимализм":
+                        if scale_7_sum < scale.min or scale_7_sum > scale.max:
+                            raise HTTPException(status_code=400,
+                                                detail="Результат не может быть меньше или больше границ шкалы!")
+                        scale_result = Scale_result(id=uuid.uuid4(),
+                                                    score=scale_7_sum,
+                                                    scale_id=scale.id,
+                                                    test_result_id=test_res_id)
+                        for bord in borders:
+                            if scale_7_sum >= bord.left_border and scale_7_sum <= bord.right_border:
+                                color = bord.color
+                                conclusion = bord.title
+                                break
+
+                        dic["scale_id"] = scale.id
+                        dic["scale_title"] = scale.title
+                        dic["score"] = scale_7_sum
+                        dic["conclusion"] = conclusion
+                        dic["color"] = color
+                        result.append(dic)
+                        dic = {}
+                        session.add(scale_result)
+                    elif scale.title == "Преувеличение опасности":
+                        if scale_8_sum < scale.min or scale_8_sum > scale.max:
+                            raise HTTPException(status_code=400,
+                                                detail="Результат не может быть меньше или больше границ шкалы!")
+                        scale_result = Scale_result(id=uuid.uuid4(),
+                                                    score=scale_8_sum,
+                                                    scale_id=scale.id,
+                                                    test_result_id=test_res_id)
+                        for bord in borders:
+                            if scale_8_sum >= bord.left_border and scale_8_sum <= bord.right_border:
+                                color = bord.color
+                                conclusion = bord.title
+                                break
+
+                        dic["scale_id"] = scale.id
+                        dic["scale_title"] = scale.title
+                        dic["score"] = scale_8_sum
+                        dic["conclusion"] = conclusion
+                        dic["color"] = color
+                        result.append(dic)
+                        dic = {}
+                        session.add(scale_result)
+                    elif scale.title == "Гипернормативность":
+                        if scale_9_sum < scale.min or scale_9_sum > scale.max:
+                            raise HTTPException(status_code=400,
+                                                detail="Результат не может быть меньше или больше границ шкалы!")
+                        scale_result = Scale_result(id=uuid.uuid4(),
+                                                    score=scale_9_sum,
+                                                    scale_id=scale.id,
+                                                    test_result_id=test_res_id)
+                        for bord in borders:
+                            if scale_9_sum >= bord.left_border and scale_9_sum <= bord.right_border:
+                                color = bord.color
+                                conclusion = bord.title
+                                break
+
+                        dic["scale_id"] = scale.id
+                        dic["scale_title"] = scale.title
+                        dic["score"] = scale_9_sum
+                        dic["conclusion"] = conclusion
+                        dic["color"] = color
+                        result.append(dic)
+                        dic = {}
+                        session.add(scale_result)
+
+                session.commit()
+                return result
+
+
+            except (Exception, Error) as error:
+                raise error
+
+    def save_test_res_coling_db(self, test_id, user_id, date, results: List[int]):
+        with session_factory() as session:
+            try:
+                if len(results) != 33:
+                    raise HTTPException(status_code=400,
+                                        detail="Передано неверное количество ответов")
+
+                result = []
+                dic = {}
+
+                test_res_id = uuid.uuid4()
+                test_res = Test_result(id=test_res_id,
+                                       user_id=user_id,
+                                       test_id=test_id,
+                                       date=date)
+                session.add(test_res)
+
+                scale_info = session.query(Scale).filter_by(test_id=test_id).all()
+                scale_1_sum, scale_2_sum, scale_3_sum = calculator_service.test_coling_calculate_results(results)
+                for scale in scale_info:
+                    borders = session.query(Borders).filter_by(scale_id=scale.id).all()
+                    if scale.title == "Разрешение проблем":
+                        if scale_1_sum < scale.min or scale_1_sum > scale.max:
+                            raise HTTPException(status_code=400,
+                                                detail="Результат не может быть меньше или больше границ шкалы!")
+                        scale_result = Scale_result(id=uuid.uuid4(),
+                                                    score=scale_1_sum,
+                                                    scale_id=scale.id,
+                                                    test_result_id=test_res_id)
+
+                        for bord in borders:
+                            if scale_1_sum >= bord.left_border and scale_1_sum <= bord.right_border:
+                                color = bord.color
+                                conclusion = bord.title
+                                break
+
+                        dic["scale_id"] = scale.id
+                        dic["scale_title"] = scale.title
+                        dic["score"] = scale_1_sum
+                        dic["conclusion"] = conclusion
+                        dic["color"] = color
+                        result.append(dic)
+                        dic = {}
+                        session.add(scale_result)
+                    elif scale.title == "Поиск социальной поддержки":
+                        if scale_2_sum < scale.min or scale_2_sum > scale.max:
+                            raise HTTPException(status_code=400,
+                                                detail="Результат не может быть меньше или больше границ шкалы!")
+                        scale_result = Scale_result(id=uuid.uuid4(),
+                                                    score=scale_2_sum,
+                                                    scale_id=scale.id,
+                                                    test_result_id=test_res_id)
+                        for bord in borders:
+                            if scale_2_sum >= bord.left_border and scale_2_sum <= bord.right_border:
+                                color = bord.color
+                                conclusion = bord.title
+                                break
+
+                        dic["scale_id"] = scale.id
+                        dic["scale_title"] = scale.title
+                        dic["score"] = scale_2_sum
+                        dic["conclusion"] = conclusion
+                        dic["color"] = color
+                        result.append(dic)
+                        dic = {}
+                        session.add(scale_result)
+                    elif scale.title == "Избегание проблем":
+                        if scale_3_sum < scale.min or scale_3_sum > scale.max:
+                            raise HTTPException(status_code=400,
+                                                detail="Результат не может быть меньше или больше границ шкалы!")
+                        scale_result = Scale_result(id=uuid.uuid4(),
+                                                    score=scale_3_sum,
+                                                    scale_id=scale.id,
+                                                    test_result_id=test_res_id)
+                        for bord in borders:
+                            if scale_3_sum >= bord.left_border and scale_3_sum <= bord.right_border:
+                                color = bord.color
+                                conclusion = bord.title
+                                break
+
+                        dic["scale_id"] = scale.id
+                        dic["scale_title"] = scale.title
+                        dic["score"] = scale_3_sum
+                        dic["conclusion"] = conclusion
+                        dic["color"] = color
+                        result.append(dic)
+                        dic = {}
+                        session.add(scale_result)
+
+                session.commit()
+                return result
+
+
+            except (Exception, Error) as error:
+                raise error
+
+    def save_test_res_back_db(self, test_id, user_id, date, results: List[int]):
+        with session_factory() as session:
+            try:
+                if len(results) != 21:
+                    raise HTTPException(status_code=400,
+                                        detail="Передано неверное количество ответов")
+
+                result = []
+                dic = {}
+
+                test_res_id = uuid.uuid4()
+                test_res = Test_result(id=test_res_id,
+                                       user_id=user_id,
+                                       test_id=test_id,
+                                       date=date)
+                session.add(test_res)
+
+                scale_info = session.query(Scale).filter_by(test_id=test_id).all()
+                scale_1_sum, scale_2_sum, scale_3_sum = calculator_service.test_back_calculate_results(results)
+                for scale in scale_info:
+                    borders = session.query(Borders).filter_by(scale_id=scale.id).all()
+                    if scale.title == "Шкала депрессии":
+                        if scale_1_sum < scale.min or scale_1_sum > scale.max:
+                            raise HTTPException(status_code=400,
+                                                detail="Результат не может быть меньше или больше границ шкалы!")
+                        scale_result = Scale_result(id=uuid.uuid4(),
+                                                    score=scale_1_sum,
+                                                    scale_id=scale.id,
+                                                    test_result_id=test_res_id)
+
+                        for bord in borders:
+                            if scale_1_sum >= bord.left_border and scale_1_sum <= bord.right_border:
+                                color = bord.color
+                                conclusion = bord.title
+                                break
+
+                        dic["scale_id"] = scale.id
+                        dic["scale_title"] = scale.title
+                        dic["score"] = scale_1_sum
+                        dic["conclusion"] = conclusion
+                        dic["color"] = color
+                        result.append(dic)
+                        dic = {}
+                        session.add(scale_result)
+                    elif scale.title == "Когнетивно-эффективная субшкала":
+                        if scale_2_sum < scale.min or scale_2_sum > scale.max:
+                            raise HTTPException(status_code=400,
+                                                detail="Результат не может быть меньше или больше границ шкалы!")
+                        scale_result = Scale_result(id=uuid.uuid4(),
+                                                    score=scale_2_sum,
+                                                    scale_id=scale.id,
+                                                    test_result_id=test_res_id)
+                        for bord in borders:
+                            if scale_2_sum >= bord.left_border and scale_2_sum <= bord.right_border:
+                                color = bord.color
+                                conclusion = bord.title
+                                break
+
+                        dic["scale_id"] = scale.id
+                        dic["scale_title"] = scale.title
+                        dic["score"] = scale_2_sum
+                        dic["conclusion"] = conclusion
+                        dic["color"] = color
+                        result.append(dic)
+                        dic = {}
+                        session.add(scale_result)
+                    elif scale.title == "Субшкала соматических проявлений депрессии":
                         if scale_3_sum < scale.min or scale_3_sum > scale.max:
                             raise HTTPException(status_code=400,
                                                 detail="Результат не может быть меньше или больше границ шкалы!")
@@ -1472,7 +2151,7 @@ class DatabaseService:
 
                         d = 0
                         p = 0
-                        for j in range(test_info.borders_cnt):
+                        for j in range(len(test_info.scale_border[i])//2):
 
                             border = Borders(
                                 id=uuid.uuid4(),
