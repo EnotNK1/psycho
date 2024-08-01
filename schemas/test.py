@@ -13,7 +13,7 @@ class ResScale(pydantic.BaseModel):
 class SaveTestRes(pydantic.BaseModel):
     test_id: str
     date: datetime.datetime
-    results: List[ResScale]
+    results: List[int]
 
 
 class ReqBorder(pydantic.BaseModel):

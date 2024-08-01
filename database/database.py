@@ -9,6 +9,7 @@ from database.inquiries import inquiries
 from database.tables import Users, Base, Problem, Message_r_i_dialog, Token, User_inquiries, Test_result, Test, Scale, \
     Inquiry, Education, Clients, Type_analysis, Intermediate_belief, Deep_conviction, FreeDiary, Diary_record, \
     Scale_result, Task, Borders, Question, Answer_choice
+from database.calculator import calculator_service
 from fastapi import FastAPI, HTTPException
 import uuid
 
@@ -436,54 +437,167 @@ class DatabaseService:
     #             print(error)
     #             return -1
 
-    def save_test_result_db(self, user_id, test_id, date, results: List[ResScale]):
+    # def save_test_result_db(self, user_id, test_id, date, results: List[ResScale]):
+    #     with (session_factory() as session):
+    #         try:
+    #             if not session.query(Test).filter_by(id=test_id).one():
+    #                 raise HTTPException(status_code=404, detail="Тест не найден!")
+    #
+    #             test_res_id = uuid.uuid4()
+    #             test_res = Test_result(id=test_res_id,
+    #                                    user_id=user_id,
+    #                                    test_id=test_id,
+    #                                    date=date)
+    #
+    #             session.add(test_res)
+    #
+    #             scale_info = session.query(Scale).filter_by(test_id=test_id).all()
+    #
+    #             for result in results:
+    #                 scale = session.query(Scale).filter_by(id=result.scale_id).one()
+    #
+    #                 if scale.test_id != test_id:
+    #                     raise HTTPException(status_code=400,
+    #                                         detail="Шкала не принадлежит переданному тесту!")
+    #
+    #                 if len(scale_info) != len(results):
+    #                     raise HTTPException(status_code=400,
+    #                                         detail="Количество переданных шкал не совпадают с количеством шкал в базе данных!")
+    #
+    #                 if result.score < scale.min:
+    #                     raise HTTPException(status_code=400, detail="Результат не может быть меньше минимального значения шкалы!")
+    #
+    #                 if result.score > scale.max:
+    #                     raise HTTPException(status_code=400, detail="Результат не может быть больше максимального значения шкалы!")
+    #
+    #                 scale_result = Scale_result(id=uuid.uuid4(),
+    #                                             score=result.score,
+    #                                             scale_id=result.scale_id,
+    #                                             test_result_id=test_res_id)
+    #
+    #                 session.add(scale_result)
+    #
+    #             session.commit()
+    #             return "Successfully!"
+    #
+    #         except NoResultFound:
+    #             raise HTTPException(status_code=404, detail="Тест или шкалы не были найдены!")
+    #         except (Exception, Error) as error:
+    #             raise error
+
+    def save_test_result_db(self, user_id, test_id, date, results: List[int]):
         with (session_factory() as session):
             try:
-                if not session.query(Test).filter_by(id=test_id).one():
+                result = 0
+                test = session.query(Test).filter_by(id=test_id).one()
+                if not test:
                     raise HTTPException(status_code=404, detail="Тест не найден!")
 
-                test_res_id = uuid.uuid4()
-                test_res = Test_result(id=test_res_id,
-                                       user_id=user_id,
-                                       test_id=test_id,
-                                       date=date)
+                if test.title == "Профессиональное выгорание":
+                    result = database_service.save_test_res_maslach_db(test_id, user_id, date, results)
 
-                session.add(test_res)
-
-                scale_info = session.query(Scale).filter_by(test_id=test_id).all()
-
-                for result in results:
-                    scale = session.query(Scale).filter_by(id=result.scale_id).one()
-
-                    if scale.test_id != test_id:
-                        raise HTTPException(status_code=400,
-                                            detail="Шкала не принадлежит переданному тесту!")
-
-                    if len(scale_info) != len(results):
-                        raise HTTPException(status_code=400,
-                                            detail="Количество переданных шкал не совпадают с количеством шкал в базе данных!")
-
-                    if result.score < scale.min:
-                        raise HTTPException(status_code=400, detail="Результат не может быть меньше минимального значения шкалы!")
-
-                    if result.score > scale.max:
-                        raise HTTPException(status_code=400, detail="Результат не может быть больше максимального значения шкалы!")
-
-                    scale_result = Scale_result(id=uuid.uuid4(),
-                                                score=result.score,
-                                                scale_id=result.scale_id,
-                                                test_result_id=test_res_id)
-
-                    session.add(scale_result)
-
-                session.commit()
-                return "Successfully!"
+                return result
 
             except NoResultFound:
                 raise HTTPException(status_code=404, detail="Тест или шкалы не были найдены!")
             except (Exception, Error) as error:
                 raise error
 
+    def save_test_res_maslach_db(self, test_id, user_id, date, results: List[int]):
+        with session_factory() as session:
+            try:
+                if len(results) != 22:
+                    raise HTTPException(status_code=400,
+                                        detail="Передано неверное количество ответов")
+
+                result = []
+                dic = {}
+
+                test_res_id = uuid.uuid4()
+                test_res = Test_result(id=test_res_id,
+                                       user_id=user_id,
+                                       test_id=test_id,
+                                       date=date)
+                session.add(test_res)
+
+                scale_info = session.query(Scale).filter_by(test_id=test_id).all()
+                scale_1_sum, scale_2_sum, scale_3_sum = calculator_service.test_maslach_calculate_results(results)
+                for scale in scale_info:
+                    borders = session.query(Borders).filter_by(scale_id=scale.id).all()
+                    if scale.title == "Эмоциональное истощение":
+                        if scale_1_sum < scale.min or scale_1_sum > scale.max:
+                            raise HTTPException(status_code=400,
+                                                detail="Результат не может быть меньше или больше границ шкалы!")
+                        scale_result = Scale_result(id=uuid.uuid4(),
+                                                    score=scale_1_sum,
+                                                    scale_id=scale.id,
+                                                    test_result_id=test_res_id)
+
+                        for bord in borders:
+                            if scale_1_sum >= bord.left_border and scale_1_sum <= bord.right_border:
+                                color = bord.color
+                                conclusion = bord.title
+                                break
+
+                        dic["scale_id"] = scale.id
+                        dic["scale_title"] = scale.title
+                        dic["score"] = scale_1_sum
+                        dic["conclusion"] = conclusion
+                        dic["color"] = color
+                        result.append(dic)
+                        dic = {}
+                        session.add(scale_result)
+                    elif scale.title == "Деперсонализация":
+                        if scale_2_sum < scale.min or scale_2_sum > scale.max:
+                            raise HTTPException(status_code=400,
+                                                detail="Результат не может быть меньше или больше границ шкалы!")
+                        scale_result = Scale_result(id=uuid.uuid4(),
+                                                    score=scale_2_sum,
+                                                    scale_id=scale.id,
+                                                    test_result_id=test_res_id)
+                        for bord in borders:
+                            if scale_2_sum >= bord.left_border and scale_2_sum <= bord.right_border:
+                                color = bord.color
+                                conclusion = bord.title
+                                break
+
+                        dic["scale_id"] = scale.id
+                        dic["scale_title"] = scale.title
+                        dic["score"] = scale_2_sum
+                        dic["conclusion"] = conclusion
+                        dic["color"] = color
+                        result.append(dic)
+                        dic = {}
+                        session.add(scale_result)
+                    elif scale.title == "Редукция проф. достижений":
+                        if scale_3_sum < scale.min or scale_3_sum > scale.max:
+                            raise HTTPException(status_code=400,
+                                                detail="Результат не может быть меньше или больше границ шкалы!")
+                        scale_result = Scale_result(id=uuid.uuid4(),
+                                                    score=scale_3_sum,
+                                                    scale_id=scale.id,
+                                                    test_result_id=test_res_id)
+                        for bord in borders:
+                            if scale_3_sum >= bord.left_border and scale_3_sum <= bord.right_border:
+                                color = bord.color
+                                conclusion = bord.title
+                                break
+
+                        dic["scale_id"] = scale.id
+                        dic["scale_title"] = scale.title
+                        dic["score"] = scale_3_sum
+                        dic["conclusion"] = conclusion
+                        dic["color"] = color
+                        result.append(dic)
+                        dic = {}
+                        session.add(scale_result)
+
+                session.commit()
+                return result
+
+
+            except (Exception, Error) as error:
+                raise error
 
 
     def create_test_db(self, title, description, short_desc, scales: List[ReqScale]):
