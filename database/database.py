@@ -1369,6 +1369,7 @@ class DatabaseService:
                     list.append(dic)
                     dic = {}
 
+                list.sort(key=lambda x: x['number'])
                 return list
             except (Exception, Error) as error:
                 print(error)
