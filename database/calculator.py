@@ -1,17 +1,23 @@
 from typing import List
+from fastapi import HTTPException
 
 class Calculator:
     def sum_specific_elements(self, answers: List[int], indices: List[int]) -> int:
         return sum(answers[i-1] for i in indices)
 
+    def check_number_responses(self, len_res, answers_cnt):
+        if len_res != answers_cnt:
+            raise HTTPException(status_code=400,
+                                detail="Передано неверное количество ответов")
+
     def test_maslach_calculate_results(self, answers: List[int]):
-        indices_1 = [1, 2, 3, 8, 13, 14, 16, 20]
+        indices_1 = [1, 2, 3, 6, 8, 13, 14, 16, 20]
         indices_2 = [5, 10, 11, 15, 22]
         indices_3 = [4, 7, 9, 12, 17, 18, 19, 21]
         scale_1_sum = calculator_service.sum_specific_elements(answers, indices_1)
         scale_2_sum = calculator_service.sum_specific_elements(answers, indices_2)
         scale_3_sum = calculator_service.sum_specific_elements(answers, indices_3)
-        return scale_1_sum, scale_2_sum, scale_3_sum
+        return [scale_1_sum, scale_2_sum, scale_3_sum]
 
     def test_jas_calculate_results(self, answers: List[int]):
         indices_1 = [1, 2, 3, 4, 5]
@@ -56,6 +62,15 @@ class Calculator:
         scale_8_sum = calculator_service.sum_specific_elements(answers, indices_8)
         scale_9_sum = calculator_service.sum_specific_elements(answers, indices_9)
         return scale_1_sum, scale_2_sum, scale_3_sum, scale_4_sum, scale_5_sum, scale_6_sum, scale_7_sum, scale_8_sum, scale_9_sum
+
+    def test_coling_calculate_results(self, answers: List[int]):
+        indices_1 = [2, 3, 8, 9, 11, 15, 16, 17, 20, 29, 33]
+        indices_2 = [1, 5, 7, 12, 14, 19, 23, 24, 25, 31, 32]
+        indices_3 = [4, 6, 10, 13, 18, 21, 22, 26, 27, 28, 30]
+        scale_1_sum = calculator_service.sum_specific_elements(answers, indices_1)
+        scale_2_sum = calculator_service.sum_specific_elements(answers, indices_2)
+        scale_3_sum = calculator_service.sum_specific_elements(answers, indices_3)
+        return scale_1_sum, scale_2_sum, scale_3_sum
 
     def test_back_calculate_results(self, answers: List[int]):
         indices_1 = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21]
