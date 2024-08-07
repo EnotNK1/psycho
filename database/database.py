@@ -1508,6 +1508,63 @@ class DatabaseService:
                 print(error)
                 return -1
 
+    def recreate_test(self, test_id, test_info):
+        with session_factory() as session:
+            try:
+                query = (
+                    session.query(Test)
+                    .filter(Test.id == test_id)
+                    .options(
+                        selectinload(Test.question).selectinload(Question.answer_choice),
+                        selectinload(Test.scale).selectinload(Scale.borders)
+                    )
+                )
+                test = query.one_or_none()
+
+                test.title = test_info.title
+                test.description = test_info.description
+                test.short_desc = test_info.short_desc
+
+                i = 0
+                for question in test.question:
+                    question.text = test_info.questions[i]
+                    question.number = i + 1
+
+                    j = 0
+                    for answer in question.answer_choice:
+                        answer.text = test_info.answers[i][j]
+                        answer.score = test_info.answer_score[i][j]
+                        j += 1
+                    i += 1
+
+                k = 0
+                i = 0
+                for scale in test.scale:
+                    scale.title = test_info.scales[i]
+                    scale.min = test_info.scale_limitation[k]
+                    scale.max = test_info.scale_limitation[k + 1]
+
+                    k += 2
+
+                    d = 0
+                    p = 0
+                    for border in scale.borders:
+                        border.left_border = test_info.scale_border[i][p]
+                        border.right_border = test_info.scale_border[i][p + 1]
+                        border.color = test_info.scale_color[i][d]
+                        border.title = test_info.scale_title[i][d]
+
+                        p += 2
+                        d += 1
+                    i += 1
+
+                session.commit()
+
+
+            except (Exception, Error) as error:
+                print(error)
+                return -1
+
     def create_test(self, test_info):
         with session_factory() as session:
             try:
@@ -1515,6 +1572,9 @@ class DatabaseService:
                 if not temp:
                     test_id = uuid.uuid4()
                     database_service.add_test_db(test_id, test_info)
+                else:
+                    database_service.recreate_test(temp.id, test_info)
+
                 return 0
             except (Exception, Error) as error:
                 print(error)
