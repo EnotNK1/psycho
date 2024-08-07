@@ -180,7 +180,7 @@ class DatabaseService:
             except Exception as e:
                 raise RuntimeError(f"Database query error: {e}")
 
-
+#пошло нахуй
     def get_test_res_db(self, user_id, test_id):
         with session_factory() as session:
             try:
@@ -200,12 +200,24 @@ class DatabaseService:
                     scale_results = []
 
                     for scale_result in test_result.scale_result:
-                        new_scale_result = {
-                            "scale_id": scale_result.scale_id,
-                            "score": scale_result.score
-                        }
+                        query = select(Scale).filter_by(id=scale_result.scale_id).options(
+                            selectinload(Scale.borders))
+                        res = session.execute(query)
+                        scale = res.unique().scalars().all()
+                        for scal in scale:
+                            for border in scal.borders:
+                                if scale_result.score >= border.left_border and scale_result.score <= border.right_border:
+                                    print(scal.title)
 
-                        scale_results.append(new_scale_result)
+                                    new_scale_result = {
+                                        "scale_id": scale_result.scale_id,
+                                        "scale_title": scal.title,
+                                        "score": scale_result.score,
+                                        "max_score": scal.max,
+                                        "conclusion": border.title,
+                                        "color": border.color,
+                                    }
+                                    scale_results.append(new_scale_result)
 
                     result_dict["scale_results"] = scale_results
                     results_list.append(result_dict)
@@ -234,12 +246,23 @@ class DatabaseService:
                 scale_results = []
 
                 for scale_result in test_result.scale_result:
-                    new_scale_result = {
-                        "scale_id": scale_result.scale_id,
-                        "score": scale_result.score
-                    }
+                    query = select(Scale).filter_by(id=scale_result.scale_id).options(
+                        selectinload(Scale.borders))
+                    res = session.execute(query)
+                    scale = res.unique().scalars().all()
+                    for scal in scale:
+                        for border in scal.borders:
+                            if scale_result.score >= border.left_border and scale_result.score <= border.right_border:
 
-                    scale_results.append(new_scale_result)
+                                new_scale_result = {
+                                    "scale_id": scale_result.scale_id,
+                                    "scale_title": scal.title,
+                                    "score": scale_result.score,
+                                    "max_score": scal.max,
+                                    "conclusion": border.title,
+                                    "color": border.color,
+                                }
+                                scale_results.append(new_scale_result)
 
                 result_dict["scale_results"] = scale_results
 
@@ -1421,70 +1444,77 @@ class DatabaseService:
                 print(error)
                 return -1
 
+    def add_test_db(self, test_id, test_info):
+        with session_factory() as session:
+            try:
+                test = Test(
+                    id=test_id,
+                    title=test_info.title,
+                    description=test_info.description,
+                    short_desc=test_info.short_desc
+                )
+                session.add(test)
+
+                for i in range(len(test_info.questions)):
+                    question_id = uuid.uuid4()
+                    question = Question(
+                        id=question_id,
+                        text=test_info.questions[i],
+                        number=i + 1,
+                        test_id=test_id
+                    )
+                    session.add(question)
+
+                    for j in range(test_info.answers_cnt):
+                        answer = Answer_choice(
+                            id=uuid.uuid4(),
+                            text=test_info.answers[i][j],
+                            question_id=question_id,
+                            score=test_info.answer_score[i][j]
+                        )
+                        session.add(answer)
+
+                k = 0
+                for i in range(len(test_info.scales)):
+                    scale_id = uuid.uuid4()
+                    scale = Scale(
+                        id=scale_id,
+                        test_id=test_id,
+                        title=test_info.scales[i],
+                        min=test_info.scale_limitation[k],
+                        max=test_info.scale_limitation[k + 1],
+                    )
+                    k += 2
+                    session.add(scale)
+
+                    d = 0
+                    p = 0
+                    for j in range(len(test_info.scale_border[i]) // 2):
+                        border = Borders(
+                            id=uuid.uuid4(),
+                            scale_id=scale_id,
+                            left_border=test_info.scale_border[i][p],
+                            right_border=test_info.scale_border[i][p + 1],
+                            color=test_info.scale_color[i][d],
+                            title=test_info.scale_title[i][d]
+                        )
+                        p += 2
+                        d += 1
+                        session.add(border)
+                session.commit()
+
+
+            except (Exception, Error) as error:
+                print(error)
+                return -1
+
     def create_test(self, test_info):
         with session_factory() as session:
             try:
                 temp = session.query(Test).filter_by(title=test_info.title).first()
                 if not temp:
                     test_id = uuid.uuid4()
-                    test = Test(
-                        id=test_id,
-                        title=test_info.title,
-                        description=test_info.description,
-                        short_desc=test_info.short_desc
-                    )
-                    session.add(test)
-
-                    for i in range(len(test_info.questions)):
-                        question_id = uuid.uuid4()
-                        question = Question(
-                            id=question_id,
-                            text=test_info.questions[i],
-                            number=i+1,
-                            test_id=test_id
-                        )
-                        session.add(question)
-
-                        for j in range(test_info.answers_cnt):
-                            answer = Answer_choice(
-                                id=uuid.uuid4(),
-                                text=test_info.answers[i][j],
-                                question_id=question_id,
-                                score=test_info.answer_score[i][j]
-                            )
-                            session.add(answer)
-
-                    k = 0
-                    for i in range(len(test_info.scales)):
-                        scale_id = uuid.uuid4()
-                        scale = Scale(
-                            id=scale_id,
-                            test_id=test_id,
-                            title=test_info.scales[i],
-                            min=test_info.scale_limitation[k],
-                            max=test_info.scale_limitation[k+1],
-                        )
-                        k += 2
-                        session.add(scale)
-
-                        d = 0
-                        p = 0
-                        for j in range(len(test_info.scale_border[i])//2):
-
-                            border = Borders(
-                                id=uuid.uuid4(),
-                                scale_id=scale_id,
-                                left_border=test_info.scale_border[i][p],
-                                right_border=test_info.scale_border[i][p+1],
-                                color=test_info.scale_color[i][d],
-                                title=test_info.scale_title[i][d]
-                            )
-                            p += 2
-                            d += 1
-                            session.add(border)
-
-
-                session.commit()
+                    database_service.add_test_db(test_id, test_info)
                 return 0
             except (Exception, Error) as error:
                 print(error)

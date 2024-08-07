@@ -54,7 +54,7 @@ class TestService:
 
         role = database_service.check_role(token_data['user_id'])
 
-        if token_data["user_id"] == res["user_id"] or role == 2 or role == 3 or role == 0 or role == 1:
+        if role == 2 or role == 3 or role == 0 or role == 1:
             if res == -1:
                 raise HTTPException(status_code=404, detail="Результат теста не найден!")
             return res
