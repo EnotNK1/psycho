@@ -524,7 +524,7 @@ class DatabaseService:
                     result = database_service.save_test_res_all_db(test_id, user_id, date, scale_title, scale_sum_list)
                 elif test.title == "Шкала профессиональной апатии":
                     answers_cnt = 10
-                    scale_title = ["Апатичные мысли", "Апатичные действия"]
+                    scale_title = ["Шкала профессиональной апатии", "Апатичные мысли", "Апатичные действия"]
                     calculator_service.check_number_responses(len(results), answers_cnt)
                     scale_sum_list = calculator_service.test_jas_calculate_results(results)
                     result = database_service.save_test_res_all_db(test_id, user_id, date, scale_title, scale_sum_list)
@@ -542,7 +542,7 @@ class DatabaseService:
                     result = database_service.save_test_res_all_db(test_id, user_id, date, scale_title, scale_sum_list)
                 elif test.title == "Опросник когнтитвных ошибок CMQ":
                     answers_cnt = 45
-                    scale_title = ["Персонализация", "Чтение мыслей", "Упрямство", "Морализация", "Катастрофизация",
+                    scale_title = ["Шкала когнитивных ошибок", "Персонализация", "Чтение мыслей", "Упрямство", "Морализация", "Катастрофизация",
                                    "Выученная беспомощность", "Максимализм", "Преувеличение опасности",
                                    "Гипернормативность"]
                     calculator_service.check_number_responses(len(results), answers_cnt)
