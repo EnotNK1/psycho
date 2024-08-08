@@ -54,15 +54,15 @@ class Calculator:
         indices_9 = [33, 34, 35, 23, 9, 31, 27]
         indices_10 = [37, 40, 32, 33, 41]
         scale_1_sum = sum(answers)
-        scale_2_sum = calculator_service.sum_specific_elements(answers, indices_2)
-        scale_3_sum = calculator_service.sum_specific_elements(answers, indices_3)
-        scale_4_sum = calculator_service.sum_specific_elements(answers, indices_4)
-        scale_5_sum = calculator_service.sum_specific_elements(answers, indices_5)
-        scale_6_sum = calculator_service.sum_specific_elements(answers, indices_6)
-        scale_7_sum = calculator_service.sum_specific_elements(answers, indices_7)
-        scale_8_sum = calculator_service.sum_specific_elements(answers, indices_8)
-        scale_9_sum = calculator_service.sum_specific_elements(answers, indices_9)
-        scale_10_sum = calculator_service.sum_specific_elements(answers, indices_10)
+        scale_2_sum = round(calculator_service.sum_specific_elements(answers, indices_2) / len(indices_2), 2)
+        scale_3_sum = round(calculator_service.sum_specific_elements(answers, indices_3) / len(indices_3), 2)
+        scale_4_sum = round(calculator_service.sum_specific_elements(answers, indices_4) / len(indices_4), 2)
+        scale_5_sum = round(calculator_service.sum_specific_elements(answers, indices_5) / len(indices_5), 2)
+        scale_6_sum = round(calculator_service.sum_specific_elements(answers, indices_6) / len(indices_6), 2)
+        scale_7_sum = round(calculator_service.sum_specific_elements(answers, indices_7) / len(indices_7), 2)
+        scale_8_sum = round(calculator_service.sum_specific_elements(answers, indices_8) / len(indices_8), 2)
+        scale_9_sum = round(calculator_service.sum_specific_elements(answers, indices_9) / len(indices_9), 2)
+        scale_10_sum = round(calculator_service.sum_specific_elements(answers, indices_10) / len(indices_10), 2)
         return [scale_1_sum, scale_2_sum, scale_3_sum, scale_4_sum, scale_5_sum, scale_6_sum, scale_7_sum, scale_8_sum, scale_9_sum, scale_10_sum]
 
     def test_coling_calculate_results(self, answers: List[int]):
