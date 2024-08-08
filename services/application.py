@@ -14,7 +14,7 @@ class ApplicationService:
 
         role = database_service.check_role(payload.user_id)
         if (role == 2 or role == 3) and token_data['user_id'] != payload.user_id:
-            result = database_service.send_application_db(token_data['user_id'], payload.user_id, payload.text)
+            result = database_service.send_application_db(token_data['user_id'], uuid.UUID(payload.user_id), payload.text)
             if result == 0:
                 return "Successfully"
             else:
@@ -27,7 +27,7 @@ class ApplicationService:
 
         role = database_service.check_role(token_data['user_id'])
         if role == 2 or role == 3:
-            result = database_service.confirm_application_db(token_data['user_id'], payload.user_id, payload.status)
+            result = database_service.confirm_application_db(token_data['user_id'], uuid.UUID(payload.user_id), payload.status)
             if result == 0:
                 return "Successfully"
             else:

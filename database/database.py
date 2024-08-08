@@ -8,7 +8,7 @@ from sqlalchemy.exc import NoResultFound
 from database.inquiries import inquiries
 from database.tables import Users, Base, Problem, Message_r_i_dialog, Token, User_inquiries, Test_result, Test, Scale, \
     Inquiry, Education, Clients, Type_analysis, Intermediate_belief, Deep_conviction, FreeDiary, Diary_record, \
-    Scale_result, Task, Borders, Question, Answer_choice
+    Scale_result, Task, Borders, Question, Answer_choice, Job_application
 from database.calculator import calculator_service
 from fastapi import FastAPI, HTTPException
 import uuid
@@ -856,6 +856,7 @@ class DatabaseService:
 
                 temp = session.get(Users, obj.psychologist_id)
 
+                user_dict["id"] = temp.id
                 user_dict["username"] = temp.username
                 user_dict['is_active'] = temp.is_active
 
@@ -1581,6 +1582,41 @@ class DatabaseService:
                     database_service.recreate_test(temp.id, test_info)
 
                 return 0
+            except (Exception, Error) as error:
+                print(error)
+                return -1
+
+    def get_your_psychologist_db(self, user_id):
+        with session_factory() as session:
+            try:
+                user_dict = {}
+                user_list = []
+
+                list_psycholog = session.query(Clients).filter_by(client_id=user_id, status=True).all()
+                for obj in list_psycholog:
+                    request_list = []
+
+                    temp = session.get(Users, obj.psychologist_id)
+
+                    user_dict["id"] = temp.id
+                    user_dict["role"] = temp.role_id
+                    user_dict["username"] = temp.username
+                    user_dict['is_active'] = temp.is_active
+
+                    request_id = session.query(User_inquiries).filter_by(user_id=temp.id, type=2).all()
+
+                    for i in request_id:
+                        request = session.query(Inquiry).filter_by(id=i.inquiry_id).first()
+                        request_list.append(request.text)
+
+                    user_dict['request'] = request_list
+
+                    user_list.append(user_dict)
+                    user_dict = {}
+
+                session.commit()
+                return user_list
+
             except (Exception, Error) as error:
                 print(error)
                 return -1

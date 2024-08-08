@@ -32,11 +32,11 @@ class PsychologistService:
         return items
 
 
-    def get_list_psycholog(self, access_token):
-        token_data = check_token(access_token)
-
-        items = database_service.get_list_psycholog(token_data['user_id'])
-        return items
+    # def get_list_psycholog(self, access_token):
+    #     token_data = check_token(access_token)
+    #
+    #     items = database_service.get_list_psycholog(token_data['user_id'])
+    #     return items
 
     def get_all_psycholog(self, access_token):
         token_data = check_token(access_token)

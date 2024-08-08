@@ -122,6 +122,12 @@ class ClientService:
         except(Error):
             return "error"
 
+    def get_your_psychologist(self, access_token):
+        token_data = check_token(access_token)
+
+        result = database_service.get_your_psychologist_db(token_data['user_id'])
+        return result
+
 
 
 client_service: ClientService = ClientService()

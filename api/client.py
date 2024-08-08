@@ -73,3 +73,11 @@ def delete_incorrect_tasks(access_token: str = Cookie(None)):
 )
 def unfulfilled_task(data: TaskId, access_token: str = Cookie(None)):
     return client_service.unfulfilled_task(data, access_token)
+
+@router.get(
+    "/client/get_your_psychologist",
+    tags=["Client"],
+    response_model=None,
+)
+def get_your_psychologist(access_token: str = Cookie(None)):
+    return client_service.get_your_psychologist(access_token)
