@@ -21,12 +21,12 @@ class DiaryService:
         token_data = check_token(access_token)
 
         try:
-            database_service.writing_think_diary_db(token_data['user_id'],
+            res = database_service.writing_think_diary_db(token_data['user_id'],
                                                     payload.situation,
                                                     payload.mood, payload.level, payload.auto_thought, payload.proofs,
                                                     payload.refutations, payload.new_mood, payload.alternative_thought,
                                                     payload.new_level, payload.behavioral)
-            return "Successfully"
+            return res
         except(Error):
             raise HTTPException(status_code=500, detail="Что-то пошло не так!")
 

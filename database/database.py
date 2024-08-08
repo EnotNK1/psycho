@@ -996,8 +996,9 @@ class DatabaseService:
                                refutations, new_mood, alternative_thought, new_level, behavioral):
         with session_factory() as session:
             try:
+                id = uuid.uuid4()
                 temp = Diary_record(
-                    id=uuid.uuid4(),
+                    id=id,
                     user_id=user_id,
                     situation=situation,
                     mood=mood,
@@ -1012,7 +1013,11 @@ class DatabaseService:
                 )
                 session.add(temp)
                 session.commit()
-                return 0
+                res = {
+                    "think_diary_id": id
+                }
+
+                return res
             except (Exception, Error) as error:
                 print(error)
                 return -1

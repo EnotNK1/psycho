@@ -217,7 +217,7 @@ class Diary_record(Base):
     proofs: Mapped[str]
     refutations: Mapped[str]
     new_mood: Mapped[str]
-    alternativeThought: Mapped[str]
+    alternative_thought: Mapped[str]
     new_level: Mapped[int]
     behavioral: Mapped[str]
 
