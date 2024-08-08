@@ -150,3 +150,10 @@ class ResponseGetPassedTests(pydantic.BaseModel):
     title: str
     description: str
     test_id: uuid.UUID
+
+class ResponseGetPsychologist(pydantic.BaseModel):
+    id: uuid.UUID
+    role: int
+    username: str
+    is_active: bool
+    request: List[str]

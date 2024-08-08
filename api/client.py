@@ -3,7 +3,7 @@ import uuid
 from fastapi import APIRouter, Cookie
 
 from schemas.users import TaskId
-from schemas.test import ResponseGetClient, ResponseGetListClient
+from schemas.test import ResponseGetClient, ResponseGetListClient, ResponseGetPsychologist
 from services.client import client_service
 from typing import List
 
@@ -77,7 +77,7 @@ def unfulfilled_task(data: TaskId, access_token: str = Cookie(None)):
 @router.get(
     "/client/get_your_psychologist",
     tags=["Client"],
-    response_model=None,
+    response_model=List[ResponseGetPsychologist],
 )
 def get_your_psychologist(access_token: str = Cookie(None)):
     return client_service.get_your_psychologist(access_token)
