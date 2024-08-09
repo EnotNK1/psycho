@@ -131,6 +131,17 @@ class WritingRIDialog(pydantic.BaseModel):
 class ReadRIDialog(pydantic.BaseModel):
     problem_id: uuid.UUID
 
+class TestResult(pydantic.BaseModel):
+    scale_id: uuid.UUID
+    scale_title: str
+    score: float
+    conclusion: str
+    color: str
+
+class SaveTestResult(pydantic.BaseModel):
+    test_result_id: uuid.UUID
+    result: List[TestResult]
+
 class ScaleResult(pydantic.BaseModel):
     scale_id: uuid.UUID
     scale_title: str

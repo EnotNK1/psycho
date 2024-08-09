@@ -1,6 +1,7 @@
 import uuid
 
-from schemas.test import SaveTestRes, CreateTest, GetTestInfo, ResponseGetPassedTests, ResponseGetTestResult
+from schemas.test import SaveTestRes, CreateTest, GetTestInfo, ResponseGetPassedTests, ResponseGetTestResult, \
+    SaveTestResult
 from services.test import test_service
 from fastapi import Cookie, APIRouter, Query
 from typing import List, Optional
@@ -10,7 +11,7 @@ router = APIRouter()
 @router.post(
     "/test/save_test_result",
     tags=["Test"],
-    response_model=None,
+    response_model=SaveTestResult,
 )
 def save_test_result(data: SaveTestRes, access_token: str = Cookie(None)):
     return test_service.save_test_result(data, access_token)
