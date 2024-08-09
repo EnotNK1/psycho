@@ -582,7 +582,9 @@ class DatabaseService:
                 session.add(test_res)
 
                 scale_info = session.query(Scale).filter_by(test_id=test_id).all()
-
+                dic["test_result_id"] = test_res_id
+                result.append(dic)
+                dic = {}
                 for scale in scale_info:
                     borders = session.query(Borders).filter_by(scale_id=scale.id).all()
                     i = scale_title.index(scale.title)
