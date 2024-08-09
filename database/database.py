@@ -207,7 +207,6 @@ class DatabaseService:
                         for scal in scale:
                             for border in scal.borders:
                                 if scale_result.score >= border.left_border and scale_result.score <= border.right_border:
-                                    print(scal.title)
 
                                     new_scale_result = {
                                         "scale_id": scale_result.scale_id,
