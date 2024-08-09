@@ -573,6 +573,7 @@ class DatabaseService:
             try:
                 result = []
                 dic = {}
+                temp = {}
 
                 test_res_id = uuid.uuid4()
                 test_res = Test_result(id=test_res_id,
@@ -583,8 +584,6 @@ class DatabaseService:
 
                 scale_info = session.query(Scale).filter_by(test_id=test_id).all()
                 dic["test_result_id"] = test_res_id
-                result.append(dic)
-                dic = {}
                 for scale in scale_info:
                     borders = session.query(Borders).filter_by(scale_id=scale.id).all()
                     i = scale_title.index(scale.title)
@@ -604,17 +603,18 @@ class DatabaseService:
                             break
 
 
-                    dic["scale_id"] = scale.id
-                    dic["scale_title"] = scale.title
-                    dic["score"] = scale_sum_list[i]
-                    dic["conclusion"] = conclusion
-                    dic["color"] = color
-                    result.append(dic)
-                    dic = {}
+                    temp["scale_id"] = scale.id
+                    temp["scale_title"] = scale.title
+                    temp["score"] = scale_sum_list[i]
+                    temp["conclusion"] = conclusion
+                    temp["color"] = color
+                    result.append(temp)
+                    temp = {}
                     session.add(scale_result)
+                dic["result"] = result
 
                 session.commit()
-                return result
+                return dic
 
 
             except (Exception, Error) as error:
