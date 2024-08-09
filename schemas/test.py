@@ -17,8 +17,8 @@ class SaveTestRes(pydantic.BaseModel):
 
 
 class ReqBorder(pydantic.BaseModel):
-    left_border: int
-    right_border: int
+    left_border: float
+    right_border: float
     color: str
     title: str
 
