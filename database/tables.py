@@ -139,7 +139,7 @@ class Scale_result(Base):
     __tablename__ = "scale_result"
 
     id: Mapped[uuid.UUID] = mapped_column(primary_key=True)
-    score: Mapped[int]
+    score: Mapped[float]
     scale_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("scale.id", ondelete="CASCADE"))
     test_result_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("test_result.id", ondelete="CASCADE"))
 
