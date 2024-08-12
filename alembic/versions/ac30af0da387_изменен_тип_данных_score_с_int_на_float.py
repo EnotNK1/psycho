@@ -19,14 +19,32 @@ depends_on: Union[str, Sequence[str], None] = None
 
 
 def upgrade() -> None:
-    op.alter_column('scale_result', 'score',
-                    type_=sa.Float(),
-                    existing_type=sa.Integer(),
-                    existing_nullable=False)
+    conn = op.get_bind()
+    inspector = sa.inspect(conn)
+    columns = inspector.get_columns('scale_result')
+
+    for column in columns:
+        if column['name'] == 'score' and not isinstance(column['type'], sa.Float):
+            op.alter_column(
+                'scale_result',
+                'score',
+                type_=sa.Float(),
+                existing_type=column['type'],
+                existing_nullable=False
+            )
 
 
 def downgrade() -> None:
-    op.alter_column('scale_result', 'score',
-                    type_=sa.Integer(),
-                    existing_type=sa.Float(),
-                    existing_nullable=False)
+    conn = op.get_bind()
+    inspector = sa.inspect(conn)
+    columns = inspector.get_columns('scale_result')
+
+    for column in columns:
+        if column['name'] == 'score' and not isinstance(column['type'], sa.Integer):
+            op.alter_column(
+                'scale_result',
+                'score',
+                type_=sa.Integer(),
+                existing_type=column['type'],
+                existing_nullable=False
+            )

@@ -19,8 +19,18 @@ depends_on: Union[str, Sequence[str], None] = None
 
 
 def upgrade() -> None:
-    op.alter_column('diary_record', 'alternativeThought', new_column_name='alternative_thought')
+    conn = op.get_bind()
+    inspector = sa.inspect(conn)
+    columns = [col['name'] for col in inspector.get_columns('diary_record')]
+
+    if 'alternativeThought' in columns:
+        op.alter_column('diary_record', 'alternativeThought', new_column_name='alternative_thought')
 
 
 def downgrade() -> None:
-    op.alter_column('diary_record', 'alternative_thought', new_column_name='alternativeThought')
+    conn = op.get_bind()
+    inspector = sa.inspect(conn)
+    columns = [col['name'] for col in inspector.get_columns('diary_record')]
+
+    if 'alternative_thought' in columns:
+        op.alter_column('diary_record', 'alternative_thought', new_column_name='alternativeThought')
