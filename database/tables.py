@@ -129,8 +129,8 @@ class Borders(Base):
     __tablename__ = "borders"
 
     id: Mapped[uuid.UUID] = mapped_column(primary_key=True)
-    left_border: Mapped[int]
-    right_border: Mapped[int]
+    left_border: Mapped[float]
+    right_border: Mapped[float]
     color: Mapped[str]
     title: Mapped[str]
     scale_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("scale.id", ondelete="CASCADE"))
