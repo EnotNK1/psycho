@@ -1253,8 +1253,14 @@ class DatabaseService:
 
                 for obj in temp:
                     desc = session.get(Test, obj.test_id)
-                    dic["Task"] = obj
-                    dic["Test description"] = desc.description
+                    dic["id"] = obj.id
+                    dic["test_title"] = obj.test_title
+                    dic["psychologist_id"] = obj.psychologist_id
+                    dic["is_complete"] = obj.is_complete
+                    dic["test_id"] = obj.test_id
+                    dic["text"] = obj.text
+                    dic["client_id"] = obj.client_id
+                    dic["test description"] = desc.description
                     list.append(dic)
                     dic = {}
 
@@ -1272,8 +1278,14 @@ class DatabaseService:
 
                 for obj in temp:
                     desc = session.get(Test, obj.test_id)
-                    dic["Task"] = obj
-                    dic["Test description"] = desc.description
+                    dic["id"] = obj.id
+                    dic["test_title"] = obj.test_title
+                    dic["psychologist_id"] = obj.psychologist_id
+                    dic["is_complete"] = obj.is_complete
+                    dic["test_id"] = obj.test_id
+                    dic["text"] = obj.text
+                    dic["client_id"] = obj.client_id
+                    dic["test description"] = desc.description
                     list.append(dic)
                     dic = {}
 
