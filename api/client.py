@@ -3,7 +3,7 @@ import uuid
 from fastapi import APIRouter, Cookie
 
 from schemas.users import TaskId
-from schemas.test import ResponseGetClient, ResponseGetListClient, ResponseGetPsychologist
+from schemas.test import ResponseGetClient, ResponseGetListClient, ResponseGetPsychologist, ResponseGetTask
 from services.client import client_service
 from typing import List
 
@@ -29,7 +29,7 @@ def get_list_client(access_token: str = Cookie(None)):
 @router.get(
     "/client/get_tasks",
     tags=["Client"],
-    response_model=None,
+    response_model=List[ResponseGetTask],
 )
 def get_tasks(access_token: str = Cookie(None)):
     return client_service.get_tasks(access_token)
@@ -37,7 +37,7 @@ def get_tasks(access_token: str = Cookie(None)):
 @router.get(
     "/client/get_given_tasks",
     tags=["Client"],
-    response_model=None,
+    response_model=List[ResponseGetTask],
 )
 def get_given_tasks(access_token: str = Cookie(None)):
     return client_service.get_given_tasks(access_token)

@@ -168,3 +168,12 @@ class ResponseGetPsychologist(pydantic.BaseModel):
     username: str
     is_active: bool
     request: List[str]
+
+class ResponseGetTask(pydantic.BaseModel):
+    id: uuid.UUID
+    test_title: str
+    psychologist_id: uuid.UUID
+    is_complete: bool
+    test_id: uuid.UUID
+    text: str
+    test_description: str

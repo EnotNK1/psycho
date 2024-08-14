@@ -1260,7 +1260,7 @@ class DatabaseService:
                     dic["test_id"] = obj.test_id
                     dic["text"] = obj.text
                     dic["client_id"] = obj.client_id
-                    dic["test description"] = desc.description
+                    dic["test_description"] = desc.description
                     list.append(dic)
                     dic = {}
 
@@ -1285,7 +1285,7 @@ class DatabaseService:
                     dic["test_id"] = obj.test_id
                     dic["text"] = obj.text
                     dic["client_id"] = obj.client_id
-                    dic["test description"] = desc.description
+                    dic["test_description"] = desc.description
                     list.append(dic)
                     dic = {}
 
