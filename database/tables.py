@@ -1,8 +1,9 @@
 import enum
 import uuid
 
-from sqlalchemy import ForeignKey
+from sqlalchemy import ForeignKey, Enum
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
+from database.enum import DiaryType
 import datetime
 
 from typing import List
@@ -43,6 +44,18 @@ class Users(Base):
     token: Mapped["Token"] = relationship(cascade="all, delete-orphan")
     free_diary: Mapped[List["FreeDiary"]] = relationship(cascade="all, delete-orphan")
     think_diary: Mapped[List["Diary_record"]] = relationship(cascade="all, delete-orphan")
+    mood_tracker: Mapped[List["Mood_tracker"]] = relationship(cascade="all, delete-orphan")
+
+class Mood_tracker(Base):
+    __tablename__ = "mood_tracker"
+
+    id: Mapped[uuid.UUID] = mapped_column(primary_key=True)
+    user_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"))
+    score: Mapped[int]
+    date: Mapped[datetime.datetime]
+    free_diary_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("free_diary.id", ondelete="CASCADE"), nullable=True)
+    think_diary_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("diary_record.id", ondelete="CASCADE"), nullable=True)
+    diary_type: Mapped[DiaryType] = mapped_column(Enum(DiaryType), nullable=True)
 
 class Token(Base):
     __tablename__ = "token"
@@ -221,6 +234,8 @@ class Diary_record(Base):
     new_level: Mapped[int]
     behavioral: Mapped[str]
 
+    mood_tracker: Mapped[List["Mood_tracker"]] = relationship(cascade="all, delete-orphan")
+
 # class Goal(Base):
 #     __tablename__ = "goal"
 #
@@ -393,3 +408,5 @@ class FreeDiary(Base):
     id: Mapped[uuid.UUID] = mapped_column(primary_key=True)
     user_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"))
     text: Mapped[str]
+
+    mood_tracker: Mapped[List["Mood_tracker"]] = relationship(cascade="all, delete-orphan")
