@@ -1255,7 +1255,7 @@ class DatabaseService:
                 print(error)
                 return -1
 
-    def manager_send_db(self, user_id, username, description, company, city, online, gender, birth_date):
+    def manager_send_db(self, user_id, username, description, city, company, online, gender, birth_date):
         with session_factory() as session:
             try:
                 user = session.get(Users, user_id)
@@ -1422,7 +1422,22 @@ class DatabaseService:
                 temp = session.query(Users).filter_by(role_id=2).all()
 
                 for obj in temp:
-                    list.append(obj)
+                    dic = {
+                        "id": obj.id,
+                        "city": obj.city,
+                        "is_active": obj.is_active,
+                        "company": obj.company,
+                        "online": obj.online,
+                        "username": obj.username,
+                        "face_to_face": obj.face_to_face,
+                        "gender": obj.gender,
+                        "email": obj.email,
+                        "birth_date": obj.birth_date,
+                        "description": obj.description,
+                        "role_id": obj.role_id
+                    }
+                    list.append(dic)
+                    dic = {}
 
                 return list
             except (Exception, Error) as error:
@@ -1436,7 +1451,22 @@ class DatabaseService:
                 temp = session.query(Users).filter_by(role_id=3).all()
 
                 for obj in temp:
-                    list.append(obj)
+                    dic = {
+                        "id": obj.id,
+                        "city": obj.city,
+                        "is_active": obj.is_active,
+                        "company": obj.company,
+                        "online": obj.online,
+                        "username": obj.username,
+                        "face_to_face": obj.face_to_face,
+                        "gender": obj.gender,
+                        "email": obj.email,
+                        "birth_date": obj.birth_date,
+                        "description": obj.description,
+                        "role_id": obj.role_id
+                    }
+                    list.append(dic)
+                    dic = {}
 
                 return list
             except (Exception, Error) as error:
