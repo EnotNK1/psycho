@@ -13,6 +13,7 @@ from api.diary import router as diary_router
 from api.client import router as client_router
 from api.manager import router as manager_router
 from api.mood_tracker import router as mood_tracker_router
+from api.educational_material import router as educational_material_router
 
 router = APIRouter()
 
@@ -29,3 +30,4 @@ router.include_router(diary_router)
 router.include_router(client_router)
 router.include_router(manager_router)
 router.include_router(mood_tracker_router)
+router.include_router(educational_material_router)

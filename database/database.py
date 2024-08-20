@@ -1,5 +1,5 @@
 from psycopg2 import Error
-from sqlalchemy import create_engine, select, func
+from sqlalchemy import create_engine, select, func, distinct
 from sqlalchemy.orm import sessionmaker, joinedload, selectinload, join
 from schemas.test import ResScale, ReqBorder, ReqScale
 from typing import List
@@ -8,7 +8,8 @@ from sqlalchemy.exc import NoResultFound
 from database.inquiries import inquiries
 from database.tables import Users, Base, Problem, Message_r_i_dialog, Token, User_inquiries, Test_result, Test, Scale, \
     Inquiry, Education, Clients, Type_analysis, Intermediate_belief, Deep_conviction, FreeDiary, Diary_record, \
-    Scale_result, Task, Borders, Question, Answer_choice, Job_application, Mood_tracker
+    Scale_result, Task, Borders, Question, Answer_choice, Job_application, Mood_tracker, Educational_material, \
+    Educational_theme, Educational_progress
 from database.calculator import calculator_service
 from database.enum import DiaryType
 from fastapi import FastAPI, HTTPException
@@ -182,7 +183,6 @@ class DatabaseService:
             except Exception as e:
                 raise RuntimeError(f"Database query error: {e}")
 
-#пошло нахуй
     def get_test_res_db(self, user_id, test_id):
         with session_factory() as session:
             try:
@@ -1684,6 +1684,145 @@ class DatabaseService:
             except (Exception, Error) as error:
                 print(error)
                 return -1
+
+    def create_education(self, edu_info):
+        with session_factory() as session:
+            try:
+                temp = session.query(Educational_theme).filter_by(theme=edu_info.theme).first()
+                if not temp:
+                    edu_id = uuid.uuid4()
+                    database_service.add_education_db(edu_id, edu_info)
+                else:
+                    database_service.recreate_education_db(temp.id, edu_info)
+
+                return 0
+            except (Exception, Error) as error:
+                print(error)
+                return -1
+
+    def add_education_db(self, edu_id, edu_info):
+        with session_factory() as session:
+            try:
+                education = Educational_theme(
+                    id=edu_id,
+                    theme=edu_info.theme,
+                    link=edu_info.link
+                )
+                session.add(education)
+                for i in range(len(edu_info.text)):
+                    education_material_id = uuid.uuid4()
+                    education_material = Educational_material(
+                        id=education_material_id,
+                        text=edu_info.text[i],
+                        title=edu_info.title,
+                        type=edu_info.type,
+                        educational_theme_id=edu_id
+                    )
+                    session.add(education_material)
+                session.commit()
+
+
+            except (Exception, Error) as error:
+                print(error)
+                return -1
+
+    def recreate_education_db(self, edu_id, edu_info):
+        with session_factory() as session:
+            try:
+                query = (
+                    session.query(Educational_theme)
+                    .filter(Educational_theme.id == edu_id)
+                    .options(
+                        selectinload(Educational_theme.educational_material)
+                    )
+                )
+                education = query.one_or_none()
+
+                education.theme = edu_info.theme
+                education.link = edu_info.link
+
+                i = 0
+                for educational_material in education.educational_material:
+                    educational_material.text = edu_info.text[i]
+                    educational_material.title = edu_info.title
+                    educational_material.type = edu_info.type
+                    i += 1
+
+                session.commit()
+
+
+            except (Exception, Error) as error:
+                print(error)
+                return -1
+
+    def get_all_education_theme_db(self, user_id):
+        with session_factory() as session:
+            try:
+                query = select(Educational_theme).options(selectinload(Educational_theme.educational_material).
+                                                          selectinload(Educational_material.educational_progress))
+                result = session.execute(query)
+                education_theme = result.scalars().all()
+
+                user_list = []
+                user_dict = {}
+                for temp in education_theme:
+                    score = 0
+                    for education_material in temp.educational_material:
+                        score += len(education_material.educational_progress)
+
+                    user_dict['id'] = temp.id
+                    user_dict['theme'] = temp.theme
+                    user_dict['score'] = score
+                    user_dict['max_score'] = len(temp.educational_material)
+
+                    user_list.append(user_dict)
+                    user_dict = {}
+                return user_list
+
+            except (Exception, Error) as error:
+                print(error)
+                return -1
+
+    def get_all_education_material_db(self, education_theme_id):
+        with session_factory() as session:
+            try:
+                education_material = session.query(Educational_material).filter_by(educational_theme_id=education_theme_id).all()
+
+                user_list = []
+                user_dict = {}
+                for temp in education_material:
+                    user_dict['id'] = temp.id
+                    user_dict['text'] = temp.text
+
+                    user_list.append(user_dict)
+                    user_dict = {}
+                return user_list
+
+            except (Exception, Error) as error:
+                print(error)
+                return -1
+
+    def complete_education_material_db(self, edu_id, user_id):
+        with session_factory() as session:
+            temp = session.query(Educational_progress).filter_by(
+                user_id=user_id, educational_material_id=edu_id).first()
+
+            if not temp:
+                education_progress = Educational_progress(
+                    id=edu_id,
+                    user_id=user_id,
+                    educational_material_id=edu_id
+                )
+                session.add(education_progress)
+                session.commit()
+                dic = {
+                    "status": "ok"
+                }
+                return dic
+            else:
+                raise HTTPException(status_code=409, detail="Данный материал уже пройден!")
+
+
 
     def get_your_psychologist_db(self, user_id):
         with session_factory() as session:

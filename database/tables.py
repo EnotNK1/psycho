@@ -32,7 +32,7 @@ class Users(Base):
     problem: Mapped[List["Problem"]] = relationship(cascade="all, delete-orphan")
     test_result: Mapped[List["Test_result"]] = relationship(cascade="all, delete-orphan")
     behavioral_experiment: Mapped[List["Behavioral_experiment"]] = relationship(cascade="all, delete-orphan")
-    educational_material: Mapped[List["Educational_material"]] = relationship(back_populates="users", secondary="educational_progress")
+    educational_progress: Mapped[List["Educational_progress"]] = relationship(cascade="all, delete-orphan")
     record: Mapped[List["Record"]] = relationship(cascade="all, delete-orphan")
     education: Mapped[List["Education"]] = relationship(cascade="all, delete-orphan")
     task: Mapped[List["Task"]] = relationship(cascade="all, delete-orphan")
@@ -273,23 +273,34 @@ class Trouble(Base):
     description: Mapped[str]
     strategy: Mapped[str]
 
+class Educational_theme(Base):
+    __tablename__ = "educational_theme"
+
+    id: Mapped[uuid.UUID] = mapped_column(primary_key=True)
+    theme: Mapped[str]
+    link: Mapped[str]
+
+    educational_material: Mapped[List["Educational_material"]] = relationship(cascade="all, delete-orphan")
+
 class Educational_material(Base):
     __tablename__ = "educational_material"
 
     id: Mapped[uuid.UUID] = mapped_column(primary_key=True)
     text: Mapped[str]
     title: Mapped[str]
-    theme: Mapped[str]
     type: Mapped[int]
-    link: Mapped[str]
+    educational_theme_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("educational_theme.id", ondelete="CASCADE"))
 
-    users: Mapped[List["Users"]] = relationship(back_populates="educational_material", secondary="educational_progress")
+    educational_progress: Mapped[List["Educational_progress"]] = relationship(cascade="all, delete-orphan")
+
+    # users: Mapped[List["Users"]] = relationship(back_populates="educational_material", secondary="educational_progress")
 
 class Educational_progress(Base):
     __tablename__ = "educational_progress"
+    id: Mapped[uuid.UUID] = mapped_column(primary_key=True)
 
-    user_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"), primary_key=True)
-    educational_material_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("educational_material.id", ondelete="CASCADE"), primary_key=True)
+    user_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"))
+    educational_material_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("educational_material.id", ondelete="CASCADE"))
 
 class Record(Base):
     __tablename__ = "record"
