@@ -1804,6 +1804,10 @@ class DatabaseService:
 
     def complete_education_material_db(self, edu_id, user_id):
         with session_factory() as session:
+            material = session.query(Educational_material).get(edu_id)
+            if not material:
+                raise HTTPException(status_code=404, detail="Материал не найден!")
+
             temp = session.query(Educational_progress).filter_by(
                 user_id=user_id, educational_material_id=edu_id).first()
 
