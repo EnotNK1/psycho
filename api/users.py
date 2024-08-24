@@ -1,7 +1,7 @@
 import uuid
 
 from fastapi import APIRouter, Cookie
-from schemas.users import Creds, Reg, ResetPassword, UpdateUser, AuthToken, UserResponse
+from schemas.users import Creds, Reg, ResetPassword, UpdateUser, AuthToken, UserResponse, UserData
 from services.users import user_service
 from starlette.responses import JSONResponse, Response
 
@@ -49,7 +49,7 @@ def get_users(access_token: str = Cookie(None)):
     "/users/user_data",
     tags=["Users"],
     status_code=200,
-    response_model=None,
+    response_model=UserData,
 )
 def get_data_user(access_token: str = Cookie(None)):
     return user_service.get_data_user(access_token)

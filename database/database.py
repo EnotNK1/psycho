@@ -163,10 +163,17 @@ class DatabaseService:
     def get_data_user(self, user_id: uuid.UUID):
         with session_factory() as session:
             try:
-                user = session.query(Users).filter_by(id=user_id).one()
+                query = (
+                    session.query(Users)
+                    .filter(Users.id == user_id)
+                    .options(
+                        selectinload(Users.inquiry)
+                    )
+                )
+                user = query.one_or_none()
 
                 inquiries = session.query(User_inquiries).filter_by(user_id=user_id).all()
-                request_list = [inq.inquiry_id for inq in inquiries]
+                request_list = [{"text": inq.text, "id": inq.id} for inq in user.inquiry]
                 type_value = inquiries[0].type if inquiries else 0
 
                 return {

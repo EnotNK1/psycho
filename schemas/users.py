@@ -1,5 +1,5 @@
 import datetime
-from typing import List
+from typing import List, Optional
 
 import pydantic
 import uuid
@@ -38,15 +38,17 @@ class UpdateUser(pydantic.BaseModel):
     description: str
     type: int
 
-
+class Inquiry(pydantic.BaseModel):
+    text: str
+    id: int
 class UserData(pydantic.BaseModel):
-    birth_date: datetime.date
-    gender: str
-    username: str
-    request: List[int]
-    city: str
-    description: str
-    type: int
+    birth_date: Optional[datetime.date] = None
+    gender: Optional[str] = None
+    username: Optional[str] = None
+    request: Optional[List[Inquiry]] = None
+    city: Optional[str] = None
+    description: Optional[str] = None
+    type: Optional[int] = None
 
 
 class AuthToken(pydantic.BaseModel):
