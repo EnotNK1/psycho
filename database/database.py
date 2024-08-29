@@ -224,6 +224,7 @@ class DatabaseService:
                                         "max_score": scal.max,
                                         "conclusion": border.title,
                                         "color": border.color,
+                                        "user_recommendation": border.user_recommendation
                                     }
                                     scale_results.append(new_scale_result)
 
@@ -269,6 +270,7 @@ class DatabaseService:
                                     "max_score": scal.max,
                                     "conclusion": border.title,
                                     "color": border.color,
+                                    "user_recommendation": border.user_recommendation
                                 }
                                 scale_results.append(new_scale_result)
 
@@ -609,6 +611,7 @@ class DatabaseService:
                         if scale_sum_list[i] >= bord.left_border and scale_sum_list[i] <= bord.right_border:
                             color = bord.color
                             conclusion = bord.title
+                            user_recommendation = bord.user_recommendation
                             break
 
 
@@ -617,6 +620,7 @@ class DatabaseService:
                     temp["score"] = scale_sum_list[i]
                     temp["conclusion"] = conclusion
                     temp["color"] = color
+                    temp["user_recommendation"] = user_recommendation
                     result.append(temp)
                     temp = {}
                     session.add(scale_result)
@@ -1608,7 +1612,8 @@ class DatabaseService:
                             left_border=test_info.scale_border[i][p],
                             right_border=test_info.scale_border[i][p + 1],
                             color=test_info.scale_color[i][d],
-                            title=test_info.scale_title[i][d]
+                            title=test_info.scale_title[i][d],
+                            user_recommendation=test_info.user_recommendation[i][d]
                         )
                         p += 2
                         d += 1
@@ -1665,6 +1670,7 @@ class DatabaseService:
                         border.right_border = test_info.scale_border[i][p + 1]
                         border.color = test_info.scale_color[i][d]
                         border.title = test_info.scale_title[i][d]
+                        border.user_recommendation = test_info.user_recommendation[i][d]
 
                         p += 2
                         d += 1

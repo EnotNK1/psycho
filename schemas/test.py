@@ -137,6 +137,7 @@ class TestResult(pydantic.BaseModel):
     score: float
     conclusion: str
     color: str
+    user_recommendation: str
 
 class SaveTestResult(pydantic.BaseModel):
     test_result_id: uuid.UUID
@@ -149,6 +150,7 @@ class ScaleResult(pydantic.BaseModel):
     max_score: int
     conclusion: str
     color: str
+    user_recommendation: str
 
 class ResponseGetTestResult(pydantic.BaseModel):
     test_id: uuid.UUID

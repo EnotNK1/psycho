@@ -146,6 +146,7 @@ class Borders(Base):
     right_border: Mapped[float]
     color: Mapped[str]
     title: Mapped[str]
+    user_recommendation: Mapped[str] = mapped_column(nullable=True)
     scale_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("scale.id", ondelete="CASCADE"))
 
 class Scale_result(Base):
