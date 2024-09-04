@@ -237,7 +237,7 @@ class DatabaseService:
                 print(error)
                 return -1
 
-    def get_test_result_db(self, test_result_id):
+    def get_test_result_db(self, test_result_id, user_id):
         with session_factory() as session:
             try:
                 query = select(Test_result).filter_by(id=test_result_id).options(
@@ -263,6 +263,11 @@ class DatabaseService:
                         for border in scal.borders:
                             if scale_result.score >= border.left_border and scale_result.score <= border.right_border:
 
+                                if test_result.user_id == user_id:
+                                    user_recommendation = border.user_recommendation
+                                else:
+                                    user_recommendation = ""
+
                                 new_scale_result = {
                                     "scale_id": scale_result.scale_id,
                                     "scale_title": scal.title,
@@ -270,7 +275,7 @@ class DatabaseService:
                                     "max_score": scal.max,
                                     "conclusion": border.title,
                                     "color": border.color,
-                                    "user_recommendation": border.user_recommendation
+                                    "user_recommendation": user_recommendation
                                 }
                                 scale_results.append(new_scale_result)
 

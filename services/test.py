@@ -50,7 +50,7 @@ class TestService:
     def get_test_result(self, test_result_id: str, access_token):
         token_data = check_token(access_token)
 
-        res = database_service.get_test_result_db(uuid.UUID(test_result_id))
+        res = database_service.get_test_result_db(uuid.UUID(test_result_id), uuid.UUID(token_data['user_id']))
 
         role = database_service.check_role(token_data['user_id'])
 
