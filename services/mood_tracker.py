@@ -1,4 +1,4 @@
-from database.database import database_service
+from database.services.teest import database_service
 import uuid
 from psycopg2 import Error
 from utils.token_utils import check_token

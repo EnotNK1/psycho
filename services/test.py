@@ -1,6 +1,6 @@
 from database.test_info import *
 from schemas.test import SaveTestRes, CreateTest
-from database.database import database_service
+from database.services.teest import database_service
 import uuid
 from psycopg2 import Error
 from fastapi import FastAPI, HTTPException

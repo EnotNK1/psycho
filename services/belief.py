@@ -1,4 +1,4 @@
-from database.database import database_service
+from database.services.teest import database_service
 from schemas.problem import CheckBelief, BeliefAnalysis, CreateDeepConviction
 from utils.token_utils import check_token
 import uuid

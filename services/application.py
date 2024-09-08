@@ -1,5 +1,5 @@
 from schemas.test import ConfirmApplication, SendАpplication
-from database.database import database_service
+from database.services.teest import database_service
 from utils.token_utils import check_token
 import uuid
 from fastapi import FastAPI, HTTPException

@@ -1,5 +1,5 @@
 from schemas.test import ReadThinkDiary, WritingThinkDiary, WritingFreeDiary
-from database.database import database_service
+from database.services.teest import database_service
 from psycopg2 import Error
 import uuid
 from fastapi import FastAPI, HTTPException

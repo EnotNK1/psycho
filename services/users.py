@@ -1,5 +1,5 @@
 from schemas.users import Creds, Reg, ResetPassword, UpdateUser, UserResponse, UserData
-from database.database import database_service
+from database.services.teest import database_service
 from services.auth import send_email
 from services.auth import generate_token
 import uuid

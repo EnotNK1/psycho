@@ -3,8 +3,17 @@ from logging.config import fileConfig
 from sqlalchemy import engine_from_config
 from sqlalchemy import pool
 
-from database.tables import Users
-from database.tables import Base
+from database.models.client import *
+from database.models.diary import *
+from database.models.education import *
+from database.models.experiment import *
+from database.models.inquiry import *
+from database.models.mood_tracker import *
+from database.models.post import *
+from database.models.problem import *
+from database.models.test import *
+from database.models.users import *
+from database.database import Base
 
 from alembic import context
 

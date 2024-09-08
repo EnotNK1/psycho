@@ -1,6 +1,6 @@
 import uuid
 
-from database.database import database_service
+from database.services.teest import database_service
 from database.test_info import Test_maslach, Test_DASS, Test_STAI, Test_coling_strategy, Test_cmq, Test_jas, Test_bek21
 from database.edu_info import Base, Cbt_base, Burnout, Breathing_techniques, Relaxation_techniques, Coping_strategies
 
