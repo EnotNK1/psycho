@@ -1,6 +1,8 @@
 from database.test_info import *
 from schemas.education_material import CompleteEducation
-from database.services.teest import database_service
+from database.services.education import education_service_db
+from database.services.users import user_service_db
+from database.services.create import create_service_db
 import uuid
 from psycopg2 import Error
 from fastapi import FastAPI, HTTPException
@@ -12,38 +14,20 @@ class EducationService:
     def get_all_theme(self, access_token):
         token_data = check_token(access_token)
 
-        res_list = database_service.get_all_education_theme_db(token_data['user_id'])
+        res_list = education_service_db.get_all_education_theme_db(token_data['user_id'])
         return res_list
 
     def get_all_education_material(self, education_theme_id, access_token):
         token_data = check_token(access_token)
 
-        result = database_service.get_all_education_material_db(education_theme_id)
+        result = education_service_db.get_all_education_material_db(education_theme_id)
         return result
 
     def complete_education_material(self, payload: CompleteEducation, access_token):
         token_data = check_token(access_token)
 
-        result = database_service.complete_education_material_db(payload.education_material_id, token_data['user_id'])
+        result = education_service_db.complete_education_material_db(payload.education_material_id, token_data['user_id'])
         return result
-
-
-    def auto_create(self, access_token):
-        token_data = check_token(access_token)
-
-        role = database_service.check_role(token_data['user_id'])
-
-        if role == 0:
-            database_service.create_test(Test_maslach)
-            database_service.create_test(Test_DASS)
-            database_service.create_test(Test_STAI)
-            database_service.create_test(Test_coling_strategy)
-            database_service.create_test(Test_cmq)
-            database_service.create_test(Test_jas)
-            database_service.create_test(Test_bek21)
-            return "ok"
-        else:
-            raise HTTPException(status_code=403, detail="У вас недостаточно прав для выполнения данной операции!")
 
 
 

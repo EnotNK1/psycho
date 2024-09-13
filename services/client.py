@@ -1,4 +1,5 @@
-from database.services.teest import database_service
+from database.services.users import user_service_db
+from database.services.client import client_service_db
 from schemas.users import TaskId
 from services.auth import verify_token
 from fastapi import FastAPI, HTTPException
@@ -12,9 +13,9 @@ class ClientService:
     def get_client(self, client_id: str, access_token):
         token_data = check_token(access_token)
 
-        role = database_service.check_role(uuid.UUID(token_data['user_id']))
+        role = user_service_db.check_role(uuid.UUID(token_data['user_id']))
         if role == 0 or role == 2 or role == 3:
-            items = database_service.getClient(client_id)
+            items = client_service_db.getClient(client_id)
             return items
         else:
             raise HTTPException(status_code=403, detail="У вас недостаточно прав для выполнения данной операции!")
@@ -22,9 +23,9 @@ class ClientService:
     def get_list_client(self, access_token):
         token_data = check_token(access_token)
 
-        role = database_service.check_role(uuid.UUID(token_data['user_id']))
+        role = user_service_db.check_role(uuid.UUID(token_data['user_id']))
         if role == 0 or role == 2 or role == 3:
-            items = database_service.getListClient(token_data['user_id'])
+            items = client_service_db.getListClient(token_data['user_id'])
             return items
         else:
             raise HTTPException(status_code=403, detail="У вас недостаточно прав для выполнения данной операции!")
@@ -33,7 +34,7 @@ class ClientService:
         token_data = check_token(access_token)
 
         try:
-            result = database_service.get_tasks_db(token_data['user_id'])
+            result = client_service_db.get_tasks_db(token_data['user_id'])
             if result != -1:
                 return result
             else:
@@ -45,9 +46,9 @@ class ClientService:
         token_data = check_token(access_token)
 
         try:
-            role = database_service.check_role(uuid.UUID(token_data['user_id']))
+            role = user_service_db.check_role(uuid.UUID(token_data['user_id']))
             if role == 0 or role == 2 or role == 3:
-                result = database_service.get_given_tasks_db(token_data['user_id'])
+                result = client_service_db.get_given_tasks_db(token_data['user_id'])
                 if result != -1:
                     return result
                 else:
@@ -61,7 +62,7 @@ class ClientService:
         token_data = check_token(access_token)
 
         try:
-            result = database_service.complete_task_db(token_data['user_id'], payload.task_id)
+            result = client_service_db.complete_task_db(token_data['user_id'], payload.task_id)
             if result != -1:
                 if result == 1:
                     return "Successfully"
@@ -76,9 +77,9 @@ class ClientService:
         token_data = check_token(access_token)
 
         try:
-            role = database_service.check_role(uuid.UUID(token_data['user_id']))
+            role = user_service_db.check_role(uuid.UUID(token_data['user_id']))
             if role == 0 or role == 2 or role == 3:
-                result = database_service.delete_task_db(payload.task_id)
+                result = client_service_db.delete_task_db(payload.task_id)
                 if result != -1:
                     if result == 1:
                         return "Successfully"
@@ -95,9 +96,9 @@ class ClientService:
         token_data = check_token(access_token)
 
         try:
-            role = database_service.check_role(uuid.UUID(token_data['user_id']))
+            role = user_service_db.check_role(uuid.UUID(token_data['user_id']))
             if role == 0:
-                result = database_service.delete_incorrect_tasks_db()
+                result = client_service_db.delete_incorrect_tasks_db()
                 if result != -1:
                     return "Successfully"
                 else:
@@ -111,7 +112,7 @@ class ClientService:
         token_data = check_token(access_token)
 
         try:
-            result = database_service.unfulfilled_task_db(token_data['user_id'], payload.task_id)
+            result = client_service_db.unfulfilled_task_db(token_data['user_id'], payload.task_id)
             if result != -1:
                 if result == 1:
                     return "Successfully"
@@ -125,7 +126,7 @@ class ClientService:
     def get_your_psychologist(self, access_token):
         token_data = check_token(access_token)
 
-        result = database_service.get_your_psychologist_db(token_data['user_id'])
+        result = client_service_db.get_your_psychologist_db(token_data['user_id'])
         return result
 
 

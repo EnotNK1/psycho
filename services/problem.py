@@ -1,4 +1,5 @@
-from database.services.teest import database_service
+from database.services.users import user_service_db
+from database.services.problem import problem_service_db
 from schemas.problem import ProblemAnalysisCreate, AddProblem
 import uuid
 from psycopg2 import Error
@@ -12,7 +13,7 @@ class ProblemService:
         token_data = check_token(access_token)
 
         try:
-            database_service.add_problem_db(token_data['user_id'], payload.description, payload.goal)
+            problem_service_db.add_problem_db(token_data['user_id'], payload.description, payload.goal)
             return "Successfully"
         except(Error):
             return "error"
@@ -20,9 +21,9 @@ class ProblemService:
     def save_problem_analysis(self, payload: ProblemAnalysisCreate, access_token):
         token_data = check_token(access_token)
 
-        role = database_service.check_role(uuid.UUID(token_data['user_id']))
+        role = user_service_db.check_role(uuid.UUID(token_data['user_id']))
         if role == 1 or role == 2 or role == 3:
-            database_service.save_problem_analysis_db(uuid.UUID(payload.problem_id), payload.type)
+            problem_service_db.save_problem_analysis_db(uuid.UUID(payload.problem_id), payload.type)
             return "Successfully"
         else:
             return "access denied"
@@ -30,9 +31,9 @@ class ProblemService:
     def get_problem_analysis(self, problem_id: str, access_token):
         token_data = check_token(access_token)
 
-        role = database_service.check_role(uuid.UUID(token_data['user_id']))
+        role = user_service_db.check_role(uuid.UUID(token_data['user_id']))
         if role == 1 or role == 2 or role == 3:
-            result = database_service.get_problem_analysis_db(uuid.UUID(problem_id))
+            result = problem_service_db.get_problem_analysis_db(uuid.UUID(problem_id))
             return result
         else:
             return "access denied"
@@ -40,7 +41,7 @@ class ProblemService:
     def get_all_problems(self, user_id: str, access_token):
         token_data = check_token(access_token)
 
-        result = database_service.get_all_problems(uuid.UUID(user_id))
+        result = problem_service_db.get_all_problems(uuid.UUID(user_id))
         return result
 
 

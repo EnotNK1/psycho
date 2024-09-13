@@ -1,4 +1,4 @@
-from database.services.teest import database_service
+from database.services.psychologist import psychologist_service_db
 from schemas.users import Psychologist
 import uuid
 from psycopg2 import Error
@@ -11,7 +11,7 @@ class PsychologistService:
         token_data = check_token(access_token)
 
         try:
-            result = database_service.psychologist_sent_db(token_data['user_id'], payload.username, payload.title,
+            result = psychologist_service_db.psychologist_sent_db(token_data['user_id'], payload.username, payload.title,
                                                            payload.document,
                                                            payload.description,
                                                            payload.city, payload.online, payload.face_to_face,
@@ -28,7 +28,7 @@ class PsychologistService:
     def get_psycholog(self, psycholog_id: str, access_token):
         token_data = check_token(access_token)
 
-        items = database_service.get_psycholog(psycholog_id)
+        items = psychologist_service_db.get_psycholog(psycholog_id)
         return items
 
 
@@ -41,7 +41,7 @@ class PsychologistService:
     def get_all_psycholog(self, access_token):
         token_data = check_token(access_token)
 
-        items = database_service.get_all_psycholog_db()
+        items = psychologist_service_db.get_all_psycholog_db()
         return items
 
 

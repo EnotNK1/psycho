@@ -1,5 +1,5 @@
 from schemas.users import Creds, Reg, ResetPassword, UpdateUser, UserResponse, UserData
-from database.services.teest import database_service
+from database.services.users import user_service_db
 from services.auth import send_email
 from services.auth import generate_token
 import uuid
@@ -27,10 +27,10 @@ class UserServise:
     def get_users(self, access_token) -> list or str:
         token_data = check_token(access_token)
 
-        role = database_service.check_role(uuid.UUID(token_data['user_id']))
+        role = user_service_db.check_role(uuid.UUID(token_data['user_id']))
 
         if role == 0:
-            items = database_service.get_all_users()
+            items = user_service_db.get_all_users()
             return items
         else:
             raise HTTPException(status_code=403, detail="У вас недостаточно прав для выполнения данной операции!")
@@ -41,7 +41,7 @@ class UserServise:
             token_data = check_token(access_token)
             user_id = uuid.UUID(token_data['user_id'])
 
-            user_data = database_service.get_data_user(user_id)
+            user_data = user_service_db.get_data_user(user_id)
             if user_data is None:
                 raise HTTPException(status_code=404, detail="Пользователь не найден")
 
@@ -56,15 +56,15 @@ class UserServise:
 
 
     def authorization(self, payload: Creds, response: Response):
-         if database_service.check_user(payload.email, payload.password) == 0:
-            user = database_service.get_user(payload.email)
+         if user_service_db.check_user(payload.email, payload.password) == 0:
+            user = user_service_db.get_user(payload.email)
             if user == -1:
                 raise HTTPException(status_code=404,
                                     detail="Пользователя с такими данными не найдено!")
             print(user)
             token = generate_token(user.id)
             response.set_cookie(key="access_token", value=token, httponly=True)
-            database_service.add_token_db(user.id, token)
+            user_service_db.add_token_db(user.id, token)
             return {
                 "token": token,
                 "user_id": user.id,
@@ -77,12 +77,12 @@ class UserServise:
 
     def authorization_token(self, payload, response: Response):
 
-        user = database_service.get_user_by_token(payload.token)
+        user = user_service_db.get_user_by_token(payload.token)
         if user == 0:
             raise HTTPException(status_code=400, detail="Не валидный токен!")
         token = generate_token(user.id)
         response.set_cookie(key="access_token", value=token, httponly=True)
-        database_service.add_token_db(user.id, token)
+        user_service_db.add_token_db(user.id, token)
         return {
             "token": token,
             "user_id": user.id,
@@ -95,10 +95,10 @@ class UserServise:
 
         if payload.password == payload.confirm_password:
             user_id = uuid.uuid4()
-            if database_service.register_user(user_id, payload.username, payload.email, payload.password, "",
+            if user_service_db.register_user(user_id, payload.username, payload.email, payload.password, "",
                                               True, False, "", "", 1, False) == 0:
                 token = generate_token(user_id)
-                database_service.add_token_db(user_id, token)
+                user_service_db.add_token_db(user_id, token)
                 new_user = UserResponse(token=token, user_id=user_id, role=1, email=payload.email, username=payload.username)
                 response.set_cookie(key="access_token", value=token, httponly=True)
                 return new_user
@@ -109,9 +109,9 @@ class UserServise:
 
     def reset_password(self, payload: ResetPassword) -> str:
 
-        if database_service.get_id_user(payload.email) != -1:
+        if user_service_db.get_id_user(payload.email) != -1:
             try:
-                user_password = database_service.get_password_user(payload.email)
+                user_password = user_service_db.get_password_user(payload.email)
                 subject = "Password Reset"
                 message = f"Your password is: {user_password}"
                 send_email(payload.email, subject, message)
@@ -126,7 +126,7 @@ class UserServise:
 
         try:
             if (21 > payload.type) and (payload.type > 0):
-                database_service.update_user_db(token_data['user_id'], payload.username, payload.gender, payload.birth_date,
+                user_service_db.update_user_db(token_data['user_id'], payload.username, payload.gender, payload.birth_date,
                                                 payload.request, payload.city, payload.description, payload.type)
                 return "Successfully"
             else:

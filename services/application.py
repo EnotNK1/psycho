@@ -1,5 +1,6 @@
 from schemas.test import ConfirmApplication, SendАpplication
-from database.services.teest import database_service
+from database.services.application import application_service_db
+from database.services.users import user_service_db
 from utils.token_utils import check_token
 import uuid
 from fastapi import FastAPI, HTTPException
@@ -12,9 +13,9 @@ class ApplicationService:
     def send_application(self, payload: SendАpplication, access_token):
         token_data = check_token(access_token)
 
-        role = database_service.check_role(payload.user_id)
+        role = user_service_db.check_role(payload.user_id)
         if (role == 2 or role == 3) and token_data['user_id'] != payload.user_id:
-            result = database_service.send_application_db(token_data['user_id'], uuid.UUID(payload.user_id), payload.text)
+            result = application_service_db.send_application_db(token_data['user_id'], uuid.UUID(payload.user_id), payload.text)
             if result == 0:
                 return "Successfully"
             else:
@@ -25,9 +26,9 @@ class ApplicationService:
     def confirm_application(self, payload: ConfirmApplication, access_token):
         token_data = check_token(access_token)
 
-        role = database_service.check_role(token_data['user_id'])
+        role = user_service_db.check_role(token_data['user_id'])
         if role == 2 or role == 3:
-            result = database_service.confirm_application_db(token_data['user_id'], uuid.UUID(payload.user_id), payload.status)
+            result = application_service_db.confirm_application_db(token_data['user_id'], uuid.UUID(payload.user_id), payload.status)
             if result == 0:
                 return "Successfully"
             else:
@@ -39,9 +40,9 @@ class ApplicationService:
         token_data = check_token(access_token)
 
 
-        role = database_service.check_role(uuid.UUID(token_data['user_id']))
+        role = user_service_db.check_role(uuid.UUID(token_data['user_id']))
         if role == 2 or role == 3:
-            result = database_service.get_list_applications_db(token_data['user_id'])
+            result = application_service_db.get_list_applications_db(token_data['user_id'])
             return result
         else:
             raise HTTPException(status_code=403, detail="У вас недостаточно прав для выполнения данной операции!")
@@ -50,9 +51,9 @@ class ApplicationService:
         token_data = check_token(access_token)
 
 
-        role = database_service.check_role(uuid.UUID(token_data['user_id']))
+        role = user_service_db.check_role(uuid.UUID(token_data['user_id']))
         if role == 2 or role == 3:
-            result = database_service.watch_application_db(token_data['user_id'], app_id)
+            result = application_service_db.watch_application_db(token_data['user_id'], app_id)
             return result
         else:
             raise HTTPException(status_code=403, detail="У вас недостаточно прав для выполнения данной операции!")

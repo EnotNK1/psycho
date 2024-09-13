@@ -1,4 +1,4 @@
-from database.services.teest import database_service
+from database.services.mood_tracker import mood_tracker_service_db
 import uuid
 from psycopg2 import Error
 from utils.token_utils import check_token
@@ -10,7 +10,7 @@ class MoodTrackerService:
         token_data = check_token(access_token)
 
         try:
-            res = database_service.get_mood_tracker_db(mood_tracker_id)
+            res = mood_tracker_service_db.get_mood_tracker_db(mood_tracker_id)
             return res
         except(Error):
             raise HTTPException(status_code=500, detail="Что-то пошло не так!")
@@ -19,7 +19,7 @@ class MoodTrackerService:
         token_data = check_token(access_token)
 
         try:
-            res = database_service.get_all_mood_tracker_db(token_data['user_id'])
+            res = mood_tracker_service_db.get_all_mood_tracker_db(token_data['user_id'])
             return res
         except(Error):
             raise HTTPException(status_code=500, detail="Что-то пошло не так!")
@@ -28,7 +28,7 @@ class MoodTrackerService:
         token_data = check_token(access_token)
 
         try:
-            res = database_service.save_mood_tracker_db(token_data['user_id'], payload.score, payload.free_diary_id,
+            res = mood_tracker_service_db.save_mood_tracker_db(token_data['user_id'], payload.score, payload.free_diary_id,
                                                         payload.think_diary_id, payload.diary_type)
             return res
         except(Error):

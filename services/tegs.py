@@ -1,4 +1,4 @@
-from database.services.teest import database_service
+from database.services.tegs import tegs_service_db
 from psycopg2 import Error
 from utils.token_utils import check_token
 
@@ -7,7 +7,7 @@ class TegsService:
         token_data = check_token(access_token)
 
         try:
-            result = database_service.get_list_tegs()
+            result = tegs_service_db.get_list_tegs()
             return result
         except(Error):
             return "error"

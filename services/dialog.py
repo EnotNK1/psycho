@@ -1,4 +1,4 @@
-from database.services.teest import database_service
+from database.services.dialog import dialog_service_db
 from schemas.test import ReadRIDialog, WritingRIDialog
 from psycopg2 import Error
 from utils.token_utils import check_token
@@ -11,7 +11,7 @@ class DialogService:
         token_data = check_token(access_token)
 
         try:
-            database_service.writing_r_i_dialog_db(payload.problem_id, payload.text, payload.type)
+            dialog_service_db.writing_r_i_dialog_db(payload.problem_id, payload.text, payload.type)
             return "Successfully"
         except(Error):
             return "error"
@@ -20,7 +20,7 @@ class DialogService:
         token_data = check_token(access_token)
 
         try:
-            result = database_service.reading_r_i_dialog_db(payload.problem_id)
+            result = dialog_service_db.reading_r_i_dialog_db(payload.problem_id)
             return result
         except(Error):
             return "error"

@@ -1,4 +1,5 @@
-from database.services.teest import database_service
+from database.services.users import user_service_db
+from database.services.manager import manager_service_db
 from schemas.users import Manager, GiveTask
 import uuid
 from psycopg2 import Error
@@ -11,7 +12,7 @@ class ManagerService:
         token_data = check_token(access_token)
 
         try:
-            result = database_service.manager_send_db(token_data['user_id'], payload.username,
+            result = manager_service_db.manager_send_db(token_data['user_id'], payload.username,
                                                       payload.description,
                                                       payload.city, payload.company, payload.online, payload.gender,
                                                       payload.birth_date)
@@ -26,9 +27,9 @@ class ManagerService:
         token_data = check_token(access_token)
 
         try:
-            role = database_service.check_role(token_data['user_id'])
+            role = user_service_db.check_role(token_data['user_id'])
             if role == 2 or role == 3 or role == 0:
-                result = database_service.give_task_db(token_data['user_id'], payload.text,
+                result = manager_service_db.give_task_db(token_data['user_id'], payload.text,
                                                           payload.test_title,
                                                           payload.test_id, payload.user_id)
                 if result == -2:
@@ -47,7 +48,7 @@ class ManagerService:
     def get_all_manager(self, access_token):
         token_data = check_token(access_token)
 
-        items = database_service.get_all_manager_db()
+        items = manager_service_db.get_all_manager_db()
         return items
 
 
