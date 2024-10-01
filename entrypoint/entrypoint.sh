@@ -13,7 +13,7 @@ sleep 5
 alembic upgrade head
 
 # Выполнение дополнительного кода
-python /app/entrypoint.py
+python /app/entrypoint/entrypoint.py
 
 # Ожидание завершения uvicorn
 wait

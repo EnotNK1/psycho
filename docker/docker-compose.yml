@@ -2,7 +2,9 @@ version: '3'
 
 services:
   app:
-    build: .
+    build:
+      context: ..
+      dockerfile: ./docker/Dockerfile
 #    ports:
 #      - "8080:8080"
     expose:
@@ -28,7 +30,7 @@ services:
     expose:
       - "80"
     volumes:
-      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/nginx.conf:/etc/nginx/nginx:ro
     networks:
       - demo
     depends_on:
