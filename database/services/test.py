@@ -271,6 +271,12 @@ class TestServiceDB:
                     calculator_service.check_number_responses(len(results), answers_cnt)
                     scale_sum_list = calculator_service.test_back_calculate_results(results)
                     result = test_service_db.save_test_res_all_db(test_id, user_id, date, scale_title, scale_sum_list)
+                elif test.title == "Самооценка стрессоустойчивости Коухена-Виллиансона":
+                    answers_cnt = 10
+                    scale_title = ["Шкала воспринимаемого стресса", "Фактор дистресса", "Фактор совладания"]
+                    calculator_service.check_number_responses(len(results), answers_cnt)
+                    scale_sum_list = calculator_service.test_stress_calculate_results(results)
+                    result = test_service_db.save_test_res_all_db(test_id, user_id, date, scale_title, scale_sum_list)
 
 
                 return result

@@ -118,6 +118,7 @@ class TestService:
             create_service_db.create_test(Test_cmq)
             create_service_db.create_test(Test_jas)
             create_service_db.create_test(Test_bek21)
+            create_service_db.create_test(Test_stress)
             return "ok"
         else:
             raise HTTPException(status_code=403, detail="У вас недостаточно прав для выполнения данной операции!")

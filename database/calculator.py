@@ -83,4 +83,13 @@ class Calculator:
         scale_3_sum = calculator_service.sum_specific_elements(answers, indices_3)
         return [scale_1_sum, scale_2_sum, scale_3_sum]
 
+    def test_stress_calculate_results(self, answers: List[int]):
+        indices_1 = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+        indices_2 = [1, 2, 3, 6, 9, 10]
+        indices_3 = [4, 5, 7, 8]
+        scale_1_sum = calculator_service.sum_specific_elements(answers, indices_1)
+        scale_2_sum = calculator_service.sum_specific_elements(answers, indices_2)
+        scale_3_sum = calculator_service.sum_specific_elements(answers, indices_3)
+        return [scale_1_sum, scale_2_sum, scale_3_sum]
+
 calculator_service = Calculator()
