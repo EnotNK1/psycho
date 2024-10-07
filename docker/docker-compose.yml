@@ -24,13 +24,13 @@ services:
       - demo
     mac_address: 02:42:ac:18:00:02
   nginx:
-    image: nginx
+    image: nginx:latest
 #    ports:
 #      - "80:80"
     expose:
       - "80"
     volumes:
-      - ./nginx/nginx.conf:/etc/nginx/nginx:ro
+      - ./nginx:/etc/nginx/conf.d
     networks:
       - demo
     depends_on:

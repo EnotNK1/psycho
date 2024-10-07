@@ -16,7 +16,7 @@ ENV POSTGRES_DB=dbname
 ENV POSTGRES_HOST=db
 
 # Копируем и устанавливаем права на выполнение скрипта entrypoint
-COPY ../entrypoint/entrypoint.sh /entrypoint.sh
+COPY ../entrypoint/entrypoint.sh /app/entrypoint/entrypoint.sh
 RUN chmod +x /app/entrypoint/entrypoint.sh
 
 # Устанавливаем entrypoint
