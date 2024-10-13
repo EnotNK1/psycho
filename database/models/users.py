@@ -2,10 +2,12 @@ import enum
 import uuid
 
 from database.database import Base
-from sqlalchemy import ForeignKey, Enum
+from sqlalchemy import ForeignKey, Enum, Column, String, Boolean, Text, TIMESTAMP, DateTime, func
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
 from database.enum import DiaryType
 import datetime
+
+
 
 from database.models.client import *
 from database.models.diary import *
@@ -96,3 +98,5 @@ class Record(Base):
     date: Mapped[datetime.datetime]
     type: Mapped[str]
     user_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"))
+
+

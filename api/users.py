@@ -1,6 +1,6 @@
 import uuid
 
-from fastapi import APIRouter, Cookie
+from fastapi import APIRouter, Cookie, Depends
 from schemas.users import Creds, Reg, ResetPassword, UpdateUser, AuthToken, UserResponse, UserData
 from services.users import user_service
 from starlette.responses import JSONResponse, Response
@@ -71,3 +71,7 @@ def reset_password(data: ResetPassword):
 )
 def update_user(data: UpdateUser, access_token: str = Cookie(None)):
     return user_service.update_user(data, access_token)
+
+
+
+

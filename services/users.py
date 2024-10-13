@@ -134,5 +134,9 @@ class UserServise:
         except(Error):
             raise HTTPException(status_code=500, detail="Что-то пошло не так!")
 
+#sdfb
+
+
+
 
 user_service: UserServise = UserServise()
