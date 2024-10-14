@@ -1,5 +1,6 @@
 import datetime
 from typing import List, Optional
+from pydantic import BaseModel, EmailStr
 
 import pydantic
 import uuid
@@ -86,3 +87,6 @@ class GiveTask(pydantic.BaseModel):
 
 class TaskId(pydantic.BaseModel):
     task_id: uuid.UUID
+
+
+#yjd

@@ -251,4 +251,14 @@ class UserServiceDB:
                 return 0
 
 
+
+    def get_email_by_id(self, user_id: uuid.UUID):
+        with session_factory() as session:
+            try:
+                user = session.get(Users, user_id)
+                return user.email
+            except (Exception, Error) as error:
+                print(error)
+
+
 user_service_db: UserServiceDB = UserServiceDB()

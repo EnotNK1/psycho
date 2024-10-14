@@ -13,6 +13,7 @@ from database.models.post import *
 from database.models.problem import *
 from database.models.test import *
 from database.models.users import *
+from database.models.review import *
 from database.database import Base
 
 from alembic import context
