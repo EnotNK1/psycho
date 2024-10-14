@@ -14,7 +14,7 @@ from utils.token_utils import check_token
 
 class ReviewService:
 
-    def create_review(self, payload: ReviewCreate, access_token: str) -> str:
+    def create_review(self, payload: ReviewCreate, access_token: str):
         token_data = check_token(access_token)
         user_email = user_service_db.get_email_by_id(uuid.UUID(token_data['user_id']))
 
@@ -22,7 +22,6 @@ class ReviewService:
             raise HTTPException(status_code=404, detail="Пользователь не найден")
 
         review_data = {"text": payload.text, "email": user_email}
-        # Сохранение отзыва
         result = review_service_db.create_review(review_data)
         return result
 

@@ -32,17 +32,16 @@ class ReviewServicedb:
             try:
                 review = Review(
                     id=uuid.uuid4(),
-                    text=review_data.text,
-                    email=review_data.email,
+                    text=review_data["text"],
+                    email=review_data["email"],
                     is_read=False,
                     created_at=datetime.now()
                 )
                 session.add(review)
                 session.commit()
-                return "review.id"
+                return review.id
             except (Exception, Error) as error:
                 print(error)
-                return None
 
 
     def get_all_reviews(self) -> list:

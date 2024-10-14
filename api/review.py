@@ -11,10 +11,10 @@ router = APIRouter()
 @router.post(
     "/review/create",
     tags=["Review"],
-    response_model=str,
+    response_model=None,
 )
-def create_review(data: ReviewCreate, access_token: str = Cookie(None)):
-    return review_service.create_review(data, access_token)
+def create_review(payload: ReviewCreate, access_token: str = Cookie(None)):
+    return review_service.create_review(payload, access_token)
 
 
 @router.get(
