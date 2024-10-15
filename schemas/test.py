@@ -104,6 +104,10 @@ class WritingFreeDiary(pydantic.BaseModel):
 class ResponseReadingFreeDiary(pydantic.BaseModel):
     free_diary_id: uuid.UUID
     text: str
+    created_at: datetime.datetime
+
+    class Config:
+        from_attributes = True
 
 class WritingThinkDiary(pydantic.BaseModel):
     situation: str
@@ -120,6 +124,7 @@ class WritingThinkDiary(pydantic.BaseModel):
 
 class ReadThinkDiary(pydantic.BaseModel):
     think_diary_id: str
+
 
 
 class WritingRIDialog(pydantic.BaseModel):

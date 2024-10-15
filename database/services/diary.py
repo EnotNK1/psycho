@@ -33,7 +33,8 @@ class DiaryServiceDB:
                 temp = FreeDiary(
                     id=uuid.uuid4(),
                     user_id=user_id,
-                    text=text
+                    text=text,
+                    created_at=datetime.now()
                 )
                 session.add(temp)
                 session.commit()
@@ -60,6 +61,7 @@ class DiaryServiceDB:
                     alternative_thought=alternative_thought,
                     new_level=new_level,
                     behavioral=behavioral,
+                    created_at=datetime.now()
                 )
                 session.add(temp)
                 session.commit()
@@ -88,6 +90,7 @@ class DiaryServiceDB:
                 dic["alternative_thought"] = temp.alternative_thought
                 dic["new_level"] = temp.new_level
                 dic["behavioral"] = temp.behavioral
+                dic["created_at"] = temp.created_at
                 return dic
             except (Exception, Error) as error:
                 print(error)
@@ -102,7 +105,8 @@ class DiaryServiceDB:
                 for obj in temp:
                     list.append({
                         "text": obj.text,
-                        "free_diary_id": obj.id
+                        "free_diary_id": obj.id,
+                        "created_at": obj.created_at
                     })
 
                 return list
@@ -120,6 +124,7 @@ class DiaryServiceDB:
                 for obj in temp:
                     dic["id"] = obj.id
                     dic["situation"] = obj.situation
+                    dic["created_at"] = obj.created_at
 
                     lis.append(dic)
                     dic = {}
