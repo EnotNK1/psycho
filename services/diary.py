@@ -6,6 +6,7 @@ from fastapi import FastAPI, HTTPException
 from utils.token_utils import check_token
 
 
+
 class DiaryService:
 
     def writing_free_diary(self, payload: WritingFreeDiary, access_token):
