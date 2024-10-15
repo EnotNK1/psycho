@@ -37,10 +37,14 @@ class EducationServiceDB:
 
                 user_list = []
                 user_dict = {}
+                user_id = uuid.UUID(user_id)
                 for temp in education_theme:
                     score = 0
                     for education_material in temp.educational_material:
-                        score += len(education_material.educational_progress)
+                        if len(education_material.educational_progress) != 0:
+                            for educational_progress in education_material.educational_progress:
+                                if educational_progress.user_id == user_id:
+                                    score += 1
 
                     user_dict['id'] = temp.id
                     user_dict['theme'] = temp.theme
