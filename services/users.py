@@ -96,7 +96,7 @@ class UserServise:
         if payload.password == payload.confirm_password:
             user_id = uuid.uuid4()
             if user_service_db.register_user(user_id, payload.username, payload.email, payload.password, "",
-                                              True, False, "", "", 1, False) == 0:
+                                              True, False, "", "", 1, False, "") == 0:
                 token = generate_token(user_id)
                 user_service_db.add_token_db(user_id, token)
                 new_user = UserResponse(token=token, user_id=user_id, role=1, email=payload.email, username=payload.username)
@@ -127,7 +127,7 @@ class UserServise:
         try:
             if (21 > payload.type) and (payload.type > 0):
                 user_service_db.update_user_db(token_data['user_id'], payload.username, payload.gender, payload.birth_date,
-                                                payload.request, payload.city, payload.description, payload.type)
+                                                payload.request, payload.city, payload.description, payload.department, payload.type)
                 return "Successfully"
             else:
                 raise HTTPException(status_code=400, detail="Тип пользователя введен неверно!")

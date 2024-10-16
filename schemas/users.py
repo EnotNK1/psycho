@@ -37,6 +37,7 @@ class UpdateUser(pydantic.BaseModel):
     request: List[int]
     city: str
     description: str
+    department: str
     type: int
 
 class Inquiry(pydantic.BaseModel):
@@ -49,6 +50,7 @@ class UserData(pydantic.BaseModel):
     request: Optional[List[Inquiry]] = None
     city: Optional[str] = None
     description: Optional[str] = None
+    department: Optional[str] = None
     type: Optional[int] = None
 
 

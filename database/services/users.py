@@ -31,7 +31,7 @@ class UserServiceDB:
         Base.metadata.create_all(engine)
 
     def register_user(self, id, username, email, password, city, online, face_to_face, gender, description, role_id,
-                      is_active):
+                      is_active, department=None):
         with session_factory() as session:
             try:
                 hashed_password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
@@ -45,7 +45,8 @@ class UserServiceDB:
                              gender=gender,
                              description=description,
                              role_id=role_id,
-                             is_active=is_active
+                             is_active=is_active,
+                             department=department
                              )
                 session.add(user)
                 session.commit()
@@ -153,6 +154,7 @@ class UserServiceDB:
                     user_dict['description'] = user.description
                     user_dict['role_id'] = user.role_id
                     user_dict['is_active'] = user.is_active
+                    user_dict['department'] = user.department
                     user_dict['token'] = user.token
                     user_list.append(user_dict)
                     user_dict = {}
@@ -185,6 +187,7 @@ class UserServiceDB:
                     "request": request_list,
                     "city": user.city,
                     "description": user.description,
+                    "department": user.department,
                     "type": type_value
                 }
             except NoResultFound:
@@ -192,7 +195,7 @@ class UserServiceDB:
             except Exception as e:
                 raise RuntimeError(f"Database query error: {e}")
 
-    def update_user_db(self, user_id, username, gender, birth_date, request, city, description, type):
+    def update_user_db(self, user_id, username, gender, birth_date, request, city, description, department, type):
 
         with session_factory() as session:
             inquiry1 = session.query(User_inquiries).filter_by(user_id=user_id, type=type).all()
@@ -203,6 +206,7 @@ class UserServiceDB:
             user.gender = gender
             user.birth_date = birth_date
             user.city = city
+            user.department = department
             if user.role_id == 2:
                 user.description = description
             session.commit()
