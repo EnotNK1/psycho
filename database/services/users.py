@@ -4,6 +4,7 @@ from sqlalchemy.orm import sessionmaker, joinedload, selectinload, join, Declara
 from schemas.test import ResScale, ReqBorder, ReqScale
 from typing import List
 from sqlalchemy.exc import NoResultFound
+import bcrypt
 
 from database.inquiries import inquiries
 from database.models.client import *
@@ -33,10 +34,11 @@ class UserServiceDB:
                       is_active):
         with session_factory() as session:
             try:
+                hashed_password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
                 user = Users(id=id,
                              username=username,
                              email=email,
-                             password=password,
+                             password=hashed_password.decode('utf-8'),
                              city=city,
                              online=online,
                              face_to_face=face_to_face,
@@ -56,9 +58,9 @@ class UserServiceDB:
         with session_factory() as session:
             try:
                 user = session.query(Users).filter_by(email=email).one()
-                pas = user.password
+                hashed_password = user.password.encode('utf-8')
 
-                if pas == password:
+                if bcrypt.checkpw(password.encode('utf-8'), hashed_password):
                     return 0
                 else:
                     return -1
