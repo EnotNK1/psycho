@@ -267,7 +267,7 @@ class TestServiceDB:
                     result = test_service_db.save_test_res_all_db(test_id, user_id, date, scale_title, scale_sum_list)
                 elif test.title == "Шкала депрессии Бека":
                     answers_cnt = 21
-                    scale_title = ["Шкала депрессии", "Когнетивно-аффективная субшкала", "Субшкала соматических проявлений депрессии"]
+                    scale_title = ["Шкала депрессии", "Когнитивно-аффективная субшкала", "Субшкала соматических проявлений депрессии"]
                     calculator_service.check_number_responses(len(results), answers_cnt)
                     scale_sum_list = calculator_service.test_back_calculate_results(results)
                     result = test_service_db.save_test_res_all_db(test_id, user_id, date, scale_title, scale_sum_list)
