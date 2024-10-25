@@ -37,7 +37,7 @@ class Users(Base):
     description: Mapped[str]
     role_id: Mapped[int]
     is_active: Mapped[bool]
-    department: Mapped[str]
+    department: Mapped[str] = mapped_column(nullable=True)
 
     problem: Mapped[List["Problem"]] = relationship(cascade="all, delete-orphan")
     test_result: Mapped[List["Test_result"]] = relationship(cascade="all, delete-orphan")
