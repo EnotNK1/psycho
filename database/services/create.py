@@ -1,6 +1,8 @@
 from psycopg2 import Error
 from sqlalchemy import create_engine, select, func, distinct
 from sqlalchemy.orm import sessionmaker, joinedload, selectinload, join, DeclarativeBase
+
+from database.models.exercise import Exercise_structure, Field
 from schemas.test import ResScale, ReqBorder, ReqScale
 from typing import List
 from sqlalchemy.exc import NoResultFound
@@ -328,5 +330,80 @@ class CreateServiceDB:
             except (Exception, Error) as error:
                 print(error)
                 return -1
+
+    def create_exercise_structure(self, exercise_info):
+        with session_factory() as session:
+            try:
+                temp = session.query(Exercise_structure).filter_by(title=exercise_info.title).first()
+                if not temp:
+                    exercise_id = uuid.uuid4()
+                    create_service_db.add_exercise_structure(exercise_id, exercise_info)
+                else:
+                    create_service_db.recreate_exercise_structure(temp.id, exercise_info)
+
+                return 0
+            except (Exception, Error) as error:
+                print(error)
+                return -1
+
+    def add_exercise_structure(self, exercise_structure_id, exercise_info):
+        with session_factory() as session:
+            try:
+                exercise_structure = Exercise_structure(
+                    id=exercise_structure_id,
+                    title=exercise_info.title,
+                    description=exercise_info.description,
+                    picture_link=exercise_info.picture_link
+                )
+                session.add(exercise_structure)
+
+                for temp_field in exercise_info.fields:
+                    field = Field(
+                        id=uuid.uuid4(),
+                        title=temp_field['title'],
+                        description=temp_field['description'],
+                        type=temp_field['type'],
+                        major=temp_field['major'],
+                        exercise_structure_id=exercise_structure_id
+                    )
+                    session.add(field)
+                session.commit()
+
+            except (Exception, Error) as error:
+                print(error)
+                return -1
+
+    def recreate_exercise_structure(self, exercise_structure_id, exercise_info):
+        with session_factory() as session:
+            try:
+                query = (
+                    session.query(Exercise_structure)
+                    .filter(Exercise_structure.id == exercise_structure_id)
+                    .options(
+                        selectinload(Exercise_structure.field)
+                    )
+                )
+                exercise_structure = query.one_or_none()
+
+                exercise_structure.description = exercise_info.description
+                exercise_structure.picture_link = exercise_info.picture_link
+
+                i = 0
+                for temp_field in exercise_structure.field:
+
+                    temp_field.title=exercise_info.fields[i]['title']
+                    temp_field.description=exercise_info.fields[i]['description']
+                    temp_field.type=exercise_info.fields[i]['type']
+                    temp_field.major=exercise_info.fields[i]['major']
+                    i += 1
+
+                session.commit()
+
+            except (Exception, Error) as error:
+                print(error)
+                return -1
+
+
+
 
 create_service_db: CreateServiceDB = CreateServiceDB()
