@@ -19,6 +19,11 @@ ENV POSTGRES_HOST=db
 COPY ../entrypoint/entrypoint.sh /app/entrypoint/entrypoint.sh
 RUN chmod +x /app/entrypoint/entrypoint.sh
 
+# Консольная команда create_admin
+RUN mv create_admin.py create_admin
+RUN chmod +x /app/create_admin
+
+
 # Устанавливаем entrypoint
 #ENTRYPOINT ["/entrypoint.sh"]
 ENTRYPOINT ["/app/entrypoint/entrypoint.sh"]

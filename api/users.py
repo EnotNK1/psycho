@@ -64,7 +64,7 @@ def reset_password(data: ResetPassword):
     return user_service.reset_password(data)
 
 
-@router.post(
+@router.patch(
     "/users/update_user",
     tags=["Users"],
     response_model=None,
