@@ -27,6 +27,7 @@ class Сompleted_exercise(Base):
     date: Mapped[datetime.datetime]
     exercise_structure_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("exercise_structure.id",
                                                                         ondelete="CASCADE"))
+    user_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"))
 
     filled_field: Mapped[List["Filled_field"]] = relationship(cascade="all, delete-orphan")
 
