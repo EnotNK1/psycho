@@ -138,7 +138,7 @@ class ReadRIDialog(pydantic.BaseModel):
 
 class TestResult(pydantic.BaseModel):
     scale_id: uuid.UUID
-    title: str
+    scale_title: str
     score: float
     conclusion: str
     color: str
