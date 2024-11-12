@@ -15,5 +15,8 @@ alembic upgrade head
 # Выполнение дополнительного кода
 python /app/entrypoint/entrypoint.py
 
+# Выполнение миграций базы данных (если необходимо)
+alembic upgrade head
+
 # Ожидание завершения uvicorn
 wait

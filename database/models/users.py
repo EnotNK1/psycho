@@ -18,6 +18,7 @@ from database.models.mood_tracker import *
 from database.models.post import *
 from database.models.problem import *
 from database.models.test import *
+from database.models.daily_task import *
 
 from typing import List
 
@@ -39,6 +40,7 @@ class Users(Base):
     is_active: Mapped[bool]
     department: Mapped[str] = mapped_column(nullable=True)
 
+    daily_tasks: Mapped[List["Daily_task"]] = relationship(cascade="all, delete-orphan")
     problem: Mapped[List["Problem"]] = relationship(cascade="all, delete-orphan")
     test_result: Mapped[List["Test_result"]] = relationship(cascade="all, delete-orphan")
     behavioral_experiment: Mapped[List["Behavioral_experiment"]] = relationship(cascade="all, delete-orphan")
@@ -98,6 +100,19 @@ class Record(Base):
     text: Mapped[str]
     date: Mapped[datetime.datetime]
     type: Mapped[str]
+    user_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"))
+
+class Daily_task(Base):
+    __tablename__ = "daily_task"
+
+    id: Mapped[uuid.UUID] = mapped_column(primary_key=True)
+    title: Mapped[str]
+    short_desc: Mapped[str]
+    destination_id: Mapped[uuid.UUID]
+    number: Mapped[int]
+    day: Mapped[int]
+    is_complete: Mapped[bool]
+    is_current: Mapped[bool]
     user_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"))
 
 

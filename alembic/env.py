@@ -15,6 +15,7 @@ from database.models.test import *
 from database.models.users import *
 from database.models.review import *
 from database.models.exercise import *
+# from database.models.daily_task import *
 from database.database import Base
 
 from alembic import context

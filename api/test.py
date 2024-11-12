@@ -1,3 +1,4 @@
+import time
 import uuid
 
 from schemas.test import SaveTestRes, CreateTest, GetTestInfo, ResponseGetPassedTests, ResponseGetTestResult, \
@@ -5,6 +6,7 @@ from schemas.test import SaveTestRes, CreateTest, GetTestInfo, ResponseGetPassed
 from services.test import test_service
 from fastapi import Cookie, APIRouter, Query
 from typing import List, Optional
+from fastapi_cache.decorator import cache
 
 router = APIRouter()
 
@@ -62,6 +64,7 @@ def get_passed_tests(access_token: str = Cookie(None)):
     tags=["Test"],
     response_model=None,
 )
+@cache(expire=60*60)
 def get_all_tests():
     return test_service.get_all_tests()
 

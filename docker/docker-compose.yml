@@ -36,6 +36,25 @@ services:
     depends_on:
       - app
     mac_address: 02:42:ac:18:00:03
+  redis:
+    image: redis:latest
+    volumes:
+      - ./redis-data:/data
+    networks:
+      - demo
+    depends_on:
+      - nginx
+  celery:
+    build:
+      context: ..
+      dockerfile: ./docker/Dockerfile
+    command: celery -A tasks.tasks worker -B --loglevel=DEBUG
+    volumes:
+      - .:/celery_app
+    networks:
+      - demo
+    depends_on:
+      - redis
 
 networks:
   demo:

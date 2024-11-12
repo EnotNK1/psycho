@@ -57,7 +57,7 @@ class ExerciseServicedb:
                 print(error)
                 return []
 
-    def get_exercise(self, exercise_id: uuid.UUID) -> list:
+    def get_exercise(self, exercise_id: uuid.UUID):
         with session_factory() as session:
             try:
                 query = select(Exercise_structure).filter_by(id=exercise_id).options(
@@ -65,21 +65,19 @@ class ExerciseServicedb:
                 res = session.execute(query)
                 exercise = res.unique().scalars().all()
 
-                result_list = []
                 for exercise_structure in exercise:
                     result_dict = {
                         "id": exercise_structure.id,
                         "title": exercise_structure.title,
                         "description": exercise_structure.description,
                     }
-                    result_list.append(result_dict)
 
                     field_results = []
                     for field in exercise_structure.field:
                         field_results.append(field)
                     result_dict["field"] = field_results
 
-                return result_list
+                return result_dict
             except (Exception, Error) as error:
                 print(error)
                 return []

@@ -18,6 +18,8 @@ from database.models.post import *
 from database.models.problem import *
 from database.models.test import *
 from database.models.users import *
+from database.models.daily_task import *
+from database.destination_id_info import destination_id
 
 from database.database import engine, session_factory
 from database.calculator import calculator_service
@@ -398,6 +400,267 @@ class CreateServiceDB:
                     i += 1
 
                 session.commit()
+
+            except (Exception, Error) as error:
+                print(error)
+                return -1
+
+# :)
+    def get_destination_id_for_daily_task(self):
+        with session_factory() as session:
+            try:
+                test = session.query(Test).all()
+                exercise = session.query(Exercise_structure).all()
+                education = session.query(Educational_theme).all()
+                destination_id.clear()
+
+                for temp in education:
+                    if temp.theme == "Дыхательные техники":
+                        temp_dict = {"title": temp.theme,
+                                     "short_description": "Изучите основы дыхательных техник для снятия стресса "
+                                                          "и улучшения самочувствия",
+                                     "destination_id": temp.id,
+                                     "number": 1, "day": 1}
+                        destination_id.append(temp_dict)
+                for temp in exercise:
+                    if temp.title == "Трекер настроения":
+                        temp_dict = {"title": temp.title,
+                                     "short_description": "Запишите свои эмоции сегодня, чтобы отслеживать "
+                                                          "изменения в настроении",
+                                     "destination_id": temp.id,
+                                     "number": 2, "day": 1}
+                        destination_id.append(temp_dict)
+                for temp in education:
+                    if temp.theme == "Основы КПТ":
+                        temp_dict = {"title": temp.theme,
+                                     "short_description": "Ознакомьтесь с ключевыми принципами когнитивно-поведенческой"
+                                                          " терапии для изменения мышления",
+                                     "destination_id": temp.id,
+                                     "number": 3, "day": 1}
+                        destination_id.append(temp_dict)
+                for temp in exercise:
+                    if temp.title == "Трекер настроения":
+                        temp_dict = {"title": temp.title,
+                                     "short_description": "Запишите свои эмоции сегодня, чтобы отслеживать "
+                                                          "изменения в настроении",
+                                     "destination_id": temp.id,
+                                     "number": 4, "day": 2}
+                        destination_id.append(temp_dict)
+                for temp in test:
+                    if temp.title == "DASS-21":
+                        temp_dict = {"title": temp.title, "short_description": "", "destination_id": temp.id,
+                                     "number": 5, "day": 2}
+                        destination_id.append(temp_dict)
+                for temp in education:
+                    if temp.theme == "Техники релаксации":
+                        temp_dict = {"title": temp.theme,
+                                     "short_description": "Узнайте о различных методах релаксации для восстановления"
+                                                          " внутреннего баланса",
+                                     "destination_id": temp.id,
+                                     "number": 6, "day": 2}
+                        destination_id.append(temp_dict)
+                for temp in exercise:
+                    if temp.title == "Трекер настроения":
+                        temp_dict = {"title": temp.title,
+                                     "short_description": "Запишите свои эмоции сегодня, чтобы отслеживать "
+                                                          "изменения в настроении",
+                                     "destination_id": temp.id,
+                                     "number": 7, "day": 3}
+                        destination_id.append(temp_dict)
+                for temp in education:
+                    if temp.theme == "Основы КПТ":
+                        temp_dict = {"title": temp.theme,
+                                     "short_description": "Ознакомьтесь с ключевыми принципами когнитивно-поведенческой"
+                                                          " терапии для изменения мышления",
+                                     "destination_id": temp.id,
+                                     "number": 8, "day": 3}
+                        destination_id.append(temp_dict)
+                for temp in exercise:
+                    if temp.title == "КПТ-дневник":
+                        temp_dict = {"title": temp.title,
+                                     "short_description": "Ведите дневник для анализа мыслей и поведения с целью "
+                                                          "улучшения психологического состояния",
+                                     "destination_id": temp.id,
+                                     "number": 9, "day": 3}
+                        destination_id.append(temp_dict)
+                for temp in education:
+                    if temp.theme == "Техники релаксации":
+                        temp_dict = {"title": temp.theme,
+                                     "short_description": "Узнайте о различных методах релаксации для восстановления"
+                                                          " внутреннего баланса",
+                                     "destination_id": temp.id,
+                                     "number": 10, "day": 3}
+                        destination_id.append(temp_dict)
+                for temp in exercise:
+                    if temp.title == "Трекер настроения":
+                        temp_dict = {"title": temp.title,
+                                     "short_description": "Запишите свои эмоции сегодня, чтобы отслеживать "
+                                                          "изменения в настроении",
+                                     "destination_id": temp.id,
+                                     "number": 11, "day": 4}
+                        destination_id.append(temp_dict)
+                for temp in test:
+                    if temp.title == "Индикатор копинг-стратегий":
+                        temp_dict = {"title": temp.title, "short_description": "", "destination_id": temp.id,
+                                     "number": 12, "day": 4}
+                        destination_id.append(temp_dict)
+                for temp in education:
+                    if temp.theme == "Копинг стратегии":
+                        temp_dict = {"title": temp.theme,
+                                     "short_description": "Изучите стратегии преодоления стресса для более эффективного"
+                                                          " управления трудными ситуациями",
+                                     "destination_id": temp.id,
+                                     "number": 13, "day": 4}
+                        destination_id.append(temp_dict)
+                for temp in education:
+                    if temp.theme == "Техники релаксации":
+                        temp_dict = {"title": temp.theme,
+                                     "short_description": "Узнайте о различных методах релаксации для восстановления"
+                                                          " внутреннего баланса",
+                                     "destination_id": temp.id,
+                                     "number": 14, "day": 4}
+                        destination_id.append(temp_dict)
+                for temp in exercise:
+                    if temp.title == "Трекер настроения":
+                        temp_dict = {"title": temp.title,
+                                     "short_description": "Запишите свои эмоции сегодня, чтобы отслеживать "
+                                                          "изменения в настроении",
+                                     "destination_id": temp.id,
+                                     "number": 15, "day": 5}
+                        destination_id.append(temp_dict)
+                for temp in exercise:
+                    if temp.title == "КПТ-дневник":
+                        temp_dict = {"title": temp.title,
+                                     "short_description": "Ведите дневник для анализа мыслей и поведения с целью "
+                                                          "улучшения психологического состояния",
+                                     "destination_id": temp.id,
+                                     "number": 16, "day": 5}
+                        destination_id.append(temp_dict)
+                for temp in test:
+                    if temp.title == "Профессиональное выгорание":
+                        temp_dict = {"title": temp.title,
+                                     "short_description": "",
+                                     "destination_id": temp.id,
+                                     "number": 17, "day": 5}
+                        destination_id.append(temp_dict)
+                for temp in education:
+                    if temp.theme == "Выгорание":
+                        temp_dict = {"title": temp.theme,
+                                     "short_description": "",
+                                     "destination_id": temp.id,
+                                     "number": 18, "day": 5}
+                        destination_id.append(temp_dict)
+                for temp in exercise:
+                    if temp.title == "Трекер настроения":
+                        temp_dict = {"title": temp.title,
+                                     "short_description": "Запишите свои эмоции сегодня, чтобы отслеживать "
+                                                          "изменения в настроении",
+                                     "destination_id": temp.id,
+                                     "number": 19, "day": 6}
+                        destination_id.append(temp_dict)
+                for temp in exercise:
+                    if temp.title == "КПТ-дневник":
+                        temp_dict = {"title": temp.title,
+                                     "short_description": "Ведите дневник для анализа мыслей и поведения с целью "
+                                                          "улучшения психологического состояния",
+                                     "destination_id": temp.id,
+                                     "number": 20, "day": 6}
+                        destination_id.append(temp_dict)
+                for temp in education:
+                    if temp.theme == "Техники релаксации":
+                        temp_dict = {"title": temp.theme,
+                                     "short_description": "Узнайте о различных методах релаксации для восстановления"
+                                                          " внутреннего баланса",
+                                     "destination_id": temp.id,
+                                     "number": 21, "day": 6}
+                        destination_id.append(temp_dict)
+                for temp in exercise:
+                    if temp.title == "Трекер настроения":
+                        temp_dict = {"title": temp.title,
+                                     "short_description": "Запишите свои эмоции сегодня, чтобы отслеживать "
+                                                          "изменения в настроении",
+                                     "destination_id": temp.id,
+                                     "number": 22, "day": 7}
+                        destination_id.append(temp_dict)
+                for temp in test:
+                    if temp.title == "DASS-21":
+                        temp_dict = {"title": temp.title, "short_description": "", "destination_id": temp.id,
+                                     "number": 23, "day": 7}
+                        destination_id.append(temp_dict)
+                for temp in education:
+                    if temp.theme == "Техники релаксации":
+                        temp_dict = {"title": temp.theme,
+                                     "short_description": "Узнайте о различных методах релаксации для восстановления"
+                                                          " внутреннего баланса",
+                                     "destination_id": temp.id,
+                                     "number": 24, "day": 7}
+                        destination_id.append(temp_dict)
+                for temp in exercise:
+                    if temp.title == "Трекер настроения":
+                        temp_dict = {"title": temp.title,
+                                     "short_description": "Запишите свои эмоции сегодня, чтобы отслеживать "
+                                                          "изменения в настроении",
+                                     "destination_id": temp.id,
+                                     "number": 25, "day": 8}
+                        destination_id.append(temp_dict)
+                for temp in exercise:
+                    if temp.title == "КПТ-дневник":
+                        temp_dict = {"title": temp.title,
+                                     "short_description": "Ведите дневник для анализа мыслей и поведения с целью "
+                                                          "улучшения психологического состояния",
+                                     "destination_id": temp.id,
+                                     "number": 26, "day": 8}
+                        destination_id.append(temp_dict)
+                for temp in education:
+                    if temp.theme == "Техники релаксации":
+                        temp_dict = {"title": temp.theme,
+                                     "short_description": "Узнайте о различных методах релаксации для восстановления"
+                                                          " внутреннего баланса",
+                                     "destination_id": temp.id,
+                                     "number": 27, "day": 8}
+                        destination_id.append(temp_dict)
+
+            except (Exception, Error) as error:
+                print(error)
+                return -1
+
+    def add_daily_task(self, user_id):
+        with session_factory() as session:
+            try:
+
+                user = session.get(Users, user_id)
+                if not user.daily_tasks:
+                    create_service_db.get_destination_id_for_daily_task()
+
+                    for i in range(len(destination_id)):
+                        is_current = False
+                        if i in [0, 1, 2]:
+                            is_current = True
+                        daily_task = Daily_task(
+                            id=uuid.uuid4(),
+                            title=destination_id[i]["title"],
+                            short_desc=destination_id[i]["short_description"],
+                            destination_id=destination_id[i]["destination_id"],
+                            number=destination_id[i]["number"],
+                            day=destination_id[i]["day"],
+                            is_complete=False,
+                            is_current=is_current,
+                            user_id=user_id
+                        )
+                        session.add(daily_task)
+                    session.commit()
+
+            except (Exception, Error) as error:
+                print(error)
+                return -1
+
+    def create_daily_task(self):
+        with session_factory() as session:
+            try:
+
+                users = session.query(Users).all()
+                for user in users:
+                    create_service_db.add_daily_task(user.id)
 
             except (Exception, Error) as error:
                 print(error)

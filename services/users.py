@@ -1,3 +1,4 @@
+from database.services.create import create_service_db
 from schemas.users import Creds, Reg, ResetPassword, UpdateUser, UserResponse, UserData
 from database.services.users import user_service_db
 from services.auth import send_email
@@ -101,6 +102,7 @@ class UserServise:
                 user_service_db.add_token_db(user_id, token)
                 new_user = UserResponse(token=token, user_id=user_id, role=1, email=payload.email, username=payload.username)
                 response.set_cookie(key="access_token", value=token, httponly=True)
+                create_service_db.add_daily_task(user_id)
                 return new_user
             else:
                 raise HTTPException(status_code=409, detail="Пользователь с таким адресом электронной почты уже зарегистрирован")

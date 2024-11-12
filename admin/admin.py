@@ -8,3 +8,4 @@ admin = Admin(app, engine)
 
 admin.add_view(UsersAdmin)
 admin.add_view(ReviewAdmin)
+admin.add_view(DailyTaskAdmin)
