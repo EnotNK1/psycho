@@ -17,4 +17,4 @@ def my_scheduled_function():
 
 @celery_app.on_after_configure.connect
 def setup_periodic_task(sender, **kwargs):
-    sender.add_periodic_task(crontab(minute='*/1'), my_scheduled_function.s())
+    sender.add_periodic_task(crontab(hour='20', minute='0'), my_scheduled_function.s())
