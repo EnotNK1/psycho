@@ -29,10 +29,10 @@ from database.services.users import user_service_db
 class PsychologistServiceDB:
 
     def psychologist_sent_db(self, user_id, username, title, document, description, city, online, face_to_face, gender,
-                             birth_date, request):
+                             birth_date, request, department):
         with session_factory() as session:
             try:
-                user_service_db.update_user_db(user_id, username, gender, birth_date, request, city, description, 2)
+                user_service_db.update_user_db(user_id, username, gender, birth_date, request, city, description, 2, department)
                 user = session.get(Users, user_id)
                 user.online = online
                 user.face_to_face = face_to_face

@@ -69,7 +69,7 @@ class Psychologist(pydantic.BaseModel):
     gender: str
     birth_date: datetime.date
     request: List[int]
-
+    department: str
 
 
 class Manager(pydantic.BaseModel):
@@ -90,5 +90,11 @@ class GiveTask(pydantic.BaseModel):
 class TaskId(pydantic.BaseModel):
     task_id: uuid.UUID
 
+class GiveTaskAllClient(pydantic.BaseModel):
+    text: str
+    test_id: uuid.UUID
 
-#yjd
+class GiveTaskListClient(pydantic.BaseModel):
+    text: str
+    test_id: uuid.UUID
+    list_client: List[uuid.UUID]
