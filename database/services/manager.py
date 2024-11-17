@@ -101,5 +101,44 @@ class ManagerServiceDB:
                 return -1
 
 
+    def give_task_all_client(self, user_id, test_id, text):
+        with session_factory() as session:
+            try:
+                temp = session.query(Clients).filter_by(psychologist_id=user_id).all()
+
+                test = session.get(Test, test_id)
+                if test is None:
+                    return -3
+
+                for client in temp:
+                    manager_service_db.give_task_db(user_id, text, test.title, test_id, client.client_id)
+                session.commit()
+
+                return 0
+            except (Exception, Error) as error:
+                print(error)
+                return -1
+
+
+    def give_task_list_client(self, user_id, test_id, text, list_client):
+        with session_factory() as session:
+            try:
+                test = session.get(Test, test_id)
+                if test is None:
+                    return -3
+
+                temp = session.query(Clients).filter_by(psychologist_id=user_id).all()
+                for i in range(len(list_client)):
+                    for client_id2 in temp:
+                        if list_client[i] == client_id2.client_id:
+                            manager_service_db.give_task_db(user_id, text, test.title, test_id, client_id2.client_id)
+
+                session.commit()
+
+                return 0
+            except (Exception, Error) as error:
+                print(error)
+                return -1
+
 
 manager_service_db: ManagerServiceDB = ManagerServiceDB()

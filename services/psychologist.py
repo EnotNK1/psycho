@@ -17,7 +17,7 @@ class PsychologistService:
                                                            payload.city, payload.online, payload.face_to_face,
                                                            payload.gender,
                                                            payload.birth_date,
-                                                           payload.request)
+                                                           payload.request, payload.department)
             if result != -1:
                 return "Successfully"
             else:

@@ -195,7 +195,7 @@ class UserServiceDB:
             except Exception as e:
                 raise RuntimeError(f"Database query error: {e}")
 
-    def update_user_db(self, user_id, username, gender, birth_date, request, city, description, department, type):
+    def update_user_db(self, user_id, username, gender, birth_date, request, city, description, type, department):
 
         with session_factory() as session:
             inquiry1 = session.query(User_inquiries).filter_by(user_id=user_id, type=type).all()
