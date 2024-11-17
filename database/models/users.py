@@ -39,7 +39,6 @@ class Users(Base):
     role_id: Mapped[int]
     is_active: Mapped[bool]
     department: Mapped[str] = mapped_column(nullable=True)
-    level: Mapped[int] = mapped_column(nullable=True)
 
     daily_tasks: Mapped[List["Daily_task"]] = relationship(cascade="all, delete-orphan")
     problem: Mapped[List["Problem"]] = relationship(cascade="all, delete-orphan")
