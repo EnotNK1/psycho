@@ -3,12 +3,11 @@ import uuid
 from database.services.create import create_service_db
 from database.services.users import user_service_db
 from database.test_info import Test_maslach, Test_DASS, Test_STAI, Test_coling_strategy, Test_cmq, Test_jas, Test_bek21, Test_stress
-from database.edu_info import Base, Cbt_base, Burnout, Breathing_techniques, Relaxation_techniques, Coping_strategies
+from database.edu_info import Base, Cbt_base, Burnout, Breathing_techniques, Relaxation_techniques, Coping_strategies, Smer_diary
 from database.exercise_info import Cpt_diary, Mood_tracker, Note
 from database.services.daily_task import daily_task_service_db
 import time
 
-user_service_db.create_tables()
 create_service_db.create_inquirty()
 create_service_db.create_type_analysis()
 create_service_db.create_test(Test_maslach)
@@ -25,6 +24,7 @@ create_service_db.create_education(Burnout)
 create_service_db.create_education(Breathing_techniques)
 create_service_db.create_education(Relaxation_techniques)
 create_service_db.create_education(Coping_strategies)
+create_service_db.create_education(Smer_diary)
 
 create_service_db.create_exercise_structure(Cpt_diary)
 create_service_db.create_exercise_structure(Mood_tracker)

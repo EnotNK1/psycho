@@ -417,22 +417,25 @@ class CreateServiceDB:
                 for temp in education:
                     if temp.theme == "Дыхательные техники":
                         temp_dict = {"title": temp.theme,
-                                     "short_description": "Изучите основы дыхательных техник для снятия стресса "
-                                                          "и улучшения самочувствия",
+                                     "type": DailyTaskType.THEORY.name,
+                                     "short_description": "Изучите основы дыхательных техник для снятия стресса и "
+                                                          "улучшения самочувствия",
                                      "destination_id": temp.id,
                                      "number": 1, "day": 1}
                         destination_id.append(temp_dict)
                 for temp in exercise:
                     if temp.title == "Трекер настроения":
                         temp_dict = {"title": temp.title,
-                                     "short_description": "Запишите свои эмоции сегодня, чтобы отслеживать "
-                                                          "изменения в настроении",
+                                     "type": DailyTaskType.MOOD_TRACKER_AND_FREE_DIARY.name,
+                                     "short_description": "Запишите свои эмоции сегодня, чтобы отслеживать изменения"
+                                                          " в настроении",
                                      "destination_id": temp.id,
                                      "number": 2, "day": 1}
                         destination_id.append(temp_dict)
                 for temp in education:
                     if temp.theme == "Основы КПТ":
                         temp_dict = {"title": temp.theme,
+                                     "type": DailyTaskType.THEORY.name,
                                      "short_description": "Ознакомьтесь с ключевыми принципами когнитивно-поведенческой"
                                                           " терапии для изменения мышления",
                                      "destination_id": temp.id,
@@ -441,43 +444,50 @@ class CreateServiceDB:
                 for temp in exercise:
                     if temp.title == "Трекер настроения":
                         temp_dict = {"title": temp.title,
-                                     "short_description": "Запишите свои эмоции сегодня, чтобы отслеживать "
-                                                          "изменения в настроении",
+                                     "type": DailyTaskType.MOOD_TRACKER_AND_FREE_DIARY.name,
+                                     "short_description": "Запишите свои эмоции сегодня, чтобы отслеживать изменения"
+                                                          " в настроении",
                                      "destination_id": temp.id,
                                      "number": 4, "day": 2}
                         destination_id.append(temp_dict)
                 for temp in test:
                     if temp.title == "DASS-21":
-                        temp_dict = {"title": temp.title, "short_description": "", "destination_id": temp.id,
+                        temp_dict = {"title": temp.title, "type": DailyTaskType.TEST.name, "short_description": "Шкалы депрессии, "
+                                                                                          "тревоги и стресса",
+                                     "destination_id": temp.id,
                                      "number": 5, "day": 2}
                         destination_id.append(temp_dict)
                 for temp in education:
                     if temp.theme == "Техники релаксации":
                         temp_dict = {"title": temp.theme,
-                                     "short_description": "Узнайте о различных методах релаксации для восстановления"
-                                                          " внутреннего баланса",
+                                     "type": DailyTaskType.THEORY.name,
+                                     "short_description": "Узнайте о различных методах релаксации для "
+                                                          "восстановления внутреннего баланса",
                                      "destination_id": temp.id,
                                      "number": 6, "day": 2}
                         destination_id.append(temp_dict)
                 for temp in exercise:
                     if temp.title == "Трекер настроения":
                         temp_dict = {"title": temp.title,
-                                     "short_description": "Запишите свои эмоции сегодня, чтобы отслеживать "
-                                                          "изменения в настроении",
+                                     "type": DailyTaskType.MOOD_TRACKER_AND_FREE_DIARY.name,
+                                     "short_description": "Запишите свои эмоции сегодня, чтобы "
+                                                          "отслеживать изменения в настроении",
                                      "destination_id": temp.id,
                                      "number": 7, "day": 3}
                         destination_id.append(temp_dict)
                 for temp in education:
-                    if temp.theme == "Основы КПТ":
+                    if temp.theme == "КПТ-дневник":
                         temp_dict = {"title": temp.theme,
-                                     "short_description": "Ознакомьтесь с ключевыми принципами когнитивно-поведенческой"
-                                                          " терапии для изменения мышления",
+                                     "type": DailyTaskType.THEORY.name,
+                                     "short_description": "Ведите дневник для анализа мыслей и поведения с "
+                                                          "целью улучшения психологического состояния.",
                                      "destination_id": temp.id,
                                      "number": 8, "day": 3}
                         destination_id.append(temp_dict)
                 for temp in exercise:
                     if temp.title == "КПТ-дневник":
                         temp_dict = {"title": temp.title,
+                                     "type": DailyTaskType.OTHER.name,
                                      "short_description": "Ведите дневник для анализа мыслей и поведения с целью "
                                                           "улучшения психологического состояния",
                                      "destination_id": temp.id,
@@ -486,6 +496,7 @@ class CreateServiceDB:
                 for temp in education:
                     if temp.theme == "Техники релаксации":
                         temp_dict = {"title": temp.theme,
+                                     "type": DailyTaskType.THEORY.name,
                                      "short_description": "Узнайте о различных методах релаксации для восстановления"
                                                           " внутреннего баланса",
                                      "destination_id": temp.id,
@@ -494,6 +505,7 @@ class CreateServiceDB:
                 for temp in exercise:
                     if temp.title == "Трекер настроения":
                         temp_dict = {"title": temp.title,
+                                     "type": DailyTaskType.MOOD_TRACKER_AND_FREE_DIARY.name,
                                      "short_description": "Запишите свои эмоции сегодня, чтобы отслеживать "
                                                           "изменения в настроении",
                                      "destination_id": temp.id,
@@ -501,28 +513,33 @@ class CreateServiceDB:
                         destination_id.append(temp_dict)
                 for temp in test:
                     if temp.title == "Индикатор копинг-стратегий":
-                        temp_dict = {"title": temp.title, "short_description": "", "destination_id": temp.id,
+                        temp_dict = {"title": temp.title, "type": DailyTaskType.TEST.name,
+                                     "short_description": "Опросник Индикатор копинг-стратегий",
+                                     "destination_id": temp.id,
                                      "number": 12, "day": 4}
                         destination_id.append(temp_dict)
                 for temp in education:
                     if temp.theme == "Копинг стратегии":
                         temp_dict = {"title": temp.theme,
-                                     "short_description": "Изучите стратегии преодоления стресса для более эффективного"
-                                                          " управления трудными ситуациями",
+                                     "type": DailyTaskType.THEORY.name,
+                                     "short_description": "Изучите стратегии преодоления стресса, чтобы уверенно  "
+                                                          "справляться с трудными ситуациями",
                                      "destination_id": temp.id,
                                      "number": 13, "day": 4}
                         destination_id.append(temp_dict)
                 for temp in education:
                     if temp.theme == "Техники релаксации":
                         temp_dict = {"title": temp.theme,
-                                     "short_description": "Узнайте о различных методах релаксации для восстановления"
-                                                          " внутреннего баланса",
+                                     "type": DailyTaskType.THEORY.name,
+                                     "short_description": "Узнайте о различных методах релаксации для восстановления "
+                                                          "внутреннего баланса.",
                                      "destination_id": temp.id,
                                      "number": 14, "day": 4}
                         destination_id.append(temp_dict)
                 for temp in exercise:
                     if temp.title == "Трекер настроения":
                         temp_dict = {"title": temp.title,
+                                     "type": DailyTaskType.MOOD_TRACKER_AND_FREE_DIARY.name,
                                      "short_description": "Запишите свои эмоции сегодня, чтобы отслеживать "
                                                           "изменения в настроении",
                                      "destination_id": temp.id,
@@ -531,52 +548,60 @@ class CreateServiceDB:
                 for temp in exercise:
                     if temp.title == "КПТ-дневник":
                         temp_dict = {"title": temp.title,
-                                     "short_description": "Ведите дневник для анализа мыслей и поведения с целью "
-                                                          "улучшения психологического состояния",
+                                     "type": DailyTaskType.OTHER.name,
+                                     "short_description": "Ведите дневник для анализа мыслей и поведения с "
+                                                          "целью улучшения психологического состояния",
                                      "destination_id": temp.id,
                                      "number": 16, "day": 5}
                         destination_id.append(temp_dict)
                 for temp in test:
                     if temp.title == "Профессиональное выгорание":
                         temp_dict = {"title": temp.title,
-                                     "short_description": "",
+                                     "type": DailyTaskType.TEST.name,
+                                     "short_description": "Опросник профессионального выгорания Маслач MBI/ПВ",
                                      "destination_id": temp.id,
                                      "number": 17, "day": 5}
                         destination_id.append(temp_dict)
                 for temp in education:
                     if temp.theme == "Выгорание":
                         temp_dict = {"title": temp.theme,
-                                     "short_description": "",
+                                     "type": DailyTaskType.THEORY.name,
+                                     "short_description": "Понимание причин и признаков выгорания поможет "
+                                                          "предотвратить его и сохранить баланс в жизни",
                                      "destination_id": temp.id,
                                      "number": 18, "day": 5}
                         destination_id.append(temp_dict)
                 for temp in exercise:
                     if temp.title == "Трекер настроения":
                         temp_dict = {"title": temp.title,
-                                     "short_description": "Запишите свои эмоции сегодня, чтобы отслеживать "
-                                                          "изменения в настроении",
+                                     "type": DailyTaskType.MOOD_TRACKER_AND_FREE_DIARY.name,
+                                     "short_description": "Запишите свои эмоции сегодня, "
+                                                          "чтобы отслеживать изменения в настроении",
                                      "destination_id": temp.id,
                                      "number": 19, "day": 6}
                         destination_id.append(temp_dict)
                 for temp in exercise:
                     if temp.title == "КПТ-дневник":
                         temp_dict = {"title": temp.title,
-                                     "short_description": "Ведите дневник для анализа мыслей и поведения с целью "
-                                                          "улучшения психологического состояния",
+                                     "type": DailyTaskType.OTHER.name,
+                                     "short_description": "Ведите дневник для анализа мыслей и поведения с целью"
+                                                          " улучшения психологического состояния",
                                      "destination_id": temp.id,
                                      "number": 20, "day": 6}
                         destination_id.append(temp_dict)
                 for temp in education:
                     if temp.theme == "Техники релаксации":
                         temp_dict = {"title": temp.theme,
-                                     "short_description": "Узнайте о различных методах релаксации для восстановления"
-                                                          " внутреннего баланса",
+                                     "type": DailyTaskType.THEORY.name,
+                                     "short_description": "Узнайте о различных методах релаксации для "
+                                                          "восстановления внутреннего баланса",
                                      "destination_id": temp.id,
                                      "number": 21, "day": 6}
                         destination_id.append(temp_dict)
                 for temp in exercise:
                     if temp.title == "Трекер настроения":
                         temp_dict = {"title": temp.title,
+                                     "type": DailyTaskType.MOOD_TRACKER_AND_FREE_DIARY.name,
                                      "short_description": "Запишите свои эмоции сегодня, чтобы отслеживать "
                                                           "изменения в настроении",
                                      "destination_id": temp.id,
@@ -584,20 +609,24 @@ class CreateServiceDB:
                         destination_id.append(temp_dict)
                 for temp in test:
                     if temp.title == "DASS-21":
-                        temp_dict = {"title": temp.title, "short_description": "", "destination_id": temp.id,
+                        temp_dict = {"title": temp.title, "type": DailyTaskType.TEST.name,
+                                     "short_description": "Шкалы депрессии, тревоги и стресса",
+                                     "destination_id": temp.id,
                                      "number": 23, "day": 7}
                         destination_id.append(temp_dict)
                 for temp in education:
                     if temp.theme == "Техники релаксации":
                         temp_dict = {"title": temp.theme,
-                                     "short_description": "Узнайте о различных методах релаксации для восстановления"
-                                                          " внутреннего баланса",
+                                     "type": DailyTaskType.THEORY.name,
+                                     "short_description": "Узнайте о различных методах релаксации "
+                                                          "для восстановления внутреннего баланса",
                                      "destination_id": temp.id,
                                      "number": 24, "day": 7}
                         destination_id.append(temp_dict)
                 for temp in exercise:
                     if temp.title == "Трекер настроения":
                         temp_dict = {"title": temp.title,
+                                     "type": DailyTaskType.MOOD_TRACKER_AND_FREE_DIARY.name,
                                      "short_description": "Запишите свои эмоции сегодня, чтобы отслеживать "
                                                           "изменения в настроении",
                                      "destination_id": temp.id,
@@ -606,6 +635,7 @@ class CreateServiceDB:
                 for temp in exercise:
                     if temp.title == "КПТ-дневник":
                         temp_dict = {"title": temp.title,
+                                     "type": DailyTaskType.OTHER.name,
                                      "short_description": "Ведите дневник для анализа мыслей и поведения с целью "
                                                           "улучшения психологического состояния",
                                      "destination_id": temp.id,
@@ -614,6 +644,7 @@ class CreateServiceDB:
                 for temp in education:
                     if temp.theme == "Техники релаксации":
                         temp_dict = {"title": temp.theme,
+                                     "type": DailyTaskType.THEORY.name,
                                      "short_description": "Узнайте о различных методах релаксации для восстановления"
                                                           " внутреннего баланса",
                                      "destination_id": temp.id,
@@ -645,6 +676,7 @@ class CreateServiceDB:
                             day=destination_id[i]["day"],
                             is_complete=False,
                             is_current=is_current,
+                            type=destination_id[i]["type"],
                             user_id=user_id
                         )
                         session.add(daily_task)

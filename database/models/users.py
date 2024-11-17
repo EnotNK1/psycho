@@ -39,6 +39,7 @@ class Users(Base):
     role_id: Mapped[int]
     is_active: Mapped[bool]
     department: Mapped[str] = mapped_column(nullable=True)
+    level: Mapped[int] = mapped_column(nullable=True)
 
     daily_tasks: Mapped[List["Daily_task"]] = relationship(cascade="all, delete-orphan")
     problem: Mapped[List["Problem"]] = relationship(cascade="all, delete-orphan")
@@ -110,9 +111,10 @@ class Daily_task(Base):
     short_desc: Mapped[str]
     destination_id: Mapped[uuid.UUID]
     number: Mapped[int]
-    day: Mapped[int]
     is_complete: Mapped[bool]
     is_current: Mapped[bool]
+    day: Mapped[int]
+    type: Mapped[DailyTaskType] = mapped_column(Enum(DailyTaskType))
     user_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"))
 
 

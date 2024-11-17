@@ -128,6 +128,7 @@ class DailyTaskServiceDB:
                 if obj.is_current:
                     task_dict = {
                         "id": obj.id,
+                        "type": obj.type,
                         "title": obj.title,
                         "short_description": obj.short_desc,
                         "destination_id": obj.destination_id,
