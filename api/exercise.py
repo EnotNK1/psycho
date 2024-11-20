@@ -32,7 +32,7 @@ def get_exercise(exercise_id: uuid.UUID, access_token: str = Cookie(None)):
     response_model=None,
 )
 def save_test_result(data: SaveExerciseResult, access_token: str = Cookie(None)):
-    exercise_service.save_exercise_result(data, access_token)
+    return exercise_service.save_exercise_result(data, access_token)
 
 @router.get(
     "/exercise/get_exercise_results/{exercise_id}",

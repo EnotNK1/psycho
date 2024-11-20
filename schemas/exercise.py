@@ -10,7 +10,7 @@ class FieldResult(pydantic.BaseModel):
     value: Union[str, int]
 
 class SaveExerciseResult(pydantic.BaseModel):
-    exercise_result_id: uuid.UUID
+    exercise_structure_id: uuid.UUID
     result: List[FieldResult]
 
 class ResponseGetExerciseResult(pydantic.BaseModel):

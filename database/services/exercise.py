@@ -127,7 +127,6 @@ class ExerciseServicedb:
 
                 session.commit()
                 return {
-                    "result": result,
                     "exercise_result_id": completed_exercise_id
                 }
 
@@ -225,7 +224,7 @@ class ExerciseServicedb:
         with session_factory() as session:
             try:
                 completed_exercise = session.query(Сompleted_exercise).get(completed_exercise_id)
-                if completed_exercise == None:
+                if completed_exercise is None:
                     raise HTTPException(status_code=404, detail="Выполненное упражнение не найдено!")
 
                 if str(user_id) != str(completed_exercise.user_id):
@@ -240,7 +239,6 @@ class ExerciseServicedb:
                         if result.field_id == filled_field.field_id:
                             filled_field.text = result.value
                             break
-
                 session.commit()
             except (Exception, Error) as error:
                 print(error)

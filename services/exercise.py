@@ -33,7 +33,7 @@ class ExerciseService:
         token_data = check_token(access_token)
 
         try:
-            return exercise_service_db.save_exercise_result_db(token_data['user_id'], payload.exercise_result_id,
+            return exercise_service_db.save_exercise_result_db(token_data['user_id'], payload.exercise_structure_id,
                                                 payload.result)
 
         except(Error):
@@ -75,7 +75,7 @@ class ExerciseService:
 
         if exercise == -1:
             raise HTTPException(status_code=500, detail="Что-то пошло не так!")
-        else: print("Выполненное упражнение успешно удалено")
-        return exercise
+        else:
+            return {"status": "OK"}
 
 exercise_service: ExerciseService = ExerciseService()
