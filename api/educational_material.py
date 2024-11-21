@@ -18,7 +18,7 @@ def get_all_theme(access_token: str = Cookie(None)):
 @router.get(
     "/education/get_all_education_material/{education_theme_id}",
     tags=["Education_material"],
-    response_model=List[ResponceGetAllMaterial],
+    response_model=ResponceGetAllMaterial,
 )
 def get_all_education_material(education_theme_id, access_token: str = Cookie(None)):
     return education_service.get_all_education_material(education_theme_id, access_token)

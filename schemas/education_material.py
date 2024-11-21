@@ -8,12 +8,21 @@ import uuid
 class CompleteEducation(pydantic.BaseModel):
     education_material_id: uuid.UUID
 
+
 class ResponceGetAllTheme(pydantic.BaseModel):
     id: uuid.UUID
     theme: str
     score: int
     max_score: int
 
-class ResponceGetAllMaterial(pydantic.BaseModel):
+
+class ResponceMaterial(pydantic.BaseModel):
     id: uuid.UUID
     text: str
+
+
+class ResponceGetAllMaterial(pydantic.BaseModel):
+    theme: str
+    score: int
+    max_score: int
+    materials: List[ResponceMaterial]

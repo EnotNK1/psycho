@@ -20,7 +20,7 @@ class EducationService:
     def get_all_education_material(self, education_theme_id, access_token):
         token_data = check_token(access_token)
 
-        result = education_service_db.get_all_education_material_db(education_theme_id)
+        result = education_service_db.get_all_education_material_db(education_theme_id, token_data["user_id"])
         return result
 
     def complete_education_material(self, payload: CompleteEducation, access_token):

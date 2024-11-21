@@ -59,20 +59,42 @@ class EducationServiceDB:
                 print(error)
                 return -1
 
-    def get_all_education_material_db(self, education_theme_id):
+    def get_all_education_material_db(self, education_theme_id, user_id):
         with session_factory() as session:
             try:
-                education_material = session.query(Educational_material).filter_by(educational_theme_id=education_theme_id).all()
+                query = select(Educational_theme).filter_by(id=education_theme_id).options(
+                    selectinload(Educational_theme.educational_material).selectinload(Educational_material.educational_progress))
+                result = session.execute(query)
+                education_theme = result.scalars().one()
 
-                user_list = []
-                user_dict = {}
-                for temp in education_material:
-                    user_dict['id'] = temp.id
-                    user_dict['text'] = temp.text
+                materials = []
+                temp_dict = {}
+                material_dict = {}
+                user_id = uuid.UUID(user_id)
+                score = 0
+                for education_material in education_theme.educational_material:
+                    material_dict['id'] = education_material.id
+                    material_dict['text'] = education_material.text
 
-                    user_list.append(user_dict)
-                    user_dict = {}
-                return user_list
+                    materials.append(material_dict)
+                    material_dict = {}
+                    if len(education_material.educational_progress) != 0:
+                        for educational_progress in education_material.educational_progress:
+                            if educational_progress.user_id == user_id:
+                                score += 1
+
+                temp_dict['theme'] = education_theme.theme
+                temp_dict['score'] = score
+                temp_dict['max_score'] = len(education_theme.educational_material)
+
+                res_dict = {
+                    "theme": education_theme.theme,
+                    "score": score,
+                    "max_score": len(education_theme.educational_material),
+                    "materials": materials
+                }
+
+                return res_dict
 
             except (Exception, Error) as error:
                 print(error)
