@@ -111,7 +111,7 @@ class EducationServiceDB:
 
             if not temp:
                 education_progress = Educational_progress(
-                    id=edu_id,
+                    id=uuid.uuid4(),
                     user_id=user_id,
                     educational_material_id=edu_id
                 )
