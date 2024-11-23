@@ -345,6 +345,11 @@ class TestServiceDB:
             try:
                 list = []
                 dic = {}
+
+                test = session.query(Test).filter_by(id=test_id).one()
+                if not test:
+                    raise HTTPException(status_code=404, detail="Тест не найден!")
+
                 temp = session.query(Question).filter_by(test_id=test_id).all()
                 if temp == []:
                     return "тест не найден"
@@ -365,7 +370,13 @@ class TestServiceDB:
                     dic = {}
 
                 list.sort(key=lambda x: x['number'])
-                return list
+                dic = {
+                    "title": test.title,
+                    "description": test.description,
+                    "short_desc": test.short_desc,
+                    "questions": list,
+                }
+                return dic
             except (Exception, Error) as error:
                 print(error)
                 return -1
