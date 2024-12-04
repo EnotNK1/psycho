@@ -1,6 +1,9 @@
 from psycopg2 import Error
 from sqlalchemy import create_engine, select, func, distinct
 from sqlalchemy.orm import sessionmaker, joinedload, selectinload, join, DeclarativeBase
+
+from database.models.exercise import Сompleted_exercise
+from database.services.education import education_service_db
 from schemas.test import ResScale, ReqBorder, ReqScale
 from typing import List
 from sqlalchemy.exc import NoResultFound
@@ -17,6 +20,7 @@ from database.models.problem import *
 from database.models.test import *
 from database.models.users import *
 from database.models.review import *
+
 
 from database.database import engine, session_factory
 from database.calculator import calculator_service
@@ -89,18 +93,39 @@ class UserStatisticsServicedb:
                 )
                 res = session.execute(query)
                 clients = res.unique().scalars().all()
+                users = session.query(Users).all()
+                tests = session.query(Test).all()
+                test_titles = {
+                    'Профессиональное выгорание': "выгорание",
+                    'DASS - 21':'DASS-21',
+                    'Шкала тревоги Спилбергера-Ханина, STAI': "тревоги",
+                    'Индикатор копинг-стратегий':"копинг",
+                    'Опросник когнтитвных ошибок CMQ': "CMQ",
+                    'Шкала профессиональной апатии':"апатии",
+                    'Шкала депрессии Бека': "Бека",
+                    'Самооценка стрессоустойчивости Коухена-Виллиансона': "Самооценка"
+                }
+
+
+                user_map = {user.id: user for user in users}
+                test_map = {test.id: test for test in tests}
 
                 for client in clients:
-                    user = session.get(Users, client.client_id)
+                    user = user_map.get(client.client_id)
+                    if not user:
+                        continue
 
                     for test_result in user.test_result:
-                        test = session.get(Test, test_result.test_id)
+                        test = test_map.get(test_result.test_id)
+                        if not test:
+                            continue
+
                         test_title = test.title
-                        ws = wb["апатии"]
-                        temp = []
-                        for scale_result in test_result.scale_result:
-                            temp.append(scale_result.score)
-                        ws.append([user.email] + temp + [test_result.date.strftime("%d.%m.%Y")])
+                        ws = wb[test_titles[test_title]]
+
+                        scores = [scale_result.score for scale_result in test_result.scale_result]
+
+                        ws.append([user.email] + scores + [test_result.date.strftime("%d.%m.%Y")])
 
                 wb.save(fn)
                 wb.close()
@@ -114,5 +139,27 @@ class UserStatisticsServicedb:
             except Exception as error:
                 print(error)
 
+    def user_activity_statistics(self):
+        with session_factory() as session:
+            try:
+                completed_exercise = session.query(Сompleted_exercise).all()
+                users = session.query(Users).all()
+
+                for user in users:
+                    score_list = []
+                    education_list = education_service_db.get_all_education_theme_db(user.id)
+                    for education in education_list:
+                        score_list.append(education['score'])
+
+                    #НЕДАДЕЛАЛИААААА
+
+                return
+            except Exception as error:
+                print(error)
+
 
 user_statistics_service_db: UserStatisticsServicedb = UserStatisticsServicedb()
+
+
+
+

@@ -40,9 +40,12 @@ class UpdateUser(pydantic.BaseModel):
     department: str
     type: int
 
+
 class Inquiry(pydantic.BaseModel):
     text: str
     id: int
+
+
 class UserData(pydantic.BaseModel):
     birth_date: Optional[datetime.date] = None
     gender: Optional[str] = None
@@ -81,18 +84,22 @@ class Manager(pydantic.BaseModel):
     gender: str
     birth_date: datetime.date
 
+
 class GiveTask(pydantic.BaseModel):
     text: str
     user_id: uuid.UUID
     test_title: str
     test_id: uuid.UUID
 
+
 class TaskId(pydantic.BaseModel):
     task_id: uuid.UUID
+
 
 class GiveTaskAllClient(pydantic.BaseModel):
     text: str
     test_id: uuid.UUID
+
 
 class GiveTaskListClient(pydantic.BaseModel):
     text: str

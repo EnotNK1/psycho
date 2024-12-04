@@ -17,8 +17,19 @@ class UserStatisticsService:
 
         role = user_service_db.check_role(uuid.UUID(token_data['user_id']))
 
-        if role in [0, 1, 2, 3]:
+        if role == 0:
             return user_statistics_service_db.general_test_results(psychologist_id)
+        else:
+            raise HTTPException(status_code=403, detail="У вас недостаточно прав для выполнения данной операции!")
+
+
+    def user_activity_statistics(self, access_token: str):
+        token_data = check_token(access_token)
+
+        role = user_service_db.check_role(uuid.UUID(token_data['user_id']))
+
+        if role in [0, 1, 2, 3]:
+            return user_statistics_service_db.user_activity_statistics()
         else:
             raise HTTPException(status_code=403, detail="У вас недостаточно прав для выполнения данной операции!")
 
