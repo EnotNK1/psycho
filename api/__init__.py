@@ -17,6 +17,7 @@ from api.educational_material import router as educational_material_router
 from api.review import router as review_router
 from api.exercise import router as exercise_router
 from api.daily_task import router as daily_task_router
+from api.user_statistics import router as user_statistics_router
 
 router = APIRouter()
 
@@ -37,3 +38,4 @@ router.include_router(educational_material_router)
 router.include_router(review_router)
 router.include_router(exercise_router)
 router.include_router(daily_task_router)
+router.include_router(user_statistics_router)
