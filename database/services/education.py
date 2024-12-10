@@ -26,6 +26,25 @@ from datetime import datetime
 
 
 class EducationServiceDB:
+    def filling_in_links(self, education_theme):
+        with session_factory() as session:
+            try:
+
+                links = [
+                    "img_1.png", "img_2.png",
+                    "img_3.png", "img_4.png", "img_5.png",
+                    "img_6.png", "img_7.png", "img_8.png", "img_9.png",
+                    "img_10.png"
+                ]
+                i = 0
+                for theme in education_theme:
+                    theme.link = links[i]
+                    i += 1
+
+
+            except (Exception, Error) as error:
+                print(error)
+                return -1
 
     def get_all_education_theme_db(self, user_id):
         with session_factory() as session:
@@ -34,11 +53,12 @@ class EducationServiceDB:
                                                           selectinload(Educational_material.educational_progress))
                 result = session.execute(query)
                 education_theme = result.scalars().all()
-
+                education_service_db.filling_in_links(education_theme)
                 user_list = []
                 user_dict = {}
                 user_id = uuid.UUID(user_id)
                 for temp in education_theme:
+
                     score = 0
                     for education_material in temp.educational_material:
                         if len(education_material.educational_progress) != 0:
@@ -50,7 +70,7 @@ class EducationServiceDB:
                     user_dict['theme'] = temp.theme
                     user_dict['score'] = score
                     user_dict['max_score'] = len(temp.educational_material)
-
+                    user_dict['link_to_picture'] = temp.link
                     user_list.append(user_dict)
                     user_dict = {}
                 return user_list
@@ -63,7 +83,8 @@ class EducationServiceDB:
         with session_factory() as session:
             try:
                 query = select(Educational_theme).filter_by(id=education_theme_id).options(
-                    selectinload(Educational_theme.educational_material).selectinload(Educational_material.educational_progress))
+                    selectinload(Educational_theme.educational_material).selectinload(
+                        Educational_material.educational_progress))
                 result = session.execute(query)
                 education_theme = result.scalars().one()
 

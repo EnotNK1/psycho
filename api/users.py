@@ -1,6 +1,8 @@
 import uuid
 
 from fastapi import APIRouter, Cookie, Depends
+from starlette.websockets import WebSocket
+
 from schemas.users import Creds, Reg, ResetPassword, UpdateUser, AuthToken, UserResponse, UserData
 from services.users import user_service
 from starlette.responses import JSONResponse, Response
@@ -73,5 +75,12 @@ def update_user(data: UpdateUser, access_token: str = Cookie(None)):
     return user_service.update_user(data, access_token)
 
 
-
-
+# @router.websocket(
+#     "/users/ws"
+# )
+# async def ws(websocket: WebSocket):
+#     await websocket.accept()
+#     while True:
+#         data = await websocket.receive_text()
+#         print(data)
+#         await websocket.send_text(data)

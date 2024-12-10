@@ -1,8 +1,10 @@
+from numpy.matlib import empty
 from psycopg2 import Error
 from sqlalchemy import create_engine, select, func, distinct
 from sqlalchemy.orm import sessionmaker, joinedload, selectinload, join, DeclarativeBase
+from sqlalchemy.util.queue import Empty
 
-from database.models.exercise import Сompleted_exercise
+from database.models.exercise import Сompleted_exercise, Exercise_structure
 from database.services.education import education_service_db
 from schemas.test import ResScale, ReqBorder, ReqScale
 from typing import List
@@ -20,7 +22,6 @@ from database.models.problem import *
 from database.models.test import *
 from database.models.users import *
 from database.models.review import *
-
 
 from database.database import engine, session_factory
 from database.calculator import calculator_service
@@ -65,7 +66,6 @@ class UserStatisticsServicedb:
                            "Морализация", "Катастрофизация", "Выученная беспомощность", "Максимализм",
                            "Преувеличение опасности", "Гипернормативность", "Дата"])
 
-
                 wb.create_sheet("апатии")
                 ws = wb["апатии"]
                 ws.append(["Email", "Шкала профессиональной апатии", "Апатичные мысли", "Апатичные действия", "Дата"])
@@ -97,15 +97,14 @@ class UserStatisticsServicedb:
                 tests = session.query(Test).all()
                 test_titles = {
                     'Профессиональное выгорание': "выгорание",
-                    'DASS - 21':'DASS-21',
+                    'DASS - 21': 'DASS-21',
                     'Шкала тревоги Спилбергера-Ханина, STAI': "тревоги",
-                    'Индикатор копинг-стратегий':"копинг",
+                    'Индикатор копинг-стратегий': "копинг",
                     'Опросник когнтитвных ошибок CMQ': "CMQ",
-                    'Шкала профессиональной апатии':"апатии",
+                    'Шкала профессиональной апатии': "апатии",
                     'Шкала депрессии Бека': "Бека",
                     'Самооценка стрессоустойчивости Коухена-Виллиансона': "Самооценка"
                 }
-
 
                 user_map = {user.id: user for user in users}
                 test_map = {test.id: test for test in tests}
@@ -145,21 +144,58 @@ class UserStatisticsServicedb:
                 completed_exercise = session.query(Сompleted_exercise).all()
                 users = session.query(Users).all()
 
+                df = pd.DataFrame()
+                excel_file = 'userss.xlsx'
+                df.to_excel(excel_file, index=False)
+                fn = "userss.xlsx"
+                wb = load_workbook(fn)
+                wb.create_sheet("excel score")
+                ws = wb["excel score"]
+                ws.append(["Email", "Основы", "Основы КПТ", "Выгорание", "Дыхательные техники", "Техники релаксации",
+                           "Копинг стратегии", "КПТ-дневник", "Трекер настроения", "КПТ-дневник", "Заметки", "Дата"])
+
                 for user in users:
                     score_list = []
-                    education_list = education_service_db.get_all_education_theme_db(user.id)
+                    date_list = []
+                    score_list_excercise = [0, 0, 0]
+                    education_list = education_service_db.get_all_education_theme_db(str(user.id))
                     for education in education_list:
                         score_list.append(education['score'])
+                    for exercise in completed_exercise:
+                        if str(user.id) == str(exercise.user_id):
+                            date_list.append(exercise.date)
+                    date_set = set(date_list)
 
-                    #НЕДАДЕЛАЛИААААА
+                    print("score_list1")
+                    if not date_list:
+                        ws.append([user.email] + score_list + score_list_excercise)
+                    for date in date_set:
+                        excel_date = ""
+                        for exercise in completed_exercise:
+                            if date == exercise.date and str(user.id) == str(exercise.user_id):
+                                excel_date = date.strftime("%d.%m.%Y")
+                                exercise_structure = session.get(Exercise_structure, exercise.exercise_structure_id)
+                                if exercise_structure.title == "Трекер настроения":
+                                    score_list_excercise[0] += 1
+                                elif exercise_structure.title == "КПТ-дневник":
+                                    score_list_excercise[1] += 1
+                                elif exercise_structure.title == "Заметки":
+                                    score_list_excercise[2] += 1
+                        print(score_list)
+                        print("score_list")
+                        ws.append([user.email] + score_list + score_list_excercise + [excel_date])
 
-                return
+                wb.save(fn)
+                wb.close()
+
+                response = FileResponse(fn,
+                                        media_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+                                        filename=fn)
+
+                return response
+
             except Exception as error:
                 print(error)
 
 
 user_statistics_service_db: UserStatisticsServicedb = UserStatisticsServicedb()
-
-
-
-

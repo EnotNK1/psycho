@@ -14,7 +14,7 @@ class ResponceGetAllTheme(pydantic.BaseModel):
     theme: str
     score: int
     max_score: int
-
+    link_to_picture: str
 
 class ResponceMaterial(pydantic.BaseModel):
     id: uuid.UUID
