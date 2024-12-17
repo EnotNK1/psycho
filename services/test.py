@@ -32,6 +32,16 @@ class TestService:
         else:
             raise HTTPException(status_code=403, detail="У вас недостаточно прав для выполнения данной операции!")
 
+    # def update_test(self, test_id, payload: UpdateTest, access_token) -> str:
+    #     token_data = check_token(access_token)
+    #
+    #     role = user_service_db.check_role(uuid.UUID(token_data['user_id']))
+    #
+    #     if role == 0:
+    #         return create_service_db.update_test_db(test_id, payload.title, payload.description, payload.short_desc)
+    #     else:
+    #         raise HTTPException(status_code=403, detail="У вас недостаточно прав для выполнения данной операции!")
+
     def get_test_res(self, id: str, access_token, user_id):
         token_data = check_token(access_token)
 

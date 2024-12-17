@@ -36,6 +36,10 @@ class CreateTest(pydantic.BaseModel):
     short_desc: str
     scales: List[ReqScale]
 
+# class UpdateTest(pydantic.BaseModel):
+#     title: str
+#     description: str
+#     short_desc: str
 
 class ResponseScale(pydantic.BaseModel):
     scale_id: uuid.UUID

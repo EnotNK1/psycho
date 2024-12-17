@@ -100,3 +100,11 @@ def delete_test(test_id: uuid.UUID, access_token: str = Cookie(None)):
 def auto_create(access_token: str = Cookie(None)):
     return test_service.auto_create(access_token)
 
+# @router.put(
+#     "/test/{test_id}",
+#     tags=["Test"],
+#     response_model=None,
+# )
+# def update_test(test_id, data: UpdateTest, access_token: str = Cookie(None)):
+#     return test_service.update_test(test_id, data, access_token)
+

@@ -125,6 +125,19 @@ class CreateServiceDB:
             except (Exception, Error) as error:
                 raise error
 
+    # def update_test_db(self, test_id,  title, description, short_desc):
+    #     with session_factory() as session:
+    #         try:
+    #             test = session.get(Test, test_id)
+    #             test.title = title
+    #             test.description = description
+    #             test.short_desc = short_desc
+    #
+    #             session.commit()
+    #             return "Successfully!"
+    #         except (Exception, Error) as error:
+    #             raise error
+
     def add_test_db(self, test_id, test_info):
         with session_factory() as session:
             try:
