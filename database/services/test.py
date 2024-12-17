@@ -53,7 +53,6 @@ class TestServiceDB:
                         for scal in scale:
                             for border in scal.borders:
                                 if scale_result.score >= border.left_border and scale_result.score <= border.right_border:
-
                                     new_scale_result = {
                                         "scale_id": scale_result.scale_id,
                                         "scale_title": scal.title,
@@ -150,20 +149,42 @@ class TestServiceDB:
                 print(error)
                 return -1
 
+    def filling_in_links(self, tests):
+        with session_factory() as session:
+            try:
+
+                links = [
+                    "img_1.png", "img_2.png",
+                    "img_3.png", "img_4.png", "img_5.png",
+                    "img_6.png", "img_7.png", "img_8.png"
+                ]
+                i = 0
+                for theme in tests:
+                    theme.link = links[i]
+                    i += 1
+
+
+            except (Exception, Error) as error:
+                print(error)
+                return -1
+
     def get_all_tests_db(self):
         with session_factory() as session:
             try:
                 query = select(Test)
                 result = session.execute(query)
-                users = result.scalars().all()
+                tests = result.scalars().all()
+
+                test_service_db.filling_in_links(tests)
 
                 user_list = []
                 user_dict = {}
-                for user in users:
+                for user in tests:
                     user_dict['title'] = user.title
                     user_dict['description'] = user.description
                     user_dict['short_desc'] = user.short_desc
                     user_dict['test_id'] = user.id
+                    user_dict['link_to_picture'] = user.link
 
                     user_list.append(user_dict)
                     user_dict = {}
@@ -253,7 +274,8 @@ class TestServiceDB:
                     result = test_service_db.save_test_res_all_db(test_id, user_id, date, scale_title, scale_sum_list)
                 elif test.title == "Опросник когнтитвных ошибок CMQ":
                     answers_cnt = 45
-                    scale_title = ["Шкала когнитивных ошибок", "Персонализация", "Чтение мыслей", "Упрямство", "Морализация", "Катастрофизация",
+                    scale_title = ["Шкала когнитивных ошибок", "Персонализация", "Чтение мыслей", "Упрямство",
+                                   "Морализация", "Катастрофизация",
                                    "Выученная беспомощность", "Максимализм", "Преувеличение опасности",
                                    "Гипернормативность"]
                     calculator_service.check_number_responses(len(results), answers_cnt)
@@ -267,7 +289,8 @@ class TestServiceDB:
                     result = test_service_db.save_test_res_all_db(test_id, user_id, date, scale_title, scale_sum_list)
                 elif test.title == "Шкала депрессии Бека":
                     answers_cnt = 21
-                    scale_title = ["Шкала депрессии", "Когнитивно-аффективная субшкала", "Субшкала соматических проявлений депрессии"]
+                    scale_title = ["Шкала депрессии", "Когнитивно-аффективная субшкала",
+                                   "Субшкала соматических проявлений депрессии"]
                     calculator_service.check_number_responses(len(results), answers_cnt)
                     scale_sum_list = calculator_service.test_back_calculate_results(results)
                     result = test_service_db.save_test_res_all_db(test_id, user_id, date, scale_title, scale_sum_list)
@@ -277,7 +300,6 @@ class TestServiceDB:
                     calculator_service.check_number_responses(len(results), answers_cnt)
                     scale_sum_list = calculator_service.test_stress_calculate_results(results)
                     result = test_service_db.save_test_res_all_db(test_id, user_id, date, scale_title, scale_sum_list)
-
 
                 return result
 
@@ -320,7 +342,6 @@ class TestServiceDB:
                             conclusion = bord.title
                             user_recommendation = bord.user_recommendation
                             break
-
 
                     temp["scale_id"] = scale.id
                     temp["scale_title"] = scale.title

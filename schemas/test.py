@@ -36,6 +36,7 @@ class CreateTest(pydantic.BaseModel):
     short_desc: str
     scales: List[ReqScale]
 
+
 # class UpdateTest(pydantic.BaseModel):
 #     title: str
 #     description: str
@@ -76,6 +77,7 @@ class ConfirmApplication(pydantic.BaseModel):
     user_id: str
     status: bool
 
+
 class ResponseGetClient(pydantic.BaseModel):
     username: str
     client_id: uuid.UUID
@@ -113,6 +115,7 @@ class ResponseReadingFreeDiary(pydantic.BaseModel):
     class Config:
         from_attributes = True
 
+
 class WritingThinkDiary(pydantic.BaseModel):
     situation: str
     mood: str
@@ -130,7 +133,6 @@ class ReadThinkDiary(pydantic.BaseModel):
     think_diary_id: str
 
 
-
 class WritingRIDialog(pydantic.BaseModel):
     problem_id: uuid.UUID
     text: str
@@ -140,6 +142,7 @@ class WritingRIDialog(pydantic.BaseModel):
 class ReadRIDialog(pydantic.BaseModel):
     problem_id: uuid.UUID
 
+
 class TestResult(pydantic.BaseModel):
     scale_id: uuid.UUID
     scale_title: str
@@ -148,9 +151,11 @@ class TestResult(pydantic.BaseModel):
     color: str
     user_recommendation: str
 
+
 class SaveTestResult(pydantic.BaseModel):
     test_result_id: uuid.UUID
     result: List[TestResult]
+
 
 class ScaleResult(pydantic.BaseModel):
     scale_id: uuid.UUID
@@ -160,6 +165,7 @@ class ScaleResult(pydantic.BaseModel):
     conclusion: str
     color: str
     user_recommendation: str
+
 
 class ResponseGetTestResult(pydantic.BaseModel):
     test_id: uuid.UUID
@@ -172,6 +178,8 @@ class ResponseGetPassedTests(pydantic.BaseModel):
     title: str
     description: str
     test_id: uuid.UUID
+    link: str
+
 
 class ResponseGetPsychologist(pydantic.BaseModel):
     id: uuid.UUID
@@ -179,6 +187,7 @@ class ResponseGetPsychologist(pydantic.BaseModel):
     username: str
     is_active: bool
     request: List[str]
+
 
 class ResponseGetTask(pydantic.BaseModel):
     id: uuid.UUID

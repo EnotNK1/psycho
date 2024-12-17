@@ -17,6 +17,7 @@ class Test(Base):
     title: Mapped[str]
     description: Mapped[str]
     short_desc: Mapped[str]
+    link: Mapped[str]
 
     test_result: Mapped[List["Test_result"]] = relationship(cascade="all, delete-orphan")
     question: Mapped[List["Question"]] = relationship(cascade="all, delete-orphan")

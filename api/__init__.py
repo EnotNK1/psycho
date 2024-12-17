@@ -1,5 +1,6 @@
 from fastapi import APIRouter
 
+from api.web_socket import router as web_socket
 from api.users import router as user_router
 from api.items import router as item_router
 from api.test import router as test_router
@@ -39,3 +40,4 @@ router.include_router(review_router)
 router.include_router(exercise_router)
 router.include_router(daily_task_router)
 router.include_router(user_statistics_router)
+router.include_router(web_socket)
