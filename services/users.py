@@ -4,6 +4,7 @@ from database.services.users import user_service_db
 from services.auth import send_email
 from services.auth import generate_token
 import uuid
+import bcrypt
 from starlette.responses import Response
 from smtplib import SMTPRecipientsRefused
 from psycopg2 import Error
