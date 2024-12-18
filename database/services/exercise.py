@@ -27,7 +27,26 @@ from fastapi import FastAPI, HTTPException
 import uuid
 from datetime import datetime
 
+
 class ExerciseServicedb:
+
+    def filling_in_links(self, exercise):
+        with session_factory() as session:
+            try:
+
+                links = [
+                    "img_1.png", "img_2.png",
+                    "img_3.png"
+                ]
+                i = 0
+                for theme in exercise:
+                    theme.picture_link = links[i]
+                    i += 1
+
+
+            except (Exception, Error) as error:
+                print(error)
+                return -1
 
     def get_all_exercises(self) -> list:
         with session_factory() as session:
@@ -36,12 +55,15 @@ class ExerciseServicedb:
                 res = session.execute(query)
                 exercise = res.unique().scalars().all()
 
+                exercise_service_db.filling_in_links(exercise)
+
                 result_list = []
                 for exercise_structure in exercise:
                     result_dict = {
                         "id": exercise_structure.id,
                         "title": exercise_structure.title,
                         "description": exercise_structure.description,
+                        "link_to_picture": exercise_structure.picture_link
                     }
                     result_list.append(result_dict)
 
@@ -242,5 +264,6 @@ class ExerciseServicedb:
                 session.commit()
             except (Exception, Error) as error:
                 print(error)
+
 
 exercise_service_db: ExerciseServicedb = ExerciseServicedb()

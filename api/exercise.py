@@ -1,14 +1,17 @@
+import shutil
 import uuid
 
-from fastapi import APIRouter, Cookie, Depends
-from schemas.exercise import SaveExerciseResult, ResponseGetExerciseResult, ResponseGetDetailExerciseResult, EditExerciseResult
+from fastapi import APIRouter, Cookie, Depends, UploadFile, File
+from schemas.exercise import SaveExerciseResult, ResponseGetExerciseResult, ResponseGetDetailExerciseResult, \
+    EditExerciseResult
 from services.exercise import exercise_service
 from database.models.exercise import Filled_field
 from services.review import review_service
-from starlette.responses import JSONResponse, Response
+from starlette.responses import JSONResponse, Response, FileResponse
 from typing import List, Optional
 
 router = APIRouter()
+
 
 @router.get(
     "/exercise/get_all_exercises",
@@ -18,6 +21,7 @@ router = APIRouter()
 def get_all_exercises(access_token: str = Cookie(None)):
     return exercise_service.get_all_exercises(access_token)
 
+
 @router.get(
     "/exercise/get_exercise",
     tags=["Exercise"],
@@ -25,6 +29,7 @@ def get_all_exercises(access_token: str = Cookie(None)):
 )
 def get_exercise(exercise_id: uuid.UUID, access_token: str = Cookie(None)):
     return exercise_service.get_exercise(exercise_id, access_token)
+
 
 @router.post(
     "/exercise/save_exercise_result",
@@ -34,6 +39,7 @@ def get_exercise(exercise_id: uuid.UUID, access_token: str = Cookie(None)):
 def save_test_result(data: SaveExerciseResult, access_token: str = Cookie(None)):
     return exercise_service.save_exercise_result(data, access_token)
 
+
 @router.get(
     "/exercise/get_exercise_results/{exercise_id}",
     tags=["Exercise"],
@@ -41,6 +47,7 @@ def save_test_result(data: SaveExerciseResult, access_token: str = Cookie(None))
 )
 def get_exercise_results(exercise_id: str, access_token: str = Cookie(None)):
     return exercise_service.get_exercise_res(exercise_id, access_token)
+
 
 @router.get(
     "/exercise/get_exercise_result/{completed_exercise_id}",
@@ -50,6 +57,7 @@ def get_exercise_results(exercise_id: str, access_token: str = Cookie(None)):
 def get_exercise_results(completed_exercise_id: str, access_token: str = Cookie(None)):
     return exercise_service.get_completed_exercise_res(completed_exercise_id, access_token)
 
+
 @router.delete(
     "/exercise/delete_exercise_result/{completed_exercise_id}",
     tags=["Exercise"],
@@ -57,6 +65,7 @@ def get_exercise_results(completed_exercise_id: str, access_token: str = Cookie(
 )
 def delete_exercise_result(completed_exercise_id: str, access_token: str = Cookie(None)):
     return exercise_service.delete_exercise_result(completed_exercise_id, access_token)
+
 
 @router.patch(
     "/exercise/edit_exercise_result",
@@ -67,7 +76,24 @@ def edit_exercise_result(data: EditExerciseResult, access_token: str = Cookie(No
     return exercise_service.edit_exercise_result(data, access_token)
 
 
+@router.post(
+    "/exercise/upload/images_exercise",
+    tags=["Exercise"],
+    response_model=None,
+)
+def upload_image(file: UploadFile = File(...)):
+    with open(f"database/images_exercise/{file.filename}", "wb") as buffer:
+        shutil.copyfileobj(file.file, buffer)
+    return {"filename": file.filename}
 
+
+@router.get(
+    "/exercise/images_exercise/{filename}",
+    tags=["Exercise"],
+    response_model=None,
+)
+def get_images(filename: str, access_token: str = Cookie(None)):
+    return FileResponse(f"database/images_exercise/{filename}")
 
 # @router.patch(
 #     "/review/read/{review_id}",
