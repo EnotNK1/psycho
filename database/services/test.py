@@ -154,9 +154,9 @@ class TestServiceDB:
             try:
 
                 links = [
-                    "img_1.png", "img_2.png",
-                    "img_3.png", "img_4.png", "img_5.png",
-                    "img_6.png", "img_7.png", "img_8.png"
+                    "Профессиональное_выгорание.png", "img_2.png",
+                    "Оценка_тревожности.png", "Индикатор_копинг_стратегий.png", "Опросник_когнитивных_ошибок_CMQ.png",
+                    "Шкала_профессиональной_апатии.png", "Шкала_Депрессии.png", "img_8.png"
                 ]
                 i = 0
                 for theme in tests:
