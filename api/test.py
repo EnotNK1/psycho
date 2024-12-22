@@ -62,7 +62,7 @@ def get_passed_tests(user_id: str, access_token: str = Cookie(None)):
 @router.get(
     "/test/get_passed_tests",
     tags=["Test"],
-    response_model=List[ResponseGetPassedTests],
+    response_model=None,
 )
 def get_passed_tests(access_token: str = Cookie(None)):
     return test_service.get_your_passed_tests(access_token)
