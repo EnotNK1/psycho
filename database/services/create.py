@@ -264,7 +264,7 @@ class CreateServiceDB:
     def create_test(self, test_info):
         with session_factory() as session:
             try:
-                temp = session.query(Test).filter_by(title=test_info.title).first()
+                temp = session.query(Test).filter_by(description=test_info.description).first()
                 if not temp:
                     test_id = uuid.uuid4()
                     create_service_db.add_test_db(test_id, test_info)

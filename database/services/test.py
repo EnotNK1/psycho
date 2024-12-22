@@ -248,31 +248,31 @@ class TestServiceDB:
                 if not test:
                     raise HTTPException(status_code=404, detail="Тест не найден!")
 
-                if test.title == "Профессиональное выгорание":
+                if test.title == "Выгорание на работе: определите свой уровень":
                     answers_cnt = 22
                     scale_title = ["Эмоциональное истощение", "Деперсонализация", "Редукция проф. достижений"]
                     calculator_service.check_number_responses(len(results), answers_cnt)
                     scale_sum_list = calculator_service.test_maslach_calculate_results(results)
                     result = test_service_db.save_test_res_all_db(test_id, user_id, date, scale_title, scale_sum_list)
-                elif test.title == "Шкала профессиональной апатии":
+                elif test.title == "Чувствуете апатию на работе? Проверьте себя":
                     answers_cnt = 10
                     scale_title = ["Шкала профессиональной апатии", "Апатичные мысли", "Апатичные действия"]
                     calculator_service.check_number_responses(len(results), answers_cnt)
                     scale_sum_list = calculator_service.test_jas_calculate_results(results)
                     result = test_service_db.save_test_res_all_db(test_id, user_id, date, scale_title, scale_sum_list)
-                elif test.title == "DASS-21":
+                elif test.title == "Комплексная оценка стресса, тревоги и склонности к депрессивным состояниям":
                     answers_cnt = 21
                     scale_title = ["Тревога", "Депрессия", "Стресс"]
                     calculator_service.check_number_responses(len(results), answers_cnt)
                     scale_sum_list = calculator_service.test_dass21_calculate_results(results)
                     result = test_service_db.save_test_res_all_db(test_id, user_id, date, scale_title, scale_sum_list)
-                elif test.title == "Шкала тревоги Спилбергера-Ханина, STAI":
+                elif test.title == "Проверьте свой уровень тревожности":
                     answers_cnt = 40
                     scale_title = ["Шкала ситуативной тревожности", "Шкала личностной тревожности"]
                     calculator_service.check_number_responses(len(results), answers_cnt)
                     scale_sum_list = calculator_service.test_stai_calculate_results(results)
                     result = test_service_db.save_test_res_all_db(test_id, user_id, date, scale_title, scale_sum_list)
-                elif test.title == "Опросник когнтитвных ошибок CMQ":
+                elif test.title == "Оцените свой способ мышления и восприятия ситуаций":
                     answers_cnt = 45
                     scale_title = ["Шкала когнитивных ошибок", "Персонализация", "Чтение мыслей", "Упрямство",
                                    "Морализация", "Катастрофизация",
@@ -281,20 +281,20 @@ class TestServiceDB:
                     calculator_service.check_number_responses(len(results), answers_cnt)
                     scale_sum_list = calculator_service.test_cmq_calculate_results(results)
                     result = test_service_db.save_test_res_all_db(test_id, user_id, date, scale_title, scale_sum_list)
-                elif test.title == "Индикатор копинг-стратегий":
+                elif test.title == "Узнайте, как вы справляетесь со стрессом":
                     answers_cnt = 33
                     scale_title = ["Разрешение проблем", "Поиск социальной поддержки", "Избегание проблем"]
                     calculator_service.check_number_responses(len(results), answers_cnt)
                     scale_sum_list = calculator_service.test_coling_calculate_results(results)
                     result = test_service_db.save_test_res_all_db(test_id, user_id, date, scale_title, scale_sum_list)
-                elif test.title == "Шкала депрессии Бека":
+                elif test.title == "Проверьте свой уровень склонности к депрессивным состояниям":
                     answers_cnt = 21
                     scale_title = ["Шкала депрессии", "Когнитивно-аффективная субшкала",
                                    "Субшкала соматических проявлений депрессии"]
                     calculator_service.check_number_responses(len(results), answers_cnt)
                     scale_sum_list = calculator_service.test_back_calculate_results(results)
                     result = test_service_db.save_test_res_all_db(test_id, user_id, date, scale_title, scale_sum_list)
-                elif test.title == "Самооценка стрессоустойчивости Коухена-Виллиансона":
+                elif test.title == "Насколько вы стрессоустойчивы?":
                     answers_cnt = 10
                     scale_title = ["Шкала воспринимаемого стресса", "Фактор дистресса", "Фактор совладания"]
                     calculator_service.check_number_responses(len(results), answers_cnt)
