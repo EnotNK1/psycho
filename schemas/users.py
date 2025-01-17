@@ -26,8 +26,13 @@ class UserResponse(pydantic.BaseModel):
     username: str
 
 
-class ResetPassword(pydantic.BaseModel):
-    email: str
+class EmailRequest(BaseModel):
+    email: EmailStr
+
+
+class ResetPasswordRequest(BaseModel):
+    token: str
+    new_password: str
 
 
 class UpdateUser(pydantic.BaseModel):

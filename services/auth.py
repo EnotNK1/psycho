@@ -30,7 +30,7 @@ def verify_token(token):
 # Подключение к серверу SMTP для отправки электронных писем
 def send_email(receiver_email: str, subject: str, message: str):
     sender_email = "obsudim.7@mail.ru"
-    password = "MySAWsLx6WkitzCanTay"
+    password = "GhAQewHficykLEQkejUZ"
 
     msg = MIMEText(message)
     msg['Subject'] = subject

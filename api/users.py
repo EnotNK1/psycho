@@ -3,7 +3,7 @@ import uuid
 from fastapi import APIRouter, Cookie, Depends
 from starlette.websockets import WebSocket
 
-from schemas.users import Creds, Reg, ResetPassword, UpdateUser, AuthToken, UserResponse, UserData
+from schemas.users import Creds, Reg, EmailRequest, ResetPasswordRequest, UpdateUser, AuthToken, UserResponse, UserData
 from services.users import user_service
 from starlette.responses import JSONResponse, Response
 
@@ -58,11 +58,19 @@ def get_data_user(access_token: str = Cookie(None)):
 
 
 @router.post(
+    "/users/reset_password_request",
+    tags=["Users"],
+    response_model=None,
+)
+def reset_password_request(data: EmailRequest):
+    return user_service.reset_password_request(data)
+
+@router.post(
     "/users/reset_password",
     tags=["Users"],
     response_model=None,
 )
-def reset_password(data: ResetPassword):
+def reset_password(data: ResetPasswordRequest):
     return user_service.reset_password(data)
 
 

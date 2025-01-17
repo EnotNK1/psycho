@@ -1,16 +1,18 @@
 from database.services.create import create_service_db
-from schemas.users import Creds, Reg, ResetPassword, UpdateUser, UserResponse, UserData
+from schemas.users import Creds, Reg, EmailRequest, ResetPasswordRequest, UpdateUser, UserResponse, UserData
 from database.services.users import user_service_db
 from services.auth import send_email
 from services.auth import generate_token
 import uuid
-import bcrypt
 from starlette.responses import Response
 from smtplib import SMTPRecipientsRefused
 from psycopg2 import Error
 from fastapi import FastAPI, HTTPException
+from fastapi.responses import JSONResponse
 from utils.token_utils import check_token
+from itsdangerous import URLSafeTimedSerializer, BadData
 
+serializer = URLSafeTimedSerializer('secret_key')
 
 app = FastAPI()
 
@@ -110,19 +112,35 @@ class UserServise:
         else:
             raise HTTPException(status_code=400, detail="Пароли не совпадают!")
 
-    def reset_password(self, payload: ResetPassword) -> str:
+    def reset_password_request(self, payload: EmailRequest) -> str:
 
         if user_service_db.get_id_user(payload.email) != -1:
             try:
-                user_password = user_service_db.get_password_user(payload.email)
+
+                token = serializer.dumps(payload.email)
+                reset_link = f"https://психолог.демо-стенд.рф/reset_password?token={token}"
+
                 subject = "Password Reset"
-                message = f"Your password is: {user_password}"
+                message = f"Перейдите по ссылке для восстановления пароля: {reset_link}"
                 send_email(payload.email, subject, message)
                 return "The password email has been sent"
             except SMTPRecipientsRefused:
                 raise HTTPException(status_code=400, detail="Email введен неверно!")
         else:
             raise HTTPException(status_code=404, detail="Ни один пользователь с этой учетной записью электронной почты не найден!")
+
+    def reset_password(self, payload: ResetPasswordRequest):
+        try:
+            email = serializer.loads(payload.token, max_age=3600)
+        except BadData:
+            raise HTTPException(status_code=400, detail="Invalid or expired token")
+
+        if user_service_db.get_id_user(email) == -1:
+            raise HTTPException(status_code=404, detail="User not found")
+
+        user_service_db.update_user_password(email, payload.new_password)
+
+        return "123"
 
     def update_user(self, payload: UpdateUser, access_token):
         token_data = check_token(access_token)
@@ -136,10 +154,6 @@ class UserServise:
                 raise HTTPException(status_code=400, detail="Тип пользователя введен неверно!")
         except(Error):
             raise HTTPException(status_code=500, detail="Что-то пошло не так!")
-
-#sdfb
-
-
 
 
 user_service: UserServise = UserServise()

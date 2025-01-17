@@ -133,6 +133,18 @@ class UserServiceDB:
                 print(error)
                 return -1
 
+    def update_user_password(self, email, new_password):
+        with session_factory() as session:
+            try:
+                user = session.query(Users).filter_by(email=email).one()
+                user.password = new_password
+                session.commit()
+                return 0
+
+            except (Exception, Error) as error:
+                print(error)
+                return -1
+
     def get_all_users(self):
         with session_factory() as session:
             try:

@@ -1,5 +1,4 @@
 from database.services.exercise import exercise_service_db
-from schemas.users import Creds, Reg, ResetPassword, UpdateUser, UserResponse, UserData
 from schemas.exercise import SaveExerciseResult, EditExerciseResult
 from database.models.exercise import Сompleted_exercise, Filled_field
 from database.services.users import user_service_db
