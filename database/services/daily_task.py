@@ -159,5 +159,12 @@ class DailyTaskServiceDB:
             for obj in user:
                 daily_task_service_db.change_daily_tasks(obj.id)
 
+    def auto_complete_daily_task(self, user_id, destination_id):
+        task_list = daily_task_service_db.get_daily_tasks(user_id)
+        for task in task_list:
+            if task["destination_id"] == destination_id:
+                daily_task_service_db.complete_daily_task(task["id"])
+
+
 
 daily_task_service_db: DailyTaskServiceDB = DailyTaskServiceDB()

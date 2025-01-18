@@ -3,6 +3,7 @@ from schemas.test import SaveTestRes, CreateTest
 from database.services.test import test_service_db
 from database.services.users import user_service_db
 from database.services.create import create_service_db
+from database.services.daily_task import daily_task_service_db
 import uuid
 from psycopg2 import Error
 from fastapi import FastAPI, HTTPException
@@ -15,8 +16,11 @@ class TestService:
         token_data = check_token(access_token)
 
         try:
-            return test_service_db.save_test_result_db(token_data['user_id'], uuid.UUID(payload.test_id),
+            result = test_service_db.save_test_result_db(token_data['user_id'], uuid.UUID(payload.test_id),
                                                  payload.date, payload.results)
+
+            daily_task_service_db.auto_complete_daily_task(token_data['user_id'], uuid.UUID(payload.test_id))
+            return result
 
         except(Error):
             return "error"

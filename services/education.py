@@ -1,3 +1,4 @@
+from database.services.daily_task import daily_task_service_db
 from database.test_info import *
 from schemas.education_material import CompleteEducation
 from database.services.education import education_service_db
@@ -27,6 +28,9 @@ class EducationService:
         token_data = check_token(access_token)
 
         result = education_service_db.complete_education_material_db(payload.education_material_id, token_data['user_id'])
+
+        theme_id = education_service_db.get_edu_theme_by_edu_material(payload.education_material_id)
+        daily_task_service_db.auto_complete_daily_task(token_data['user_id'], theme_id)
         return result
 
 

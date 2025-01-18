@@ -1,3 +1,4 @@
+from database.services.daily_task import daily_task_service_db
 from database.services.exercise import exercise_service_db
 from schemas.exercise import SaveExerciseResult, EditExerciseResult
 from database.models.exercise import Сompleted_exercise, Filled_field
@@ -32,8 +33,11 @@ class ExerciseService:
         token_data = check_token(access_token)
 
         try:
-            return exercise_service_db.save_exercise_result_db(token_data['user_id'], payload.exercise_structure_id,
+            result = exercise_service_db.save_exercise_result_db(token_data['user_id'], payload.exercise_structure_id,
                                                 payload.result)
+            daily_task_service_db.auto_complete_daily_task(token_data['user_id'], payload.exercise_structure_id)
+            return result
+
 
         except(Error):
             return "error"

@@ -145,5 +145,21 @@ class EducationServiceDB:
             else:
                 raise HTTPException(status_code=409, detail="Данный материал уже пройден!")
 
+    def get_edu_theme_by_edu_material(self, edu_material_id):
+        with session_factory() as session:
+            stmt = select(Educational_material.educational_theme_id).where(
+                Educational_material.id == edu_material_id
+            )
+            theme_id = session.scalar(stmt)
+
+            if theme_id is None:
+                return None
+
+            stmt = select(Educational_theme).where(Educational_theme.id == theme_id)
+            theme = session.execute(stmt).scalar_one_or_none()
+
+            return theme.id
+
+
 
 education_service_db: EducationServiceDB = EducationServiceDB()
