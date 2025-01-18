@@ -33,6 +33,7 @@ class EmailRequest(BaseModel):
 class ResetPasswordRequest(BaseModel):
     token: str
     new_password: str
+    confirm_new_password: str
 
 
 class UpdateUser(pydantic.BaseModel):

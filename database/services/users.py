@@ -133,7 +133,10 @@ class UserServiceDB:
                 print(error)
                 return -1
 
-    def update_user_password(self, email, new_password):
+    def update_user_password(self, email, new_password, confirm_new_password):
+        if new_password != confirm_new_password:
+            return -2
+
         with session_factory() as session:
             try:
                 user = session.query(Users).filter_by(email=email).one()

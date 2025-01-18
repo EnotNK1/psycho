@@ -118,7 +118,7 @@ class UserServise:
             try:
 
                 token = serializer.dumps(payload.email)
-                reset_link = f"https://психолог.демо-стенд.рф/reset_password?token={token}"
+                reset_link = f"https://психолог.демо-стенд.рф/password/change/{token}"
 
                 subject = "Password Reset"
                 message = f"Перейдите по ссылке для восстановления пароля: {reset_link}"
@@ -138,9 +138,10 @@ class UserServise:
         if user_service_db.get_id_user(email) == -1:
             raise HTTPException(status_code=404, detail="User not found")
 
-        user_service_db.update_user_password(email, payload.new_password)
+        if user_service_db.update_user_password(email, payload.new_password, payload.confirm_new_password) == -2:
+            raise HTTPException(status_code=400, detail="Passwords do not match")
 
-        return "123"
+        return {"status": "ok"}
 
     def update_user(self, payload: UpdateUser, access_token):
         token_data = check_token(access_token)
