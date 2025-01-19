@@ -27,6 +27,7 @@ class Educational_material(Base):
     text: Mapped[str]
     title: Mapped[str]
     type: Mapped[int]
+    link_to_picture: Mapped[str] = mapped_column(nullable=True)
     educational_theme_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("educational_theme.id", ondelete="CASCADE"))
 
     educational_progress: Mapped[List["Educational_progress"]] = relationship(cascade="all, delete-orphan")

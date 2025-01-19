@@ -19,6 +19,7 @@ class ResponceGetAllTheme(pydantic.BaseModel):
 class ResponceMaterial(pydantic.BaseModel):
     id: uuid.UUID
     text: str
+    link_to_picture: str
 
 
 class ResponceGetAllMaterial(pydantic.BaseModel):

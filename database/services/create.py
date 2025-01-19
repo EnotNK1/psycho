@@ -305,6 +305,7 @@ class CreateServiceDB:
                     education_material = Educational_material(
                         id=education_material_id,
                         text=edu_info.text[i],
+                        link_to_picture=edu_info.link_to_picture[i],
                         title=edu_info.title,
                         type=edu_info.type,
                         educational_theme_id=edu_id
@@ -335,6 +336,7 @@ class CreateServiceDB:
                 i = 0
                 for educational_material in education.educational_material:
                     educational_material.text = edu_info.text[i]
+                    educational_material.link_to_picture = edu_info.link_to_picture[i]
                     educational_material.title = edu_info.title
                     educational_material.type = edu_info.type
                     i += 1

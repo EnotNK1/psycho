@@ -97,6 +97,7 @@ class EducationServiceDB:
                 for education_material in education_theme.educational_material:
                     material_dict['id'] = education_material.id
                     material_dict['text'] = education_material.text
+                    material_dict['link_to_picture'] = education_material.link_to_picture
 
                     materials.append(material_dict)
                     material_dict = {}
