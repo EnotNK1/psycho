@@ -54,3 +54,11 @@ def upload_image(file: UploadFile = File(...)):
 )
 def get_images(filename: str, access_token: str = Cookie(None)):
     return FileResponse(f"database/images_education_material/{filename}")
+
+@router.delete(
+    "/education/{theme_id}",
+    tags=["Education_material"],
+    response_model=None,
+)
+def delete_theme(theme_id, access_token: str = Cookie(None)):
+    return education_service.delete_education(theme_id, access_token)

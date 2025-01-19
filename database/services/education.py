@@ -31,10 +31,11 @@ class EducationServiceDB:
             try:
 
                 links = [
-                    "img_1.png", "img_2.png",
-                    "img_3.png", "img_4.png", "img_5.png",
-                    "img_6.png", "img_7.png", "img_8.png", "img_9.png",
-                    "img_10.png"
+                    "/education/images_education_material/img_2.png", "/education/images_education_material/img_3.png",
+                    "/education/images_education_material/img_4.png", "/education/images_education_material/img_5.png",
+                    "/education/images_education_material/img_6.png", "/education/images_education_material/img_7.png",
+                    "/education/images_education_material/img_7.png", "/education/images_education_material/img_8.png",
+                    "/education/images_education_material/img_9.png", "/education/images_education_material/img_10.png"
                 ]
                 i = 0
                 for theme in education_theme:
@@ -159,6 +160,20 @@ class EducationServiceDB:
             theme = session.execute(stmt).scalar_one_or_none()
 
             return theme.id
+
+    def delete_education_theme_db(self, education_theme_id):
+        with session_factory() as session:
+            try:
+                temp = session.query(Educational_theme).get(education_theme_id)
+                session.delete(temp)
+                session.commit()
+                dic = {}
+                dic['status'] = "OK"
+
+                return dic
+            except (Exception, Error) as error:
+                print(error)
+                return -1
 
 
 
