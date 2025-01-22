@@ -116,6 +116,12 @@ class ResponseReadingFreeDiary(pydantic.BaseModel):
         from_attributes = True
 
 
+class WritingFreeDiaryWithDate(pydantic.BaseModel):
+    text: str
+    created_at: datetime.date
+
+
+
 class WritingThinkDiary(pydantic.BaseModel):
     situation: str
     mood: str

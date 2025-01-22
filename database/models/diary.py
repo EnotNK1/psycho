@@ -17,7 +17,7 @@ class FreeDiary(Base):
     id: Mapped[uuid.UUID] = mapped_column(primary_key=True)
     user_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"))
     text: Mapped[str]
-    created_at: Mapped[datetime.datetime]
+    created_at: Mapped[datetime.date]
 
     mood_tracker: Mapped[List["Mood_tracker"]] = relationship(cascade="all, delete-orphan")
 

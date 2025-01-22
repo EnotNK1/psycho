@@ -23,6 +23,8 @@ from database.enum import DiaryType
 from fastapi import FastAPI, HTTPException
 import uuid
 from datetime import datetime
+from sqlalchemy.sql.expression import cast
+from sqlalchemy.types import Date
 
 
 class DiaryServiceDB:
@@ -113,6 +115,49 @@ class DiaryServiceDB:
             except (Exception, Error) as error:
                 print(error)
                 return -1
+            
+    def writing_free_diary_with_date_db(self, user_id, text, created_at):
+        with session_factory() as session:
+            try:
+                temp = FreeDiary(
+                    id=uuid.uuid4(),
+                    user_id=user_id,
+                    text=text,
+                    created_at=created_at,
+                )
+                session.add(temp)
+                session.commit()
+                return 0
+            except (Exception, Error) as error:
+                print(error)
+                return -1
+            
+    def reading_free_diary_with_date_db(self, user_id, date):
+        with session_factory() as session:
+            try:
+                temp = (
+                    session.query(FreeDiary)
+                    .filter(
+                        FreeDiary.user_id == user_id,
+                        cast(FreeDiary.created_at, Date) == date,  # Сравнение только по дате
+                    )
+                    .all()
+                )
+                # Формируем список заметок
+                result = [
+                    {
+                        "text": obj.text,
+                        "free_diary_id": str(obj.id),
+                        "created_at": obj.created_at,
+                    }
+                    for obj in temp
+                ]
+
+                return result
+            except (Exception, Error) as error:
+                print(error)
+                return -1
+
 
     def get_all_think_diary_db(self, user_id):
         with session_factory() as session:

@@ -1,9 +1,10 @@
-from schemas.test import ReadThinkDiary, WritingThinkDiary, WritingFreeDiary
+from schemas.test import ReadThinkDiary, WritingThinkDiary, WritingFreeDiary, WritingFreeDiaryWithDate
 from database.services.diary import diary_service_db
 from psycopg2 import Error
 import uuid
 from fastapi import FastAPI, HTTPException
 from utils.token_utils import check_token
+from datetime import datetime
 
 
 
@@ -16,6 +17,17 @@ class DiaryService:
             diary_service_db.writing_free_diary_db(token_data['user_id'], payload.text)
             return "Successfully"
         except(Error):
+            raise HTTPException(status_code=500, detail="Что-то пошло не так!")
+    
+    def writing_free_diary_with_date(self, payload: WritingFreeDiaryWithDate, access_token):
+        token_data = check_token(access_token)
+
+        try:
+            diary_service_db.writing_free_diary_with_date_db(
+                token_data["user_id"], payload.text, payload.created_at
+            )
+            return "Successfully"
+        except Error:
             raise HTTPException(status_code=500, detail="Что-то пошло не так!")
 
     def writing_think_diary(self, payload: WritingThinkDiary, access_token):
@@ -38,6 +50,18 @@ class DiaryService:
             result = diary_service_db.reading_free_diary_db(token_data['user_id'])
             return result
         except(Error):
+            raise HTTPException(status_code=500, detail="Что-то пошло не так!")
+        
+    def reading_free_diary_with_date(self, access_token, date: str):
+        token_data = check_token(access_token)
+        try:
+            # Преобразуем строку в объект datetime.date
+            date_object = datetime.strptime(date, "%Y-%m-%d").date()
+            result = diary_service_db.reading_free_diary_with_date_db(
+                token_data["user_id"], date_object
+            )
+            return result
+        except Error:
             raise HTTPException(status_code=500, detail="Что-то пошло не так!")
 
     def reading_think_diary(self, payload: ReadThinkDiary, access_token):
