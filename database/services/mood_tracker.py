@@ -23,10 +23,12 @@ from database.enum import DiaryType
 from fastapi import FastAPI, HTTPException
 import uuid
 from datetime import datetime
+from sqlalchemy.sql.expression import cast
+from sqlalchemy.types import Date
 
 class MoodTrackerServiceDB:
 
-    def save_mood_tracker_db(self, user_id, score, free_diary_id, think_diary_id, diary_type):
+    def save_mood_tracker_db(self, user_id, score, free_diary_id, think_diary_id, diary_type, date):
         with session_factory() as session:
             if think_diary_id:
                 temp = session.get(Diary_record, think_diary_id)
@@ -38,7 +40,10 @@ class MoodTrackerServiceDB:
                     raise HTTPException(status_code=404, detail="Запись вольного дневника не найдена!")
 
             id = uuid.uuid4()
-            date = datetime.utcnow()
+
+            if date is None:
+                date = datetime.utcnow()
+
             if diary_type:
                 diary_type = DiaryType(diary_type)
 
@@ -58,11 +63,22 @@ class MoodTrackerServiceDB:
             }
             return dic
 
-    def get_all_mood_tracker_db(self, user_id):
+    def get_all_mood_tracker_db(self, user_id, date):
         with session_factory() as session:
             try:
                 list = []
-                temp = session.query(Mood_tracker).filter_by(user_id=user_id).all()
+
+                if date:
+                    temp = (
+                        session.query(Mood_tracker)
+                        .filter(
+                            Mood_tracker.user_id == user_id,
+                            cast(Mood_tracker.date, Date) == date,  # Сравнение только по дате
+                        )
+                        .all()
+                    )
+                else:
+                    temp = session.query(Mood_tracker).filter_by(user_id=user_id).all()
 
                 for obj in temp:
                     list.append(obj)
@@ -71,6 +87,27 @@ class MoodTrackerServiceDB:
             except (Exception, Error) as error:
                 print(error)
                 return -1
+
+    # def get_all_mood_tracker_with_date_db(self, user_id, date):
+    #     with session_factory() as session:
+    #         try:
+    #             list = []
+    #             temp = (
+    #                 session.query(Mood_tracker)
+    #                 .filter(
+    #                     Mood_tracker.user_id == user_id,
+    #                     cast(Mood_tracker.date, Date) == date,  # Сравнение только по дате
+    #                 )
+    #                 .all()
+    #             )
+    #
+    #             for obj in temp:
+    #                 list.append(obj)
+    #
+    #             return list
+    #         except (Exception, Error) as error:
+    #             print(error)
+    #             return -1
 
     def get_mood_tracker_db(self, mood_tracker_id):
         with session_factory() as session:

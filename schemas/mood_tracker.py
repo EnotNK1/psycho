@@ -8,6 +8,7 @@ import uuid
 
 class SaveMoodTracker(pydantic.BaseModel):
     score: int
+    date: Optional[datetime.datetime] = None
     free_diary_id: Optional[uuid.UUID] = None
     think_diary_id: Optional[uuid.UUID] = None
     diary_type: Optional[DiaryType] = None

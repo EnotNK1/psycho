@@ -22,8 +22,16 @@ def save_mood_tracker(data: SaveMoodTracker, access_token: str = Cookie(None)):
     tags=["Mood_tracker"],
     response_model=List[ResponseGetTracker],
 )
-def get_all_mood_tracker(access_token: str = Cookie(None)):
-    return mood_tracker_service.get_all_mood_tracker(access_token)
+def get_all_mood_tracker(date: Optional[str] = None, access_token: str = Cookie(None)):
+    return mood_tracker_service.get_all_mood_tracker(date, access_token)
+
+# @router.get(
+#     "/mood_tracker/get_all_mood_tracker_with_date",
+#     tags=["Mood_tracker"],
+#     response_model=List[ResponseGetTracker],
+# )
+# def get_all_mood_tracker_with_date(date, access_token: str = Cookie(None)):
+#     return mood_tracker_service.get_all_mood_tracker_with_date(date, access_token)
 
 @router.get(
     "/mood_tracker/get_mood_tracker/{mood_tracker_id}",
