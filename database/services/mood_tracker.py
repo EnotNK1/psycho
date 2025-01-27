@@ -82,8 +82,6 @@ class MoodTrackerServiceDB:
                     temp = session.query(Mood_tracker).filter_by(user_id=user_id).order_by(Mood_tracker.date).all()
 
                 for obj in temp:
-                    if isinstance(obj.date, datetime):
-                        obj.date = obj.date.date()
 
                     list.append(obj)
 

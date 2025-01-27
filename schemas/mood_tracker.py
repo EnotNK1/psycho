@@ -22,7 +22,7 @@ class ResponseGetTracker(pydantic.BaseModel):
     id: uuid.UUID
     user_id: uuid.UUID
     score: int
-    date: datetime.date
+    date: datetime.datetime
     free_diary_id: Optional[uuid.UUID] = None
     think_diary_id: Optional[uuid.UUID] = None
     diary_type: Optional[DiaryType] = None
