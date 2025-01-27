@@ -110,7 +110,7 @@ class WritingFreeDiary(pydantic.BaseModel):
 class ResponseReadingFreeDiary(pydantic.BaseModel):
     free_diary_id: uuid.UUID
     text: str
-    created_at: datetime.datetime
+    created_at: datetime.date
 
     class Config:
         from_attributes = True

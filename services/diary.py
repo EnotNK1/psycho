@@ -52,13 +52,11 @@ class DiaryService:
         except(Error):
             raise HTTPException(status_code=500, detail="Что-то пошло не так!")
         
-    def reading_free_diary_with_date(self, access_token, date: str):
+    def reading_free_diary_with_date(self, access_token, date: datetime.date):
         token_data = check_token(access_token)
         try:
-            # Преобразуем строку в объект datetime.date
-            date_object = datetime.strptime(date, "%Y-%m-%d").date()
             result = diary_service_db.reading_free_diary_with_date_db(
-                token_data["user_id"], date_object
+                token_data["user_id"], date
             )
             return result
         except Error:

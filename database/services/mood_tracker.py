@@ -73,14 +73,18 @@ class MoodTrackerServiceDB:
                         session.query(Mood_tracker)
                         .filter(
                             Mood_tracker.user_id == user_id,
-                            cast(Mood_tracker.date, Date) == date,  # Сравнение только по дате
+                            cast(Mood_tracker.date, Date) == date,
                         )
+                        .order_by(Mood_tracker.date)
                         .all()
                     )
                 else:
-                    temp = session.query(Mood_tracker).filter_by(user_id=user_id).all()
+                    temp = session.query(Mood_tracker).filter_by(user_id=user_id).order_by(Mood_tracker.date).all()
 
                 for obj in temp:
+                    if isinstance(obj.date, datetime):
+                        obj.date = obj.date.date()
+
                     list.append(obj)
 
                 return list

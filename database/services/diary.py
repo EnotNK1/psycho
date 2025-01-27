@@ -102,7 +102,7 @@ class DiaryServiceDB:
         with session_factory() as session:
             try:
                 list = []
-                temp = session.query(FreeDiary).filter_by(user_id=user_id).all()
+                temp = session.query(FreeDiary).filter_by(user_id=user_id).order_by(FreeDiary.created_at).all()
 
                 for obj in temp:
                     list.append({
@@ -139,8 +139,9 @@ class DiaryServiceDB:
                     session.query(FreeDiary)
                     .filter(
                         FreeDiary.user_id == user_id,
-                        cast(FreeDiary.created_at, Date) == date,  # Сравнение только по дате
+                        cast(FreeDiary.created_at, Date) == date,
                     )
+                    .order_by(FreeDiary.created_at)
                     .all()
                 )
                 # Формируем список заметок

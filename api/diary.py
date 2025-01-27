@@ -1,3 +1,5 @@
+import datetime
+
 from schemas.test import WritingFreeDiary, WritingThinkDiary, ReadThinkDiary, ReadRIDialog, ResponseReadingFreeDiary, WritingFreeDiaryWithDate
 from services.diary import diary_service
 
@@ -43,7 +45,7 @@ def writing_free_diary_with_date(data: WritingFreeDiaryWithDate, access_token: s
     tags=["Diary"],
     response_model=List[ResponseReadingFreeDiary],
 )
-def reading_free_diary_with_date(date: str, access_token: str = Cookie(None)):
+def reading_free_diary_with_date(date: datetime.date, access_token: str = Cookie(None)):
     return diary_service.reading_free_diary_with_date(access_token, date)
 
 
