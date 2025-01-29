@@ -160,14 +160,21 @@ class ExerciseServicedb:
     def get_exercise_results(self, exercise_id, user_id):
         with session_factory() as session:
             try:
-                exercise_results = session.query(Сompleted_exercise).filter(
+                exercise_results = session.query(
+                    Сompleted_exercise.id.label('completed_exercise_id'),
+                    Сompleted_exercise.date,
+                    Exercise_structure.title
+                ).join(
+                    Exercise_structure, Exercise_structure.id == Сompleted_exercise.exercise_structure_id
+                ).filter(
                     (Сompleted_exercise.exercise_structure_id == exercise_id) & (Сompleted_exercise.user_id == user_id)
                 ).all()
                 results_list = []
 
                 for exercise_result in exercise_results:
                     result_dict = {
-                        "completed_exercise_id": exercise_result.id,
+                        "title": exercise_result.title,
+                        "completed_exercise_id": exercise_result.completed_exercise_id,
                         "date": exercise_result.date
                     }
                     results_list.append(result_dict)

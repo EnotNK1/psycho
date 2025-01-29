@@ -264,7 +264,7 @@ class CreateServiceDB:
     def create_test(self, test_info):
         with session_factory() as session:
             try:
-                temp = session.query(Test).filter_by(description=test_info.description).first()
+                temp = session.query(Test).filter_by(short_desc=test_info.short_desc).first()
                 if not temp:
                     test_id = uuid.uuid4()
                     create_service_db.add_test_db(test_id, test_info)
@@ -295,7 +295,7 @@ class CreateServiceDB:
         with session_factory() as session:
             try:
                 education = Educational_theme(
-                    id=edu_id,
+                    id=uuid.UUID(edu_info.id),
                     theme=edu_info.theme,
                     link=edu_info.link
                 )
@@ -308,7 +308,7 @@ class CreateServiceDB:
                         link_to_picture=edu_info.link_to_picture[i],
                         title=edu_info.title,
                         type=edu_info.type,
-                        educational_theme_id=edu_id
+                        educational_theme_id=uuid.UUID(edu_info.id)
                     )
                     session.add(education_material)
                 session.commit()
@@ -331,6 +331,7 @@ class CreateServiceDB:
                 education = query.one_or_none()
 
                 education.theme = edu_info.theme
+                education.id = uuid.UUID(edu_info.id)
                 education.link = edu_info.link
 
                 i = 0
@@ -466,7 +467,7 @@ class CreateServiceDB:
                                      "number": 4, "day": 2}
                         destination_id.append(temp_dict)
                 for temp in test:
-                    if temp.title == "DASS-21":
+                    if temp.title == "Общая оценка стресса, тревоги и депрессии":
                         temp_dict = {"title": temp.title, "type": DailyTaskType.TEST.name, "short_description": "Шкалы депрессии, "
                                                                                           "тревоги и стресса",
                                      "destination_id": temp.id,
@@ -527,7 +528,7 @@ class CreateServiceDB:
                                      "number": 11, "day": 4}
                         destination_id.append(temp_dict)
                 for temp in test:
-                    if temp.title == "Индикатор копинг-стратегий":
+                    if temp.title == "Узнайте, как вы справляетесь со стрессом":
                         temp_dict = {"title": temp.title, "type": DailyTaskType.TEST.name,
                                      "short_description": "Опросник Индикатор копинг-стратегий",
                                      "destination_id": temp.id,
@@ -570,7 +571,7 @@ class CreateServiceDB:
                                      "number": 16, "day": 5}
                         destination_id.append(temp_dict)
                 for temp in test:
-                    if temp.title == "Профессиональное выгорание":
+                    if temp.title == "Определение уровня выгорания на работе":
                         temp_dict = {"title": temp.title,
                                      "type": DailyTaskType.TEST.name,
                                      "short_description": "Опросник профессионального выгорания Маслач MBI/ПВ",
@@ -623,7 +624,7 @@ class CreateServiceDB:
                                      "number": 22, "day": 7}
                         destination_id.append(temp_dict)
                 for temp in test:
-                    if temp.title == "DASS-21":
+                    if temp.title == "Общая оценка стресса, тревоги и депрессии":
                         temp_dict = {"title": temp.title, "type": DailyTaskType.TEST.name,
                                      "short_description": "Шкалы депрессии, тревоги и стресса",
                                      "destination_id": temp.id,

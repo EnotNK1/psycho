@@ -14,6 +14,7 @@ class SaveExerciseResult(pydantic.BaseModel):
     result: List[FieldResult]
 
 class ResponseGetExerciseResult(pydantic.BaseModel):
+    title: str
     completed_exercise_id: uuid.UUID
     date: datetime.datetime
 
