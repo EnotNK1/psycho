@@ -61,7 +61,20 @@ class DiaryService:
             return result
         except Error:
             raise HTTPException(status_code=500, detail="Что-то пошло не так!")
-
+        
+    def reading_free_diary_by_month(self, access_token, date: int):
+        token_data = check_token(access_token)
+        try:
+            result = diary_service_db.reading_free_diary_by_month_db(
+                token_data["user_id"], date)
+            if result == -1:
+                raise HTTPException(
+                    status_code=500, detail="Ошибка при чтении из БД")
+            return result
+        except Exception as e:
+            print(e)
+            raise HTTPException(status_code=500, detail="Что-то пошло не так!")
+        
     def reading_think_diary(self, payload: ReadThinkDiary, access_token):
         token_data = check_token(access_token)
 

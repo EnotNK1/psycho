@@ -1,6 +1,6 @@
 import datetime
 
-from schemas.test import WritingFreeDiary, WritingThinkDiary, ReadThinkDiary, ReadRIDialog, ResponseReadingFreeDiary, WritingFreeDiaryWithDate
+from schemas.test import WritingFreeDiary, WritingThinkDiary, ReadThinkDiary, ReadRIDialog, ResponseReadingFreeDiary, WritingFreeDiaryWithDate, ResponseDay
 from services.diary import diary_service
 
 from fastapi import Cookie, APIRouter
@@ -47,6 +47,15 @@ def writing_free_diary_with_date(data: WritingFreeDiaryWithDate, access_token: s
 )
 def reading_free_diary_with_date(date: datetime.date, access_token: str = Cookie(None)):
     return diary_service.reading_free_diary_with_date(access_token, date)
+
+
+@router.get(
+    "/diary/reading_free_diary_by_month",
+    tags=["Diary"],
+    response_model=List[ResponseDay],
+)
+def reading_free_diary_by_month(date: int, access_token: str = Cookie(None)):
+    return diary_service.reading_free_diary_by_month(access_token, date)
 
 
 @router.post(

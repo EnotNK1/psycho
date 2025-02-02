@@ -1,9 +1,9 @@
 from psycopg2 import Error
-from sqlalchemy import create_engine, select, func, distinct
+from sqlalchemy import create_engine, select, func, distinct, cast, Date
 from sqlalchemy.orm import sessionmaker, joinedload, selectinload, join, DeclarativeBase
 from schemas.test import ResScale, ReqBorder, ReqScale
 from typing import List
-from sqlalchemy.exc import NoResultFound
+from sqlalchemy.exc import NoResultFound, SQLAlchemyError
 
 from database.inquiries import inquiries
 from database.models.client import *
@@ -22,7 +22,8 @@ from database.calculator import calculator_service
 from database.enum import DiaryType
 from fastapi import FastAPI, HTTPException
 import uuid
-from datetime import datetime
+import calendar
+from datetime import datetime, date, time, timedelta
 from sqlalchemy.sql.expression import cast
 from sqlalchemy.types import Date
 
@@ -41,7 +42,7 @@ class DiaryServiceDB:
                 session.add(temp)
                 session.commit()
                 return 0
-            except (Exception, Error) as error:
+            except (Exception, SQLAlchemyError) as error:
                 print(error)
                 return -1
 
@@ -72,7 +73,7 @@ class DiaryServiceDB:
                 }
 
                 return res
-            except (Exception, Error) as error:
+            except (Exception, SQLAlchemyError) as error:
                 print(error)
                 return -1
 
@@ -94,7 +95,7 @@ class DiaryServiceDB:
                 dic["behavioral"] = temp.behavioral
                 dic["created_at"] = temp.created_at
                 return dic
-            except (Exception, Error) as error:
+            except (Exception, SQLAlchemyError) as error:
                 print(error)
                 return -1
 
@@ -112,7 +113,7 @@ class DiaryServiceDB:
                     })
 
                 return list
-            except (Exception, Error) as error:
+            except (Exception, SQLAlchemyError) as error:
                 print(error)
                 return -1
             
@@ -128,7 +129,7 @@ class DiaryServiceDB:
                 session.add(temp)
                 session.commit()
                 return 0
-            except (Exception, Error) as error:
+            except (Exception, SQLAlchemyError) as error:
                 print(error)
                 return -1
             
@@ -155,7 +156,49 @@ class DiaryServiceDB:
                 ]
 
                 return result
-            except (Exception, Error) as error:
+            except (Exception, SQLAlchemyError) as error:
+                print(error)
+                return -1
+            
+    def reading_free_diary_by_month_db(self, user_id, unix_date: int):
+        with session_factory() as session:
+            try:
+                # Преобразуем unix метку в datetime (предполагаем, что время всегда 00:00)
+                month_datetime = datetime.fromtimestamp(unix_date)
+                # Первый день месяца
+                first_day = month_datetime.replace(day=1)
+                # Последний день месяца
+                last_day_number = calendar.monthrange(first_day.year, first_day.month)[1]
+                last_day = first_day.replace(day=last_day_number)
+
+                # Запрос заметок за указанный месяц
+                diaries = (
+                    session.query(FreeDiary)
+                    .filter(
+                        FreeDiary.user_id == user_id,
+                        cast(FreeDiary.created_at, Date) >= first_day.date(),
+                        cast(FreeDiary.created_at, Date) <= last_day.date()
+                    )
+                    .all()
+                )
+
+                # Собираем набор дат, на которые имеются заметки
+                diary_dates = {diary.created_at.date() for diary in diaries}
+
+                # Формируем список всех дней месяца с нужной информацией
+                days_list = []
+                current_day = first_day.date()
+                while current_day <= last_day.date():
+                    # Формируем datetime для 00:00 текущего дня
+                    current_day_dt = datetime.combine(current_day, time(0, 0))
+                    days_list.append({
+                        "date": int(current_day_dt.timestamp()),
+                        "diary": current_day in diary_dates
+                    })
+                    current_day += timedelta(days=1)
+
+                return days_list
+            except (Exception, SQLAlchemyError) as error:
                 print(error)
                 return -1
 
@@ -176,7 +219,7 @@ class DiaryServiceDB:
                     dic = {}
 
                 return lis
-            except (Exception, Error) as error:
+            except (Exception, SQLAlchemyError) as error:
                 print(error)
                 return -1
 

@@ -121,6 +121,11 @@ class WritingFreeDiaryWithDate(pydantic.BaseModel):
     created_at: datetime.date
 
 
+class ResponseDay(pydantic.BaseModel):
+    date: int
+    diary: bool
+
+
 
 class WritingThinkDiary(pydantic.BaseModel):
     situation: str
