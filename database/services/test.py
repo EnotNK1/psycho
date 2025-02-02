@@ -248,31 +248,31 @@ class TestServiceDB:
                 if not test:
                     raise HTTPException(status_code=404, detail="Тест не найден!")
 
-                if test.title == "Выгорание на работе: определите свой уровень":
+                if test.title == "Определение уровня выгорания на работе":
                     answers_cnt = 22
                     scale_title = ["Эмоциональное истощение", "Деперсонализация", "Редукция проф. достижений"]
                     calculator_service.check_number_responses(len(results), answers_cnt)
                     scale_sum_list = calculator_service.test_maslach_calculate_results(results)
                     result = test_service_db.save_test_res_all_db(test_id, user_id, date, scale_title, scale_sum_list)
-                elif test.title == "Чувствуете апатию на работе? Проверьте себя":
+                elif test.title == "Оцени свой уровень апатии на работе":
                     answers_cnt = 10
                     scale_title = ["Шкала профессиональной апатии", "Апатичные мысли", "Апатичные действия"]
                     calculator_service.check_number_responses(len(results), answers_cnt)
                     scale_sum_list = calculator_service.test_jas_calculate_results(results)
                     result = test_service_db.save_test_res_all_db(test_id, user_id, date, scale_title, scale_sum_list)
-                elif test.title == "Комплексная оценка стресса, тревоги и склонности к депрессивным состояниям":
+                elif test.title == "Общая оценка стресса, тревоги и депрессии":
                     answers_cnt = 21
                     scale_title = ["Тревога", "Депрессия", "Стресс"]
                     calculator_service.check_number_responses(len(results), answers_cnt)
                     scale_sum_list = calculator_service.test_dass21_calculate_results(results)
                     result = test_service_db.save_test_res_all_db(test_id, user_id, date, scale_title, scale_sum_list)
-                elif test.title == "Проверьте свой уровень тревожности":
+                elif test.title == "Проверьте уровень тревожности":
                     answers_cnt = 40
                     scale_title = ["Шкала ситуативной тревожности", "Шкала личностной тревожности"]
                     calculator_service.check_number_responses(len(results), answers_cnt)
                     scale_sum_list = calculator_service.test_stai_calculate_results(results)
                     result = test_service_db.save_test_res_all_db(test_id, user_id, date, scale_title, scale_sum_list)
-                elif test.title == "Оцените свой способ мышления и восприятия ситуаций":
+                elif test.title == "Найди свои ошибки мышления":
                     answers_cnt = 45
                     scale_title = ["Шкала когнитивных ошибок", "Персонализация", "Чтение мыслей", "Упрямство",
                                    "Морализация", "Катастрофизация",
@@ -287,7 +287,7 @@ class TestServiceDB:
                     calculator_service.check_number_responses(len(results), answers_cnt)
                     scale_sum_list = calculator_service.test_coling_calculate_results(results)
                     result = test_service_db.save_test_res_all_db(test_id, user_id, date, scale_title, scale_sum_list)
-                elif test.title == "Проверьте свой уровень склонности к депрессивным состояниям":
+                elif test.title == "Проверьте уровень депрессии":
                     answers_cnt = 21
                     scale_title = ["Шкала депрессии", "Когнитивно-аффективная субшкала",
                                    "Субшкала соматических проявлений депрессии"]
