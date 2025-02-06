@@ -35,6 +35,7 @@ class Users(Base):
     face_to_face: Mapped[bool]
     gender: Mapped[str]
     birth_date: Mapped[datetime.date] = mapped_column(nullable=True)
+    phone_number: Mapped[str] = mapped_column(nullable=True)
     description: Mapped[str]
     role_id: Mapped[int]
     is_active: Mapped[bool]

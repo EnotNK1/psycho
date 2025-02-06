@@ -99,8 +99,7 @@ class UserServise:
 
         if payload.password == payload.confirm_password:
             user_id = uuid.uuid4()
-            if user_service_db.register_user(user_id, payload.username, payload.email, payload.password, "",
-                                              True, False, "", "", 1, False, "") == 0:
+            if user_service_db.register_user(user_id, payload.username, payload.birth_date, payload.gender, payload.city, payload.email, payload.phone_number, payload.password, True, False, "", 1, False, "") == 0:
                 token = generate_token(user_id)
                 user_service_db.add_token_db(user_id, token)
                 new_user = UserResponse(token=token, user_id=user_id, role=1, email=payload.email, username=payload.username)

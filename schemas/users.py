@@ -12,8 +12,12 @@ class Creds(pydantic.BaseModel):
 
 
 class Reg(pydantic.BaseModel):
-    email: str
     username: str
+    birth_date: str
+    gender: str
+    city: str
+    email: str
+    phone_number: str
     password: str
     confirm_password: str
 

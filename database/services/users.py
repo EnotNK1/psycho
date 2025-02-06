@@ -25,15 +25,16 @@ from fastapi import FastAPI, HTTPException
 import uuid
 from datetime import datetime
 
+
 class UserServiceDB:
     def create_tables(self):
         # Base.metadata.drop_all(engine)
         Base.metadata.create_all(engine)
 
-    def register_user(self, id, username, email, password, city, online, face_to_face, gender, description, role_id,
-                      is_active, department=None):
+    def register_user(self, id, username, birth_date_str, gender, city, email, phone_number, password, online, face_to_face, description, role_id, is_active, department=None):
         with session_factory() as session:
             try:
+                birth_date = datetime.strptime(birth_date_str, '%Y-%m-%d')
                 # hashed_password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
                 user = Users(id=id,
                              username=username,
@@ -46,7 +47,9 @@ class UserServiceDB:
                              description=description,
                              role_id=role_id,
                              is_active=is_active,
-                             department=department
+                             department=department,
+                             phone_number=phone_number,
+                             birth_date=birth_date
                              )
                 session.add(user)
                 session.commit()
@@ -191,8 +194,10 @@ class UserServiceDB:
                 )
                 user = query.one_or_none()
 
-                inquiries = session.query(User_inquiries).filter_by(user_id=user_id).all()
-                request_list = [{"text": inq.text, "id": inq.id} for inq in user.inquiry]
+                inquiries = session.query(
+                    User_inquiries).filter_by(user_id=user_id).all()
+                request_list = [{"text": inq.text, "id": inq.id}
+                                for inq in user.inquiry]
                 type_value = inquiries[0].type if inquiries else 0
 
                 return {
@@ -213,7 +218,8 @@ class UserServiceDB:
     def update_user_db(self, user_id, username, gender, birth_date, request, city, description, type, department):
 
         with session_factory() as session:
-            inquiry1 = session.query(User_inquiries).filter_by(user_id=user_id, type=type).all()
+            inquiry1 = session.query(User_inquiries).filter_by(
+                user_id=user_id, type=type).all()
             for obj in inquiry1:
                 session.delete(obj)
             user = session.get(Users, user_id)
@@ -255,7 +261,8 @@ class UserServiceDB:
                 session.commit()
                 return 0
             except (Exception, Error) as error:
-                raise HTTPException(status_code=403, detail="У вас недостаточно прав для выполнения данной операции!")
+                raise HTTPException(
+                    status_code=403, detail="У вас недостаточно прав для выполнения данной операции!")
 
     def get_user_by_token(self, token_id):
         with session_factory() as session:
@@ -270,8 +277,6 @@ class UserServiceDB:
             except (Exception, Error) as error:
                 print(error)
                 return 0
-
-
 
     def get_email_by_id(self, user_id: uuid.UUID):
         with session_factory() as session:
