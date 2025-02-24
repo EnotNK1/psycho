@@ -17,7 +17,7 @@ services:
     mac_address: 02:42:ac:18:00:01
   db:
     container_name: odeyalo-backend-db
-    image: postgres
+    image: public.ecr.aws/docker/library/postgres
     environment:
       POSTGRES_USER: user
       POSTGRES_PASSWORD: password
@@ -27,7 +27,7 @@ services:
     mac_address: 02:42:ac:18:00:02
   nginx:
     container_name: odeyalo-backend-nginx
-    image: nginx:latest
+    image: public.ecr.aws/nginx/nginx:latest
 #    ports:
 #    - "80:80"
     expose:
@@ -41,7 +41,7 @@ services:
     mac_address: 02:42:ac:18:00:03
   redis:
     container_name: odeyalo-backend-redis
-    image: redis:latest
+    image: public.ecr.aws/docker/library/redis:latest
     volumes:
       - ./redis-data:/data
     networks:

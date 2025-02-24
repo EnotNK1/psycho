@@ -1,5 +1,5 @@
 # Используем базовый образ Python
-FROM python:3.9
+FROM public.ecr.aws/docker/library/python:3.9
 
 # Устанавливаем зависимости
 WORKDIR /app
