@@ -2,6 +2,7 @@ version: '3'
 
 services:
   app:
+    container_name: odeyalo-backend-app
     build:
       context: ..
       dockerfile: ./docker/Dockerfile
@@ -10,21 +11,23 @@ services:
     expose:
       - "8080"
     networks:
-      - demo
+      - odeyalo-network
     depends_on:
       - db
     mac_address: 02:42:ac:18:00:01
   db:
-    image: postgres
+    container_name: odeyalo-backend-db
+    image: public.ecr.aws/docker/library/postgres
     environment:
       POSTGRES_USER: user
       POSTGRES_PASSWORD: password
       POSTGRES_DB: dbname
     networks:
-      - demo
+      - odeyalo-network
     mac_address: 02:42:ac:18:00:02
   nginx:
-    image: nginx:latest
+    container_name: odeyalo-backend-nginx
+    image: public.ecr.aws/nginx/nginx:latest
 #    ports:
 #    - "80:80"
     expose:
@@ -32,19 +35,22 @@ services:
     volumes:
       - ./nginx:/etc/nginx/conf.d
     networks:
-      - demo
+      - odeyalo-network
     depends_on:
       - app
     mac_address: 02:42:ac:18:00:03
   redis:
-    image: redis:latest
+    container_name: odeyalo-backend-redis
+    image: public.ecr.aws/docker/library/redis:latest
     volumes:
       - ./redis-data:/data
     networks:
-      - demo
+      - odeyalo-network
     depends_on:
       - nginx
+    mac_address: 02:42:ac:18:00:04
   celery:
+    container_name: odeyalo-backend-celery
     build:
       context: ..
       dockerfile: ./docker/Dockerfile
@@ -52,10 +58,12 @@ services:
     volumes:
       - .:/celery_app
     networks:
-      - demo
+      - odeyalo-network
     depends_on:
       - redis
+    mac_address: 02:42:ac:18:00:05
 
 networks:
-  demo:
-     external: true
+  odeyalo-network:
+    name: odeyalo-network
+    driver: bridge
