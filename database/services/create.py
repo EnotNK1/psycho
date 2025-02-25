@@ -281,8 +281,7 @@ class CreateServiceDB:
             try:
                 temp = session.query(Educational_theme).filter_by(theme=edu_info.theme).first()
                 if not temp:
-                    edu_id = uuid.uuid4()
-                    create_service_db.add_education_db(edu_id, edu_info)
+                    create_service_db.add_education_db(edu_info)
                 else:
                     create_service_db.recreate_education_db(temp.id, edu_info)
 
@@ -291,26 +290,42 @@ class CreateServiceDB:
                 print(error)
                 return -1
 
-    def add_education_db(self, edu_id, edu_info):
+
+    def add_education_db(self, edu_info):
         with session_factory() as session:
             try:
                 education = Educational_theme(
                     id=uuid.UUID(edu_info.id),
                     theme=edu_info.theme,
-                    link=edu_info.link
+                    link=edu_info.link,
+                    related_topics=edu_info.related_topics
                 )
+
                 session.add(education)
-                for i in range(len(edu_info.text)):
+
+                for i in range(len(edu_info.subtopics)):
                     education_material_id = uuid.uuid4()
                     education_material = Educational_material(
                         id=education_material_id,
-                        text=edu_info.text[i],
                         link_to_picture=edu_info.link_to_picture[i],
-                        title=edu_info.title,
                         type=edu_info.type,
+                        title=edu_info.title,
+                        subtitle=edu_info.subtopics[i]["subtitle"],
                         educational_theme_id=uuid.UUID(edu_info.id)
                     )
+
                     session.add(education_material)
+
+                    for j in range(len(edu_info.subtopics[i]["cards"])):
+                        education_card = Card(
+                            id=edu_info.subtopics[i]["cards"][j]["id"],
+                            text=edu_info.subtopics[i]["cards"][j]["text"],
+                            link_to_picture=edu_info.subtopics[i]["cards"][j]["link_to_picture"],
+                            educational_material_id=education_material_id
+                        )
+
+                        session.add(education_card)
+
                 session.commit()
 
 
@@ -336,14 +351,14 @@ class CreateServiceDB:
 
                 i = 0
                 for educational_material in education.educational_material:
-                    educational_material.text = edu_info.text[i]
-                    educational_material.link_to_picture = edu_info.link_to_picture[i]
+                    educational_material.link_to_picture = edu_info.link_to_picture
                     educational_material.title = edu_info.title
                     educational_material.type = edu_info.type
+                    educational_material.subtitle = edu_info.subtopics[i]["subtitle"]
+                    educational_material.educational_theme_id = edu_id
+
                     i += 1
-
                 session.commit()
-
 
             except (Exception, Error) as error:
                 print(error)

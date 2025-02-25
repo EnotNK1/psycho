@@ -61,6 +61,6 @@ class EducationAdmin(ModelView, model=Educational_theme):
     name = "Education"
 
 class EducationMaterialAdmin(ModelView, model=Educational_material):
-    column_list = [Educational_material.text]
+    # column_list = [Educational_material.text]
     name_plural = "Educational_materials"
     name = "Educational_material"

@@ -18,12 +18,23 @@ class ResponceGetAllTheme(pydantic.BaseModel):
 
 class ResponceMaterial(pydantic.BaseModel):
     id: uuid.UUID
+    theme: str
+    link_to_picture: str
+    max_score: int
+
+class CardResponse(pydantic.BaseModel):
+    id: uuid.UUID
     text: str
     link_to_picture: str
 
+class SubtopicResponse(pydantic.BaseModel):
+    subtitle: str
+    cards: List[CardResponse]
 
 class ResponceGetAllMaterial(pydantic.BaseModel):
     theme: str
-    score: int
+    id: uuid.UUID
     max_score: int
-    materials: List[ResponceMaterial]
+    link_to_picture: str
+    related_topics: List[ResponceMaterial]
+    subtopics: List[SubtopicResponse]
