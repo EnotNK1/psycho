@@ -6,8 +6,8 @@ services:
     build:
       context: ..
       dockerfile: ./docker/Dockerfile
-#    ports:
-#    - "8080:8080"
+    ports:
+    - "8080:8080"
     expose:
       - "8080"
     networks:
@@ -28,8 +28,8 @@ services:
   nginx:
     container_name: odeyalo-backend-nginx
     image: public.ecr.aws/nginx/nginx:latest
-#    ports:
-#    - "80:80"
+    ports:
+    - "80:80"
     expose:
       - "80"
     volumes:
