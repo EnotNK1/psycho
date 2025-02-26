@@ -26,9 +26,9 @@ create_service_db.create_education(Relaxation_techniques)
 create_service_db.create_education(Coping_strategies)
 create_service_db.create_education(Smer_diary)
 
-create_service_db.create_exercise_structure(Cpt_diary)
-create_service_db.create_exercise_structure(Mood_tracker)
-create_service_db.create_exercise_structure(Note)
+first_ex = create_service_db.create_exercise_structure(Cpt_diary, None)
+second_ex = create_service_db.create_exercise_structure(Mood_tracker, first_ex)
+third_ex = create_service_db.create_exercise_structure(Note, second_ex)
 
 create_service_db.get_destination_id_for_daily_task()
 create_service_db.create_daily_task()

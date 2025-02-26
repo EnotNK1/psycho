@@ -2,7 +2,7 @@ from psycopg2 import Error
 from sqlalchemy import create_engine, select, func, distinct
 from sqlalchemy.orm import sessionmaker, joinedload, selectinload, join, DeclarativeBase
 
-from database.models.exercise import Exercise_structure, Field
+from database.models.exercise import Exercise_structure, Field, Variant
 from schemas.test import ResScale, ReqBorder, ReqScale
 from typing import List
 from sqlalchemy.exc import NoResultFound
@@ -349,29 +349,31 @@ class CreateServiceDB:
                 print(error)
                 return -1
 
-    def create_exercise_structure(self, exercise_info):
+    def create_exercise_structure(self, exercise_info, link_id):
         with session_factory() as session:
             try:
                 temp = session.query(Exercise_structure).filter_by(title=exercise_info.title).first()
                 if not temp:
                     exercise_id = uuid.uuid4()
-                    create_service_db.add_exercise_structure(exercise_id, exercise_info)
+                    create_service_db.add_exercise_structure(exercise_id, exercise_info, link_id)
                 else:
-                    create_service_db.recreate_exercise_structure(temp.id, exercise_info)
+                    create_service_db.recreate_exercise_structure(temp.id, exercise_info, link_id)
 
-                return 0
+                return exercise_id
             except (Exception, Error) as error:
                 print(error)
                 return -1
 
-    def add_exercise_structure(self, exercise_structure_id, exercise_info):
+    def add_exercise_structure(self, exercise_structure_id, exercise_info, link_id):
         with session_factory() as session:
             try:
                 exercise_structure = Exercise_structure(
                     id=exercise_structure_id,
                     title=exercise_info.title,
                     description=exercise_info.description,
-                    picture_link=exercise_info.picture_link
+                    picture_link=exercise_info.picture_link,
+                    closed=exercise_info.closed,
+                    linked_exercise_id=link_id
                 )
                 session.add(exercise_structure)
 
@@ -379,19 +381,29 @@ class CreateServiceDB:
                     field = Field(
                         id=uuid.uuid4(),
                         title=temp_field['title'],
+                        hint=temp_field['hint'],
                         description=temp_field['description'],
                         type=temp_field['type'],
                         major=temp_field['major'],
                         exercise_structure_id=exercise_structure_id
                     )
                     session.add(field)
+                    # Создаем варианты для поля
+                    for temp_variant in temp_field['variants']:
+                        variant = Variant(
+                            id=uuid.uuid4(),
+                            title=temp_variant['title'],
+                            field_id=field.id  # Связываем вариант с полем
+                        )
+                        session.add(variant)
+
                 session.commit()
 
             except (Exception, Error) as error:
                 print(error)
                 return -1
 
-    def recreate_exercise_structure(self, exercise_structure_id, exercise_info):
+    def recreate_exercise_structure(self, exercise_structure_id, exercise_info, link_id):
         with session_factory() as session:
             try:
                 query = (
@@ -405,6 +417,7 @@ class CreateServiceDB:
 
                 exercise_structure.description = exercise_info.description
                 exercise_structure.picture_link = exercise_info.picture_link
+                exercise_structure.linked_exercise_id = link_id
 
                 i = 0
                 for temp_field in exercise_structure.field:

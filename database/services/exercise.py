@@ -2,7 +2,7 @@ from psycopg2 import Error
 from sqlalchemy import create_engine, select, func, distinct
 from sqlalchemy.orm import sessionmaker, joinedload, selectinload, join, DeclarativeBase
 
-from database.models.exercise import Exercise_structure, Сompleted_exercise, Filled_field
+from database.models.exercise import Exercise_structure, Сompleted_exercise, Filled_field, Field
 from schemas.exercise import FieldResult
 from typing import List
 from sqlalchemy.exc import NoResultFound
@@ -43,7 +43,6 @@ class ExerciseServicedb:
                     theme.picture_link = links[i]
                     i += 1
 
-
             except (Exception, Error) as error:
                 print(error)
                 return -1
@@ -51,7 +50,8 @@ class ExerciseServicedb:
     def get_all_exercises(self) -> list:
         with session_factory() as session:
             try:
-                query = select(Exercise_structure).options(joinedload(Exercise_structure.field))
+                query = select(Exercise_structure).options(
+                    joinedload(Exercise_structure.field))
                 res = session.execute(query)
                 exercise = res.unique().scalars().all()
 
@@ -63,7 +63,9 @@ class ExerciseServicedb:
                         "id": exercise_structure.id,
                         "title": exercise_structure.title,
                         "description": exercise_structure.description,
-                        "link_to_picture": exercise_structure.picture_link
+                        "link_to_picture": exercise_structure.picture_link,
+                        "linked_exercise_id": exercise_structure.linked_exercise_id,
+                        "closed": exercise_structure.closed
                     }
                     result_list.append(result_dict)
 
@@ -82,8 +84,14 @@ class ExerciseServicedb:
     def get_exercise(self, exercise_id: uuid.UUID):
         with session_factory() as session:
             try:
-                query = select(Exercise_structure).filter_by(id=exercise_id).options(
-                    joinedload(Exercise_structure.field))
+                query = (
+                    select(Exercise_structure)
+                    .filter_by(id=exercise_id)
+                    .options(
+                        joinedload(Exercise_structure.field).joinedload(
+                            Field.variants)
+                    )
+                )
                 res = session.execute(query)
                 exercise = res.unique().scalars().all()
 
@@ -92,11 +100,22 @@ class ExerciseServicedb:
                         "id": exercise_structure.id,
                         "title": exercise_structure.title,
                         "description": exercise_structure.description,
+                        "closed": exercise_structure.closed
                     }
 
                     field_results = []
                     for field in exercise_structure.field:
-                        field_results.append(field)
+                        field_data = {
+                            "title": field.title,
+                            "hint": field.hint,
+                            "description": field.description,
+                            "major": field.major,
+                            "id": field.id,
+                            "type": field.type,
+                            "exercise_structure_id": field.exercise_structure_id,
+                            "variants": [variant.title for variant in field.variants]
+                        }
+                        field_results.append(field_data)
                     result_dict["field"] = field_results
 
                 return result_dict
@@ -108,9 +127,11 @@ class ExerciseServicedb:
         with (session_factory() as session):
             try:
                 result = 0
-                exercise = session.query(Exercise_structure).filter_by(id=exercise_id).one()
+                exercise = session.query(
+                    Exercise_structure).filter_by(id=exercise_id).one()
                 if not exercise:
-                    raise HTTPException(status_code=404, detail="Упражнение не найдено!")
+                    raise HTTPException(
+                        status_code=404, detail="Упражнение не найдено!")
 
                 field_cnt = len(exercise.field)
                 # if field_cnt
@@ -127,7 +148,8 @@ class ExerciseServicedb:
                 #     )
                 #     filled_fields.append(filled_field)
 
-                calculator_service.check_number_responses(len(results), field_cnt)
+                calculator_service.check_number_responses(
+                    len(results), field_cnt)
                 exercise_result = Сompleted_exercise(id=completed_exercise_id,
                                                      date=datetime.now(),
                                                      exercise_structure_id=exercise_id,
@@ -147,13 +169,27 @@ class ExerciseServicedb:
                     filled_fields.append(filled_field)
                     session.add(filled_field)
 
+                linked_exercise = session.query(Exercise_structure).filter_by(
+                    linked_exercise_id=exercise.id).first()
+                if linked_exercise:
+                    # Проверяем, выполнял ли текущий пользователь это упражнение ранее
+                    has_completed = session.query(Сompleted_exercise).filter(
+                        (Сompleted_exercise.exercise_structure_id == linked_exercise.id) &
+                        (Сompleted_exercise.user_id == user_id)
+                    ).first()
+                    # Если пользователь еще не выполнял это упражнение, разблокируем его
+                    if not has_completed:
+                        linked_exercise.closed = False
+                        session.add(linked_exercise)
+
                 session.commit()
                 return {
                     "exercise_result_id": completed_exercise_id
                 }
 
             except NoResultFound:
-                raise HTTPException(status_code=404, detail="Упражнение или поле не были найдены!")
+                raise HTTPException(
+                    status_code=404, detail="Упражнение или поле не были найдены!")
             except (Exception, Error) as error:
                 raise error
 
@@ -167,7 +203,8 @@ class ExerciseServicedb:
                 ).join(
                     Exercise_structure, Exercise_structure.id == Сompleted_exercise.exercise_structure_id
                 ).filter(
-                    (Сompleted_exercise.exercise_structure_id == exercise_id) & (Сompleted_exercise.user_id == user_id)
+                    (Сompleted_exercise.exercise_structure_id == exercise_id) & (
+                        Сompleted_exercise.user_id == user_id)
                 ).all()
                 results_list = []
 
@@ -193,10 +230,12 @@ class ExerciseServicedb:
                 ).first()
 
                 if exercise_results == None:
-                    raise HTTPException(status_code=404, detail="Такое упражнение не найдено!")
+                    raise HTTPException(
+                        status_code=404, detail="Такое упражнение не найдено!")
 
                 if str(user_id) != str(exercise_results.user_id):
-                    raise HTTPException(status_code=401, detail="Вы не имеете доступ к чужим упражнениям!")
+                    raise HTTPException(
+                        status_code=401, detail="Вы не имеете доступ к чужим упражнениям!")
 
                 exercise_structure = session.query(Exercise_structure).filter(
                     Exercise_structure.id == exercise_results.exercise_structure_id
@@ -237,12 +276,15 @@ class ExerciseServicedb:
                 ).first()
 
                 if exercise_results == None:
-                    raise HTTPException(status_code=404, detail="Такое упражнение не найдено!")
+                    raise HTTPException(
+                        status_code=404, detail="Такое упражнение не найдено!")
 
                 if str(user_id) != str(exercise_results.user_id):
-                    raise HTTPException(status_code=401, detail="Вы не имеете доступ к чужим упражнениям!")
+                    raise HTTPException(
+                        status_code=401, detail="Вы не имеете доступ к чужим упражнениям!")
 
-                completed_exercise = session.query(Сompleted_exercise).filter_by(id=completed_exercise_id).one_or_none()
+                completed_exercise = session.query(Сompleted_exercise).filter_by(
+                    id=completed_exercise_id).one_or_none()
                 session.delete(completed_exercise)
                 session.commit()
             except (Exception, Error) as error:
@@ -252,12 +294,15 @@ class ExerciseServicedb:
 
         with session_factory() as session:
             try:
-                completed_exercise = session.query(Сompleted_exercise).get(completed_exercise_id)
+                completed_exercise = session.query(
+                    Сompleted_exercise).get(completed_exercise_id)
                 if completed_exercise is None:
-                    raise HTTPException(status_code=404, detail="Выполненное упражнение не найдено!")
+                    raise HTTPException(
+                        status_code=404, detail="Выполненное упражнение не найдено!")
 
                 if str(user_id) != str(completed_exercise.user_id):
-                    raise HTTPException(status_code=401, detail="Вы не имеете доступ к чужим упражнениям!")
+                    raise HTTPException(
+                        status_code=401, detail="Вы не имеете доступ к чужим упражнениям!")
 
                 filled_fields = session.query(Filled_field).filter(
                     (Filled_field.completed_exercise_id == completed_exercise_id)
