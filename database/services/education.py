@@ -1,6 +1,8 @@
 from psycopg2 import Error
 from sqlalchemy import create_engine, select, func, distinct
 from sqlalchemy.orm import sessionmaker, joinedload, selectinload, join, DeclarativeBase
+
+from schemas.education_material import ResponceMaterial, ResponceGetAllMaterial, SubtopicResponse, CardResponse
 from schemas.test import ResScale, ReqBorder, ReqScale
 from typing import List
 from sqlalchemy.exc import NoResultFound
@@ -70,7 +72,7 @@ class EducationServiceDB:
                     user_dict['id'] = temp.id
                     user_dict['theme'] = temp.theme
                     user_dict['score'] = score
-                    user_dict['max_score'] = len(temp.educational_material)
+                    user_dict['max_score'] = sum(len(material.card) for material in temp.educational_material)
                     user_dict['link_to_picture'] = temp.link
                     user_list.append(user_dict)
                     user_dict = {}
@@ -84,42 +86,61 @@ class EducationServiceDB:
         with session_factory() as session:
             try:
                 query = select(Educational_theme).filter_by(id=education_theme_id).options(
+                    selectinload(Educational_theme.educational_material).selectinload(Educational_material.card),
                     selectinload(Educational_theme.educational_material).selectinload(
-                        Educational_material.educational_progress))
+                        Educational_material.educational_progress)
+                )
                 result = session.execute(query)
                 education_theme = result.scalars().one()
+                related_topics_ = []
+                for i in range(len(education_theme.related_topics)):
 
-                materials = []
-                temp_dict = {}
-                material_dict = {}
-                user_id = uuid.UUID(user_id)
-                score = 0
-                for education_material in education_theme.educational_material:
-                    material_dict['id'] = education_material.id
-                    material_dict['text'] = education_material.text
-                    material_dict['link_to_picture'] = education_material.link_to_picture
+                    query = select(Educational_theme).filter_by(id=uuid.UUID(education_theme.related_topics[i]))
 
-                    materials.append(material_dict)
-                    material_dict = {}
-                    if len(education_material.educational_progress) != 0:
-                        for educational_progress in education_material.educational_progress:
-                            if educational_progress.user_id == user_id:
-                                score += 1
+                    result = session.execute(query)
+                    education_theme_rel = result.scalars().one()
 
-                temp_dict['theme'] = education_theme.theme
-                temp_dict['score'] = score
-                temp_dict['max_score'] = len(education_theme.educational_material)
+                    for material in education_theme_rel.educational_material:
 
-                res_dict = {
-                    "theme": education_theme.theme,
-                    "score": score,
-                    "max_score": len(education_theme.educational_material),
-                    "materials": materials
-                }
+                        topic = ResponceMaterial(
+                            id = education_theme_rel.id,
+                            theme = education_theme_rel.theme,
+                            link_to_picture = education_theme_rel.educational_material[i].link_to_picture,
+                            max_score = sum(len(material.card) for material in education_theme_rel.educational_material)
+                        )
 
-                return res_dict
+                    related_topics_.append(topic)
 
-            except (Exception, Error) as error:
+
+                subtopics = []
+                for material in education_theme.educational_material:
+                    cards = []
+                    for card in material.card:
+                        card_response = CardResponse(
+                            id=card.id,
+                            text=card.text,
+                            link_to_picture=card.link_to_picture
+                        )
+                        cards.append(card_response)
+                    subtopic = SubtopicResponse(
+                        subtitle=material.subtitle,
+                        cards=cards
+                    )
+                    subtopics.append(subtopic)
+
+                # Формирование итогового ответа
+                response = ResponceGetAllMaterial(
+                    theme=education_theme.theme,
+                    id=education_theme_id,
+                    link_to_picture=education_theme.educational_material[i].link_to_picture,
+                    max_score=sum(len(material.card) for material in education_theme.educational_material),
+                    related_topics=related_topics_,
+                    subtopics=subtopics
+                )
+
+                return response
+
+            except Exception as error:
                 print(error)
                 return -1
 
