@@ -35,8 +35,9 @@ class ExerciseServicedb:
             try:
 
                 links = [
-                    "img_1.png", "img_2.png",
-                    "img_3.png"
+                    "/exercise/images_exercise/КПТ_дневник.png", "/exercise/images_exercise/Определение_групп_проблем.png",
+                    "/exercise/images_exercise/Определение_проблемы_постановка_цели.png", "/exercise/images_exercise/Анализ_проблемы.png", "/exercise/images_exercise/Проверка_убеждений.png",
+                    "/exercise/images_exercise/Анализ_убеждений.png", "/exercise/images_exercise/Лестница_страха.png"
                 ]
                 i = 0
                 for theme in exercise:
