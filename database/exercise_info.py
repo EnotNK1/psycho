@@ -16,6 +16,7 @@ class Cpt_diary():
             'type': FieldType.TEXT,
             'major': True,
             'variants': [],
+            'exercises': ['Проблемы и цели', 'Анализ проблемы'],
         },
         {
             'title': "",
@@ -24,6 +25,7 @@ class Cpt_diary():
             'type': FieldType.TEXT,
             'major': True,
             'variants': [],
+            'exercises': [],
         },
         {
             'title': "",
@@ -32,6 +34,7 @@ class Cpt_diary():
             'type': FieldType.TEXT,
             'major': False,
             'variants': [],
+            'exercises': [],
         },
         {
             'title': "Автоматические мысли",
@@ -40,6 +43,7 @@ class Cpt_diary():
             'type': FieldType.TEXT,
             'major': False,
             'variants': [],
+            'exercises': [],
         },
         {
             'title': "",
@@ -48,6 +52,7 @@ class Cpt_diary():
             'type': FieldType.SLIDER,
             'major': False,
             'variants': [],
+            'exercises': [],
         },
         {
             'title': "",
@@ -56,6 +61,7 @@ class Cpt_diary():
             'type': FieldType.TEXT,
             'major': False,
             'variants': [],
+            'exercises': [],
         },
         {
             'title': "Что думаете про эту ситуацию теперь?",
@@ -64,6 +70,7 @@ class Cpt_diary():
             'type': FieldType.TEXT,
             'major': False,
             'variants': [],
+            'exercises': [],
         },
         {
             'title': "",
@@ -72,6 +79,7 @@ class Cpt_diary():
             'type': FieldType.TEXT,
             'major': False,
             'variants': [],
+            'exercises': [],
         },
         {
             'title': "Настроение теперь",
@@ -80,6 +88,7 @@ class Cpt_diary():
             'type': FieldType.SLIDER,
             'major': False,
             'variants': [],
+            'exercises': [],
         }
     ]
 
@@ -99,6 +108,7 @@ class Definition_group_problems():
             'type': FieldType.TEXT,
             'major': True,
             'variants': [],
+            'exercises': [],
         },
         {
             'title': "Что вы чувствуете по этому поводу?",
@@ -107,6 +117,7 @@ class Definition_group_problems():
             'type': FieldType.TEXT,
             'major': False,
             'variants': [],
+            'exercises': [],
         },
         {
             'title': "Чего вы хотите добиться, когда решите свою проблему?",
@@ -115,6 +126,7 @@ class Definition_group_problems():
             'type': FieldType.TEXT,
             'major': False,
             'variants': [],
+            'exercises': [],
         }
     ]
 
@@ -141,6 +153,7 @@ class Definition_problems_setting_goals():
                 {'title': 'Боль'},
                 {'title': 'Стыд'}
             ],
+            'exercises': [],
         },
         {
             'title': "Какое событие вызвало у вас эти эмоции",
@@ -149,6 +162,7 @@ class Definition_problems_setting_goals():
             'type': FieldType.TEXT,
             'major': False,
             'variants': [],
+            'exercises': [],
         },
         {
             'title': "Почему вы испытываете такие эмоции?",
@@ -157,6 +171,7 @@ class Definition_problems_setting_goals():
             'type': FieldType.TEXT,
             'major': False,
             'variants': [],
+            'exercises': [],
         },
         {
             'title': "Цель",
@@ -165,6 +180,7 @@ class Definition_problems_setting_goals():
             'type': FieldType.TEXT,
             'major': True,
             'variants': [],
+            'exercises': [],
         }
     ]
 
@@ -187,6 +203,7 @@ class Problem_analysis():
             'type': FieldType.TEXT,
             'major': False,
             'variants': [],
+            'exercises': [],
         },
         {
             'title': "Цель",
@@ -195,6 +212,7 @@ class Problem_analysis():
             'type': FieldType.TEXT,
             'major': False,
             'variants': [],
+            'exercises': [],
         },
         {
             'title': "Проработка",
@@ -204,6 +222,7 @@ class Problem_analysis():
             'type': FieldType.TEXT,
             'major': False,
             'variants': [],
+            'exercises': [],
         },
         {
             'title': "",
@@ -214,6 +233,7 @@ class Problem_analysis():
             'type': FieldType.TEXT,
             'major': True,
             'variants': [],
+            'exercises': [],
         }
     ]
 
@@ -236,6 +256,7 @@ class Testing_beliefs():
             'type': FieldType.TEXT,
             'major': True,
             'variants': [],
+            'exercises': [],
         },
         {
             'title': "",
@@ -245,6 +266,7 @@ class Testing_beliefs():
             'type': FieldType.TEXT,
             'major': False,
             'variants': [],
+            'exercises': [],
         },
         {
             'title': "",
@@ -253,6 +275,7 @@ class Testing_beliefs():
             'type': FieldType.TEXT,
             'major': False,
             'variants': [],
+            'exercises': [],
         },
         {
             'title': "Гибкое убеждение",
@@ -261,6 +284,7 @@ class Testing_beliefs():
             'type': FieldType.TEXT,
             'major': False,
             'variants': [],
+            'exercises': [],
         },
         {
             'title': "",
@@ -270,6 +294,7 @@ class Testing_beliefs():
             'type': FieldType.TEXT,
             'major': False,
             'variants': [],
+            'exercises': [],
         },
         {
             'title': "",
@@ -278,6 +303,7 @@ class Testing_beliefs():
             'type': FieldType.TEXT,
             'major': False,
             'variants': [],
+            'exercises': [],
         }
     ]
 
@@ -298,6 +324,7 @@ class Beliefs_analysis():
             'type': FieldType.TEXT,
             'major': False,
             'variants': [],
+            'exercises': [],
         },
         {
             'title': "",
@@ -306,6 +333,7 @@ class Beliefs_analysis():
             'type': FieldType.TEXT,
             'major': False,
             'variants': [],
+            'exercises': [],
         },
         {
             'title': "",
@@ -314,6 +342,7 @@ class Beliefs_analysis():
             'type': FieldType.TEXT,
             'major': False,
             'variants': [],
+            'exercises': [],
         },
         {
             'title': "Гибкое предпочтение",
@@ -322,6 +351,7 @@ class Beliefs_analysis():
             'type': FieldType.TEXT,
             'major': False,
             'variants': [],
+            'exercises': [],
         },
         {
             'title': "",
@@ -330,6 +360,7 @@ class Beliefs_analysis():
             'type': FieldType.TEXT,
             'major': False,
             'variants': [],
+            'exercises': [],
         },
         {
             'title': "",
@@ -338,6 +369,7 @@ class Beliefs_analysis():
             'type': FieldType.TEXT,
             'major': True,
             'variants': [],
+            'exercises': [],
         }
     ]
 
@@ -356,6 +388,7 @@ class Mood_tracker():
             'type': FieldType.SLIDER,
             'major': True,
             'variants': [],
+            'exercises': [],
         }
     ]
 
@@ -374,6 +407,7 @@ class Note():
             'type': FieldType.TEXT,
             'major': True,
             'variants': [],
+            'exercises': [],
         }
     ]
 

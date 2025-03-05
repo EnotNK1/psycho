@@ -1,6 +1,7 @@
 from psycopg2 import Error
 from sqlalchemy import create_engine, select, func, distinct
 from sqlalchemy.orm import sessionmaker, joinedload, selectinload, join, DeclarativeBase
+from sqlalchemy.dialects.postgresql import ARRAY
 
 from database.models.exercise import Exercise_structure, Сompleted_exercise, Filled_field, Field
 from schemas.exercise import FieldResult
@@ -85,12 +86,12 @@ class ExerciseServicedb:
     def get_exercise(self, exercise_id: uuid.UUID):
         with session_factory() as session:
             try:
+                # Получаем упражнение по ID
                 query = (
                     select(Exercise_structure)
                     .filter_by(id=exercise_id)
                     .options(
-                        joinedload(Exercise_structure.field).joinedload(
-                            Field.variants)
+                        joinedload(Exercise_structure.field).joinedload(Field.variants)
                     )
                 )
                 res = session.execute(query)
@@ -114,12 +115,33 @@ class ExerciseServicedb:
                             "id": field.id,
                             "type": field.type,
                             "exercise_structure_id": field.exercise_structure_id,
-                            "variants": [variant.title for variant in field.variants]
+                            "variants": [variant.title for variant in field.variants],
+                            "exercises": field.exercises,
                         }
                         field_results.append(field_data)
+
+                    # Ищем все заполненные поля (filled_field), которые связаны с текущим упражнением
+                    filled_fields_to_pull = session.query(Filled_field).filter(
+                        Filled_field.exercises.contains([exercise_structure.title])
+                    ).all()
+
+                    # Формируем список "стянутых" полей
+                    pulled_fields = [
+                        {
+                            "id": filled_field.id,
+                            "field_id": filled_field.field_id,
+                            "text": filled_field.text,
+                            "exercises": filled_field.exercises
+                        }
+                        for filled_field in filled_fields_to_pull
+                    ]
+
+                    # Добавляем "стянутые" поля в результат
+                    result_dict["pulled_fields"] = pulled_fields
                     result_dict["field"] = field_results
 
                 return result_dict
+
             except (Exception, Error) as error:
                 print(error)
                 return []
@@ -165,7 +187,8 @@ class ExerciseServicedb:
                         id=uuid.uuid4(),
                         text=field.value,
                         field_id=field.field_id,
-                        completed_exercise_id=completed_exercise_id
+                        completed_exercise_id=completed_exercise_id,
+                        exercises=field.exercises if field.exercises is not None else []
                     )
                     filled_fields.append(filled_field)
                     session.add(filled_field)
@@ -253,7 +276,8 @@ class ExerciseServicedb:
                 for filled_field in filled_fields:
                     filled_fields_values.append({
                         "field_id": filled_field.field_id,
-                        "value": filled_field.text
+                        "value": filled_field.text,
+                        "exercises": filled_field.exercises if filled_field.exercises else []  # Добавляем поле exercises
                     })
                 print(filled_fields_values)
 

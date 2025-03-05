@@ -7,6 +7,7 @@ import uuid
 
 class FieldResult(pydantic.BaseModel):
     field_id: uuid.UUID
+    exercises: Optional[List[str]] = None
     value: Union[str, int]
 
 class SaveExerciseResult(pydantic.BaseModel):

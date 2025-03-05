@@ -400,6 +400,7 @@ class CreateServiceDB:
                         description=temp_field['description'],
                         type=temp_field['type'],
                         major=temp_field['major'],
+                        exercises=temp_field['exercises'],
                         exercise_structure_id=exercise_structure_id
                     )
                     session.add(field)
