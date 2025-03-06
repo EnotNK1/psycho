@@ -21,7 +21,7 @@ class Cpt_diary():
         {
             'title': "",
             'description': "Запиши сами действия.",
-            'hint': "Как ты себя повел?",
+            'hint': "Как вы себя повели?...",
             'type': FieldType.TEXT,
             'major': True,
             'variants': [],
@@ -30,7 +30,7 @@ class Cpt_diary():
         {
             'title': "",
             'description': "Опишите чувства, которые возникли. Оцени их уровень на слайдере ниже.",
-            'hint': "Какие чувства вызвала у вас эта ситуация?",
+            'hint': "Какие чувства вызвала у вас эта ситуация?...",
             'type': FieldType.TEXT,
             'major': False,
             'variants': [],
@@ -94,9 +94,9 @@ class Cpt_diary():
 
 
 class Definition_group_problems():
-    title = "Определение групп (категорий) проблем"
+    title = "Определение групп проблем"
     description = "Здесь вы определите проблему, над которой хотели бы поработать. Если их несколько, распределите их "\
-            "на категории. В таком случае вы сможете вернуться к своему списку позже."
+            "на категории. В таком случае вы сможете вернуться к своему списку позже"
     picture_link = ""
     closed = False
 
@@ -108,7 +108,7 @@ class Definition_group_problems():
             'type': FieldType.TEXT,
             'major': True,
             'variants': [],
-            'exercises': [],
+            'exercises': ["Проблемы и цели"],
         },
         {
             'title': "Что вы чувствуете по этому поводу?",
@@ -139,10 +139,19 @@ class Definition_problems_setting_goals():
 
     fields = [
         {
-            'title': "Выберите эмоцию, которую испытываете из-за проблемы",
+            'title': "Выберите сферу, в которой испытываете трудности",
             'description': "",
             'hint': "",
-            'type': FieldType.TEXT,
+            'type': FieldType.CHOICE,
+            'major': False,
+            'variants': [],
+            'exercises': [],
+        },
+        {
+            'title': "Выберите эмоцию, которую испытывали в той ситуации",
+            'description': "",
+            'hint': "",
+            'type': FieldType.CHOICE,
             'major': False,
             'variants': [
                 {'title': 'Тревога'},
@@ -156,8 +165,8 @@ class Definition_problems_setting_goals():
             'exercises': [],
         },
         {
-            'title': "Какое событие вызвало у вас эти эмоции",
-            'description': "Краткое запишите конкретное событие, которое вызвало у вас такие эмоции",
+            'title': "Какое событие вызвало эти эмоции?",
+            'description': "",
             'hint': "Опишите его",
             'type': FieldType.TEXT,
             'major': False,
@@ -165,22 +174,22 @@ class Definition_problems_setting_goals():
             'exercises': [],
         },
         {
-            'title': "Почему вы испытываете такие эмоции?",
+            'title': "Почему вы испытывали такие эмоции?",
             'description': "Выберите аргумент, который волнует вас больше всего",
-            'hint': "Аргумент",
-            'type': FieldType.TEXT,
+            'hint': "Проаргументируйте",
+            'type': FieldType.SELECTION,
             'major': False,
             'variants': [],
-            'exercises': [],
+            'exercises': ["Анализ проблемы"],
         },
         {
             'title': "Цель",
             'description': "",
-            'hint': "Укажите цель еще раз, если она изменилась",
+            'hint': "Уточните свою цель",
             'type': FieldType.TEXT,
             'major': True,
             'variants': [],
-            'exercises': [],
+            'exercises': ["Анализ проблемы", "Проверка убеждений", "Анализ убеждений"],
         }
     ]
 

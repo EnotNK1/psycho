@@ -7,6 +7,9 @@ class DiaryType(enum.Enum):
 class FieldType(enum.Enum):
     TEXT = 1
     SLIDER = 2
+    CHOICE = 3
+    SELECTION = 4
+
 
 class DailyTaskType(enum.Enum):
     THEORY = 1
