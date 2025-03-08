@@ -29,7 +29,7 @@ class Cpt_diary():
         {
             'title': "Какие чувства вызвала у вас эта ситуация",
             'description': "Опишите чувства, которые возникли. Оцени их уровень на слайдере ниже.",
-            'hint': "Тестт",
+            'hint': "Тест",
             'type': FieldType.TEXT,
             'major': False,
             'variants': [],
