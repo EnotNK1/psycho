@@ -10,81 +10,92 @@ class Cpt_diary():
 
     fields = [
         {
-            'title': "Опишите ситуацию",
-            'description': "Факты без мыслей и эмоций.",
-            'hint': "Только что случилось такое...",
+            'title': "Опиши ситуацию",
+            'description': "Запиши факты, без мыслей и эмоций.",
+            'hint': "Тест",
             'type': FieldType.TEXT,
             'major': True,
             'variants': [],
-            'exercises': ['Проблемы и цели', 'Анализ проблемы'],
         },
         {
-            'title': "",
+            'title': "Как ты себя повел?",
             'description': "Запиши сами действия.",
-            'hint': "Как вы себя повели?...",
+            'hint': "Тест",
             'type': FieldType.TEXT,
-            'major': True,
+            'major': False,
             'variants': [],
             'exercises': [],
         },
         {
-            'title': "",
+            'title': "Какие чувства вызвала у вас эта ситуация",
             'description': "Опишите чувства, которые возникли. Оцени их уровень на слайдере ниже.",
-            'hint': "Какие чувства вызвала у вас эта ситуация?...",
+            'hint': "Тест",
             'type': FieldType.TEXT,
             'major': False,
             'variants': [],
             'exercises': [],
         },
         {
-            'title': "Автоматические мысли",
-            'description': "Опиши как можно подробнее основные мысли, которые пришли в голову в момент стрессовой ситуации.",
-            'hint': "Какие мысли были в этот момент?",
-            'type': FieldType.TEXT,
-            'major': False,
-            'variants': [],
-            'exercises': [],
-        },
-        {
-            'title': "",
-            'description': "Запиши аргументы подтверждающие мысли из прошлого пункта",
-            'hint': "Что подтверждает эту мысль?",
-            'type': FieldType.SLIDER,
-            'major': False,
-            'variants': [],
-            'exercises': [],
-        },
-        {
-            'title': "",
-            'description': "Запиши контраргументы, показывающие, что эти мысли не совсем корректны и правдивы",
-            'hint': "Что опровергает эту мысль?",
-            'type': FieldType.TEXT,
-            'major': False,
-            'variants': [],
-            'exercises': [],
-        },
-        {
-            'title': "Что думаете про эту ситуацию теперь?",
-            'description': "Сформулируйте альтернативные мысли, которые можно противопоставить автоматической мысли, и которые будут соответствовать прошлому пункту",
-            'hint': "Сейчас мне...",
-            'type': FieldType.TEXT,
-            'major': False,
-            'variants': [],
-            'exercises': [],
-        },
-        {
-            'title': "",
-            'description': "Опиши как ты себя чувствуешь после дневника",
-            'hint': "Какое у вас теперь настроение?",
-            'type': FieldType.TEXT,
-            'major': False,
-            'variants': [],
-            'exercises': [],
-        },
-        {
-            'title': "Настроение теперь",
+            'title': "Уровень настроения",
             'description': "",
-            'hint': "",
+            'hint': "Тест",
+            'type': FieldType.TEXT,
+            'major': False,
+            'variants': [],
+            'exercises': [],
+        },
+        {
+            'title': "Какие были мысли в этот момент?",
+            'description': "Опиши как можно подробно основные мысли, которые пришли в голову в момент стрессовой"
+                            "ситуации. Это могут быть оскорбительные насмешки, угрызения совести, жизненные убеждения,"
+                            "установки и т.д.",
+            'hint': "Тест",
+            'type': FieldType.TEXT,
+            'major': False,
+            'variants': [],
+            'exercises': [],
+        },
+        {
+            'title': "Что подтверждает эту мысль?",
+            'description': "Запиши аргументы, подтверждающие мысли из прошлого пункта",
+            'hint': "Тест",
+            'type': FieldType.TEXT,
+            'major': False,
+            'variants': [],
+            'exercises': [],
+        },
+        {
+            'title': "Что опровергает эту мысль?",
+            'description': "Запиши контраргументы, показывающие, что эти мысли не совсем корректны и правдивы",
+            'hint': "Тест",
+            'type': FieldType.TEXT,
+            'major': False,
+            'variants': [],
+            'exercises': [],
+        },
+        {
+            'title': "Что ты думаешь об этой ситуации теперь?",
+            'description': "Сформулируй альтернативные мысли, которые можно противопоставить автоматической мысли,"
+                            "и которые будут соответствовать прошлому пункту",
+            'hint': "Тест",
+            'type': FieldType.TEXT,
+            'major': False,
+            'variants': [],
+            'exercises': [],
+        },
+        {
+            'title': "Какое у тебя теперь настроение?",
+            'description': "Опиши, как ты себя чувствуешь после заполнения дневника",
+            'hint': "Тест",
+            'type': FieldType.TEXT,
+            'major': False,
+            'variants': [],
+            'exercises': [],
+        },
+        {
+            'title': "Новый уровень",
+            'description': "",
+            'hint': "Тест",
             'type': FieldType.SLIDER,
             'major': False,
             'variants': [],
@@ -135,7 +146,7 @@ class Definition_problems_setting_goals():
     title = "Проблемы и цели"
     description = "А теперь, как из камня высекают фигуру, вы сможете придать четкую форму своей проблеме"
     picture_link = ""
-    closed = False
+    closed = True
 
     fields = [
         {
@@ -202,7 +213,7 @@ class Problem_analysis():
             "вы не загоняете себя в жесткие рамки, которые мешают вам жить, а выбираете "\
             "предпочтения, осознавая их возможное невыполнение."
     picture_link = ""
-    closed = False
+    closed = True
 
     fields = [
         {
@@ -255,7 +266,7 @@ class Testing_beliefs():
             "сталкиваемся с чем-то новым. Если вам нужна помощь, обратитесь к психологу, он сможет прояснить для вас "\
             "некоторые моменты"
     picture_link = ""
-    closed = False
+    closed = True
 
     fields = [
         {
@@ -323,7 +334,7 @@ class Beliefs_analysis():
             "данная техника поможет вам сформулировать значимые, эмоциональные и сложные аргументов, которые помогут "\
             "отпустить вредные мысли"
     picture_link = ""
-    closed = False
+    closed = True
 
     fields = [
         {
@@ -387,7 +398,7 @@ class Mood_tracker():
     title = "Трекер настроения"
     description = ""
     picture_link = ""
-    closed = True
+    closed = False
 
     fields = [
         {
@@ -406,7 +417,7 @@ class Note():
     title = "Заметки"
     description = "Заметки помогают отслеживать, как прошёл день, как себя чувствуешь и так далее"
     picture_link = ""
-    closed = True
+    closed = False
 
     fields = [
         {
