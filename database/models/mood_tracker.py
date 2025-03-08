@@ -5,7 +5,6 @@ import datetime
 import uuid
 from database.enum import DiaryType
 
-from database.models.test import *
 
 class Mood_tracker(Base):
     __tablename__ = "mood_tracker"
