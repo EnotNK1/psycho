@@ -6,6 +6,7 @@ class Cpt_diary():
     description = "Это способ самоанализа, который позволяет отслеживать эмоции и чувства, выявлять взаимосвязи между "\
         "ситуациями и мыслями"
     picture_link = ""
+    fields_has_description = True
     closed = False
 
     fields = [
@@ -109,7 +110,8 @@ class Definition_group_problems():
     description = "Здесь вы определите проблему, над которой хотели бы поработать. Если их несколько, распределите их "\
             "на категории. В таком случае вы сможете вернуться к своему списку позже"
     picture_link = ""
-    closed = False
+    fields_has_description = False
+    closed = True
 
     fields = [
         {
@@ -146,6 +148,7 @@ class Definition_problems_setting_goals():
     title = "Проблемы и цели"
     description = "А теперь, как из камня высекают фигуру, вы сможете придать четкую форму своей проблеме"
     picture_link = ""
+    fields_has_description = False
     closed = True
 
     fields = [
@@ -213,6 +216,7 @@ class Problem_analysis():
             "вы не загоняете себя в жесткие рамки, которые мешают вам жить, а выбираете "\
             "предпочтения, осознавая их возможное невыполнение."
     picture_link = ""
+    fields_has_description = True
     closed = True
 
     fields = [
@@ -266,6 +270,7 @@ class Testing_beliefs():
             "сталкиваемся с чем-то новым. Если вам нужна помощь, обратитесь к психологу, он сможет прояснить для вас "\
             "некоторые моменты"
     picture_link = ""
+    fields_has_description = True
     closed = True
 
     fields = [
@@ -334,6 +339,7 @@ class Beliefs_analysis():
             "данная техника поможет вам сформулировать значимые, эмоциональные и сложные аргументов, которые помогут "\
             "отпустить вредные мысли"
     picture_link = ""
+    fields_has_description = True
     closed = True
 
     fields = [
