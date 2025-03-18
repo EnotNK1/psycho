@@ -40,7 +40,7 @@ class Cpt_diary():
             'title': "Уровень настроения",
             'description': "",
             'hint': "Тест",
-            'type': FieldType.TEXT,
+            'type': FieldType.SLIDER,
             'major': False,
             'variants': [],
             'exercises': [],
