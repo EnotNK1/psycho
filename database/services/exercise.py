@@ -147,7 +147,6 @@ class ExerciseServicedb:
                         Filled_field.exercises.contains([exercise_structure.title])
                     ).all()
 
-                    # Формируем список "стянутых" полей
                     pulled_fields = [
                         {
                             "id": filled_field.id,
