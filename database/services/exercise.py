@@ -3,6 +3,8 @@ from sqlalchemy import create_engine, select, func, distinct
 from sqlalchemy.orm import sessionmaker, joinedload, selectinload, join, DeclarativeBase
 from sqlalchemy.dialects.postgresql import ARRAY
 
+from database.exercise_info import Cpt_diary, Definition_group_problems, Definition_problems_setting_goals, \
+    Problem_analysis, Testing_beliefs, Beliefs_analysis, Note
 from database.models.exercise import Exercise_structure, Сompleted_exercise, Filled_field, Field
 from schemas.exercise import FieldResult
 from typing import List
@@ -119,6 +121,26 @@ class ExerciseServicedb:
                             "exercises": field.exercises,
                         }
                         field_results.append(field_data)
+
+                    # Определяем порядок полей для текущего упражнения
+                    if exercise_structure.title == "КПТ-дневник":
+                        expected_order = [field['title'] for field in Cpt_diary.fields]
+                    elif exercise_structure.title == "Определение групп проблем":
+                        expected_order = [field['title'] for field in Definition_group_problems.fields]
+                    elif exercise_structure.title == "Проблемы и цели":
+                        expected_order = [field['title'] for field in Definition_problems_setting_goals.fields]
+                    elif exercise_structure.title == "Анализ проблемы":
+                        expected_order = [field['title'] for field in Problem_analysis.fields]
+                    elif exercise_structure.title == "Проверка убеждений":
+                        expected_order = [field['title'] for field in Testing_beliefs.fields]
+                    elif exercise_structure.title == "Анализ убеждений":
+                        expected_order = [field['title'] for field in Beliefs_analysis.fields]
+                    else:
+                        expected_order = []  # Если упражнение не найдено, порядок не меняем
+
+                    # Сортируем поля по порядку, указанному в expected_order
+                    if expected_order:
+                        field_results.sort(key=lambda x: expected_order.index(x['title']))
 
                     # Ищем все заполненные поля (filled_field), которые связаны с текущим упражнением
                     filled_fields_to_pull = session.query(Filled_field).filter(
