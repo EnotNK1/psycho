@@ -1,5 +1,6 @@
 from schemas.test import ReadThinkDiary, WritingThinkDiary, WritingFreeDiary, WritingFreeDiaryWithDate
 from database.services.diary import diary_service_db
+from database.services.daily_task import daily_task_service_db
 from psycopg2 import Error
 import uuid
 from fastapi import FastAPI, HTTPException
@@ -39,6 +40,7 @@ class DiaryService:
                                                     payload.mood, payload.level, payload.auto_thought, payload.proofs,
                                                     payload.refutations, payload.new_mood, payload.alternative_thought,
                                                     payload.new_level, payload.behavioral)
+            daily_task_service_db.auto_complete_daily_task(token_data['user_id'], uuid.UUID("fd8016cf-c1b9-4ef1-a5eb-b93773bdeb74"))
             return res
         except(Error):
             raise HTTPException(status_code=500, detail="Что-то пошло не так!")

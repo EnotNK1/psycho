@@ -85,6 +85,7 @@ class EducationServiceDB:
     def get_all_education_material_db(self, education_theme_id, user_id):
         with session_factory() as session:
             try:
+                # Получаем основную тему образования с материалами и прогрессом
                 query = select(Educational_theme).filter_by(id=education_theme_id).options(
                     selectinload(Educational_theme.educational_material).selectinload(Educational_material.card),
                     selectinload(Educational_theme.educational_material).selectinload(
@@ -92,26 +93,25 @@ class EducationServiceDB:
                 )
                 result = session.execute(query)
                 education_theme = result.scalars().one()
+
+                # Сбор связанных тем
                 related_topics_ = []
-                for i in range(len(education_theme.related_topics)):
-
-                    query = select(Educational_theme).filter_by(id=uuid.UUID(education_theme.related_topics[i]))
-
+                for related_topic_id in education_theme.related_topics:
+                    query = select(Educational_theme).filter_by(id=uuid.UUID(related_topic_id))
                     result = session.execute(query)
                     education_theme_rel = result.scalars().one()
 
-                    for material in education_theme_rel.educational_material:
-
-                        topic = ResponceMaterial(
-                            id = education_theme_rel.id,
-                            theme = education_theme_rel.theme,
-                            link_to_picture = education_theme_rel.educational_material[i].link_to_picture,
-                            max_score = sum(len(material.card) for material in education_theme_rel.educational_material)
-                        )
-
+                    # Создаем объект темы с материалами
+                    topic = ResponceMaterial(
+                        id=education_theme_rel.id,
+                        theme=education_theme_rel.theme,
+                        link_to_picture=education_theme_rel.educational_material[
+                            0].link_to_picture if education_theme_rel.educational_material else None,
+                        max_score=sum(len(material.card) for material in education_theme_rel.educational_material)
+                    )
                     related_topics_.append(topic)
 
-
+                # Сбор подтем
                 subtopics = []
                 for material in education_theme.educational_material:
                     cards = []
@@ -132,7 +132,8 @@ class EducationServiceDB:
                 response = ResponceGetAllMaterial(
                     theme=education_theme.theme,
                     id=education_theme_id,
-                    link_to_picture=education_theme.educational_material[i].link_to_picture,
+                    link_to_picture=education_theme.educational_material[
+                        0].link_to_picture if education_theme.educational_material else None,
                     max_score=sum(len(material.card) for material in education_theme.educational_material),
                     related_topics=related_topics_,
                     subtopics=subtopics
@@ -146,27 +147,28 @@ class EducationServiceDB:
 
     def complete_education_material_db(self, edu_id, user_id):
         with session_factory() as session:
-            material = session.query(Educational_material).get(edu_id)
+            material = session.query(Educational_theme).get(edu_id)
             if not material:
                 raise HTTPException(status_code=404, detail="Материал не найден!")
 
-            temp = session.query(Educational_progress).filter_by(
-                user_id=user_id, educational_material_id=edu_id).first()
+            # temp = session.query(Educational_progress).filter_by(
+            #     user_id=user_id, educational_material_id=edu_id).first()
 
-            if not temp:
-                education_progress = Educational_progress(
-                    id=uuid.uuid4(),
-                    user_id=user_id,
-                    educational_material_id=edu_id
-                )
-                session.add(education_progress)
-                session.commit()
-                dic = {
-                    "status": "ok"
-                }
-                return dic
-            else:
-                raise HTTPException(status_code=409, detail="Данный материал уже пройден!")
+
+            # if not temp:
+                # education_progress = Educational_progress(
+                #     id=uuid.uuid4(),
+                #     user_id=user_id,
+                #     educational_material_id=edu_id
+                # )
+                # session.add(education_progress)
+                # session.commit()
+            dic = {
+                "status": "ok"
+            }
+            return dic
+            # else:
+            #     raise HTTPException(status_code=409, detail="Данный материал уже пройден!")
 
     def get_edu_theme_by_edu_material(self, edu_material_id):
         with session_factory() as session:

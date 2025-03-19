@@ -29,8 +29,8 @@ class EducationService:
 
         result = education_service_db.complete_education_material_db(payload.education_material_id, token_data['user_id'])
 
-        theme_id = education_service_db.get_edu_theme_by_edu_material(payload.education_material_id)
-        daily_task_service_db.auto_complete_daily_task(token_data['user_id'], theme_id)
+        # theme_id = education_service_db.get_edu_theme_by_edu_material(payload.education_material_id)
+        daily_task_service_db.auto_complete_daily_task(token_data['user_id'], payload.education_material_id)
         return result
 
     def delete_education(self, education_id: str, access_token):

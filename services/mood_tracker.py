@@ -1,9 +1,11 @@
 from database.services.mood_tracker import mood_tracker_service_db
+from database.services.daily_task import daily_task_service_db
 import uuid
 from psycopg2 import Error
 from utils.token_utils import check_token
 from fastapi import HTTPException
 from schemas.mood_tracker import SaveMoodTracker
+
 
 class MoodTrackerService:
     def get_mood_tracker(self, mood_tracker_id, access_token):
@@ -39,6 +41,7 @@ class MoodTrackerService:
         try:
             res = mood_tracker_service_db.save_mood_tracker_db(token_data['user_id'], payload.score, payload.free_diary_id,
                                                         payload.think_diary_id, payload.diary_type, payload.date)
+            daily_task_service_db.auto_complete_daily_task(token_data['user_id'], uuid.UUID("4e9a00c9-0ee7-47d0-b388-a65cf9c85e50"))
             return res
         except(Error):
             raise HTTPException(status_code=500, detail="Что-то пошло не так!")
