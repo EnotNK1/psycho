@@ -311,6 +311,7 @@ class CreateServiceDB:
                         type=edu_info.type,
                         title=edu_info.title,
                         subtitle=edu_info.subtopics[i]["subtitle"],
+                        number=edu_info.subtopics[i]["number"],
                         educational_theme_id=uuid.UUID(edu_info.id)
                     )
 
@@ -320,6 +321,7 @@ class CreateServiceDB:
                         education_card = Card(
                             id=edu_info.subtopics[i]["cards"][j]["id"],
                             text=edu_info.subtopics[i]["cards"][j]["text"],
+                            number=edu_info.subtopics[i]["cards"][j]["number"],
                             link_to_picture=edu_info.subtopics[i]["cards"][j]["link_to_picture"],
                             educational_material_id=education_material_id
                         )
@@ -355,6 +357,7 @@ class CreateServiceDB:
                     educational_material.title = edu_info.title
                     educational_material.type = edu_info.type
                     educational_material.subtitle = edu_info.subtopics[i]["subtitle"]
+                    educational_material.number = edu_info.subtopics[i]["number"]
                     educational_material.educational_theme_id = edu_id
 
                     i += 1

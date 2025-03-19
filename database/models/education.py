@@ -27,6 +27,7 @@ class Educational_material(Base):
 
     id: Mapped[uuid.UUID] = mapped_column(primary_key=True)
     type: Mapped[int]
+    number: Mapped[int]
     title: Mapped[str] = mapped_column(nullable=True)
     link_to_picture: Mapped[str] = mapped_column(nullable=True)
     educational_theme_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("educational_theme.id", ondelete="CASCADE"))
@@ -40,6 +41,7 @@ class Card(Base):
     __tablename__ = "educational_card"
     id: Mapped[uuid.UUID] = mapped_column(primary_key=True)
     text: Mapped[str]
+    number: Mapped[int]
     link_to_picture: Mapped[str] = mapped_column(nullable=True)
 
     educational_material_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("educational_material.id", ondelete="CASCADE"))

@@ -113,9 +113,9 @@ class EducationServiceDB:
 
                 # Сбор подтем
                 subtopics = []
-                for material in education_theme.educational_material:
+                for material in sorted(education_theme.educational_material, key=lambda m: m.number):
                     cards = []
-                    for card in material.card:
+                    for card in sorted(material.card, key=lambda c: c.number):
                         card_response = CardResponse(
                             id=card.id,
                             text=card.text,
