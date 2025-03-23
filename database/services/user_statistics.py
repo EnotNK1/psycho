@@ -4,7 +4,7 @@ from sqlalchemy import create_engine, select, func, distinct
 from sqlalchemy.orm import sessionmaker, joinedload, selectinload, join, DeclarativeBase
 from sqlalchemy.util.queue import Empty
 
-from database.models.exercise import Сompleted_exercise, Exercise_structure
+# from database.models.exercise import Сompleted_exercise, Exercise_structure
 from database.services.education import education_service_db
 from schemas.test import ResScale, ReqBorder, ReqScale
 from typing import List

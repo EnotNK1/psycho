@@ -2,7 +2,7 @@ from psycopg2 import Error
 from sqlalchemy import create_engine, select, func, distinct
 from sqlalchemy.orm import sessionmaker, joinedload, selectinload, join, DeclarativeBase
 
-from database.models.exercise import Exercise_structure, Field, Variant
+# from database.models.exercise import Exercise_structure, Field, Variant
 from schemas.test import ResScale, ReqBorder, ReqScale
 from typing import List
 from sqlalchemy.exc import NoResultFound
