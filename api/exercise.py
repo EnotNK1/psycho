@@ -23,6 +23,20 @@ router = APIRouter()
 #     return exercise_service.get_all_exercises(access_token)
 
 @router.get(
+    "/exercise/all",
+    tags=["Exercise"],
+    response_model=None,
+)
+def get_all(access_token: str = Cookie(None)):
+    token_data = check_token(access_token)
+    user_id = token_data["user_id"]
+
+    exercises = exercise_service_db.get_all(
+        user_id)
+    return exercises
+
+
+@router.get(
     "/defining_problem_groups/get_all_by_user",
     tags=["Exercise"],
     response_model=None,

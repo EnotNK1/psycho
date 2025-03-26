@@ -33,6 +33,120 @@ from datetime import datetime
 
 class ExerciseServicedb:
 
+
+    def get_all(self, user_id: uuid.UUID):
+        with session_factory() as session:
+            try:
+                query1 = select(Exercise_1).filter_by(user_id=user_id)
+                query2 = select(Exercise_2).filter_by(user_id=user_id)
+                query3 = select(Exercise_3).filter_by(user_id=user_id)
+                query4 = select(Exercise_4).filter_by(user_id=user_id)
+                query5 = select(Exercise_5).filter_by(user_id=user_id)
+                res1 = session.execute(query1)
+                res2 = session.execute(query2)
+                res3 = session.execute(query3)
+                res4 = session.execute(query4)
+                res5 = session.execute(query5)
+                exercises1 = res1.unique().scalars().all()
+                exercises2 = res2.unique().scalars().all()
+                exercises3 = res3.unique().scalars().all()
+                exercises4 = res4.unique().scalars().all()
+                exercises5 = res5.unique().scalars().all()
+
+                if exercises1 == []:
+                    return [{
+                        "title": "defining_problem_groups",
+                        "is_closed": False
+                    },{
+                        "title": "problems_and_goals",
+                        "is_closed": True
+                    },{
+                        "title": "problem_analysis",
+                        "is_closed": True
+                    },{
+                        "title": "testing_beliefs",
+                        "is_closed": True
+                    },{
+                        "title": "belief_analysis",
+                        "is_closed": True
+                    }]
+                elif exercises2 == []:
+                    return [{
+                        "title": "defining_problem_groups",
+                        "is_closed": False
+                    }, {
+                        "title": "problems_and_goals",
+                        "is_closed": False
+                    }, {
+                        "title": "problem_analysis",
+                        "is_closed": True
+                    }, {
+                        "title": "testing_beliefs",
+                        "is_closed": True
+                    }, {
+                        "title": "belief_analysis",
+                        "is_closed": True
+                    }]
+
+                elif exercises3 == []:
+                    return [{
+                        "title": "defining_problem_groups",
+                        "is_closed": False
+                    }, {
+                        "title": "problems_and_goals",
+                        "is_closed": False
+                    }, {
+                        "title": "problem_analysis",
+                        "is_closed": False
+                    }, {
+                        "title": "testing_beliefs",
+                        "is_closed": True
+                    }, {
+                        "title": "belief_analysis",
+                        "is_closed": True
+                    }]
+
+                elif exercises4 == []:
+                    return [{
+                        "title": "defining_problem_groups",
+                        "is_closed": False
+                    }, {
+                        "title": "problems_and_goals",
+                        "is_closed": False
+                    }, {
+                        "title": "problem_analysis",
+                        "is_closed": False
+                    }, {
+                        "title": "testing_beliefs",
+                        "is_closed": False
+                    }, {
+                        "title": "belief_analysis",
+                        "is_closed": True
+                    }]
+
+                elif exercises5 == []:
+                    return [{
+                        "title": "defining_problem_groups",
+                        "is_closed": False
+                    }, {
+                        "title": "problems_and_goals",
+                        "is_closed": False
+                    }, {
+                        "title": "problem_analysis",
+                        "is_closed": False
+                    }, {
+                        "title": "testing_beliefs",
+                        "is_closed": False
+                    }, {
+                        "title": "belief_analysis",
+                        "is_closed": False
+                    }]
+
+            except (Exception, Error) as error:
+                print(error)
+                return []
+
+
     def get_all_defining_problem_groups_by_user(self, user_id: uuid.UUID):
         with session_factory() as session:
             try:
