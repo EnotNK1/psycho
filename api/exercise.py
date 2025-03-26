@@ -70,9 +70,9 @@ def save_dpg(data: DefiningProblemGroups, access_token: str = Cookie(None)):
 
     exercise_id = exercise_service_db.save_defining_problem_groups(
         user_id=user_id,
-        field_1=data.field_1,
-        field_2=data.field_2,
-        field_3=data.field_3
+        field_1=data.sphere,
+        field_2=data.emotion,
+        field_3=data.target
     )
 
     if exercise_id:
@@ -114,11 +114,11 @@ def save_pag(data: ProblemsAndGoals, access_token: str = Cookie(None)):
 
     exercise_id = exercise_service_db.save_problems_and_goals(
         user_id=user_id,
-        field_1=data.field_1,
-        field_2=data.field_2,
-        field_3=data.field_3,
-        field_4=data.field_4,
-        field_5=data.field_5
+        field_1=data.sphere,
+        field_2=data.emotion,
+        field_3=data.event,
+        field_4=data.argument,
+        field_5=data.target
     )
 
     if exercise_id:
@@ -160,10 +160,10 @@ def save_pa(data: ProblemAnalysis, access_token: str = Cookie(None)):
 
     exercise_id = exercise_service_db.save_problem_analysis(
         user_id=user_id,
-        field_1=data.field_1,
-        field_2=data.field_2,
-        field_3=data.field_3,
-        field_4=data.field_4
+        field_1=data.problem,
+        field_2=data.target,
+        field_3=data.elaboration,
+        field_4=data.belief
     )
 
     if exercise_id:
@@ -205,12 +205,12 @@ def save_tb(data: TestingBeliefs, access_token: str = Cookie(None)):
 
     exercise_id = exercise_service_db.save_testing_beliefs(
         user_id=user_id,
-        field_1=data.field_1,
-        field_2=data.field_2,
-        field_3=data.field_3,
-        field_4=data.field_4,
-        field_5=data.field_5,
-        field_6=data.field_6
+        field_1=data.truthfulness_dogmatic,
+        field_2=data.logic_dogmatic,
+        field_3=data.utility_dogmatic,
+        field_4=data.truthfulness_flexible,
+        field_5=data.logic_flexible,
+        field_6=data.utility_flexible
     )
 
     if exercise_id:
@@ -252,12 +252,12 @@ def save_ba(data: BeliefAnalysis, access_token: str = Cookie(None)):
 
     exercise_id = exercise_service_db.save_belief_analysis(
         user_id=user_id,
-        field_1=data.field_1,
-        field_2=data.field_2,
-        field_3=data.field_3,
-        field_4=data.field_4,
-        field_5=data.field_5,
-        field_6=data.field_6
+        field_1=data.action_dogmatic,
+        field_2=data.interference_dogmatic,
+        field_3=data.results_dogmatic,
+        field_4=data.action_flexible,
+        field_5=data.interference_flexible,
+        field_6=data.results_flexible
     )
 
     if exercise_id:

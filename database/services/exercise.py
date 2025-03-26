@@ -160,7 +160,7 @@ class ExerciseServicedb:
                     result_dict = {
                         "id": exercise.id,
                         "time": exercise.time,
-                        "field_1": exercise.field_1
+                        "sphere": exercise.field_1
                     }
                     result_list.append(result_dict)
 
@@ -176,19 +176,16 @@ class ExerciseServicedb:
                 res = session.execute(query)
                 exercise = res.unique().scalars().all()
 
-                result_list = []
-
                 for new_res in exercise:
                     result_dict = {
                         "id": new_res.id,
                         "time": new_res.time,
-                        "field_1": new_res.field_1,
-                        "field_2": new_res.field_2,
-                        "field_3": new_res.field_3
+                        "sphere": new_res.field_1,
+                        "emotion": new_res.field_2,
+                        "target": new_res.field_3
                     }
-                    result_list.append(result_dict)
 
-                return result_list
+                return result_dict
             except (Exception, Error) as error:
                 print(error)
                 return []
@@ -225,7 +222,7 @@ class ExerciseServicedb:
                     result_dict = {
                         "id": exercise.id,
                         "time": exercise.time,
-                        "field_5": exercise.field_5
+                        "target": exercise.field_5
                     }
                     result_list.append(result_dict)
 
@@ -241,21 +238,18 @@ class ExerciseServicedb:
                 res = session.execute(query)
                 exercise = res.unique().scalars().all()
 
-                result_list = []
-
                 for new_res in exercise:
                     result_dict = {
                         "id": new_res.id,
                         "time": new_res.time,
-                        "field_1": new_res.field_1,
-                        "field_2": new_res.field_2,
-                        "field_3": new_res.field_3,
-                        "field_4": new_res.field_4,
-                        "field_5": new_res.field_5
+                        "sphere": new_res.field_1,
+                        "emotion": new_res.field_2,
+                        "event": new_res.field_3,
+                        "argument": new_res.field_4,
+                        "target": new_res.field_5
                     }
-                    result_list.append(result_dict)
 
-                return result_list
+                return result_dict
             except (Exception, Error) as error:
                 print(error)
                 return []
@@ -294,7 +288,7 @@ class ExerciseServicedb:
                     result_dict = {
                         "id": exercise.id,
                         "time": exercise.time,
-                        "field_4": exercise.field_4
+                        "belief": exercise.field_4
                     }
                     result_list.append(result_dict)
 
@@ -310,20 +304,17 @@ class ExerciseServicedb:
                 res = session.execute(query)
                 exercise = res.unique().scalars().all()
 
-                result_list = []
-
                 for new_res in exercise:
                     result_dict = {
                         "id": new_res.id,
                         "time": new_res.time,
-                        "field_1": new_res.field_1,
-                        "field_2": new_res.field_2,
-                        "field_3": new_res.field_3,
-                        "field_4": new_res.field_4
+                        "problem": new_res.field_1,
+                        "target": new_res.field_2,
+                        "elaboration": new_res.field_3,
+                        "belief": new_res.field_4
                     }
-                    result_list.append(result_dict)
 
-                return result_list
+                return result_dict
             except (Exception, Error) as error:
                 print(error)
                 return []
@@ -361,7 +352,7 @@ class ExerciseServicedb:
                     result_dict = {
                         "id": exercise.id,
                         "time": exercise.time,
-                        "field_1": exercise.field_1
+                        "truthfulness": exercise.field_1
                     }
                     result_list.append(result_dict)
 
@@ -377,22 +368,19 @@ class ExerciseServicedb:
                 res = session.execute(query)
                 exercise = res.unique().scalars().all()
 
-                result_list = []
-
                 for new_res in exercise:
                     result_dict = {
                         "id": new_res.id,
                         "time": new_res.time,
-                        "field_1": new_res.field_1,
-                        "field_2": new_res.field_2,
-                        "field_3": new_res.field_3,
-                        "field_4": new_res.field_4,
-                        "field_5": new_res.field_5,
-                        "field_6": new_res.field_6
+                        "truthfulness_dogmatic": new_res.field_1,
+                        "logic_dogmatic": new_res.field_2,
+                        "utility_dogmatic": new_res.field_3,
+                        "truthfulness_flexible": new_res.field_4,
+                        "logic_flexible": new_res.field_5,
+                        "utility_flexible": new_res.field_6
                     }
-                    result_list.append(result_dict)
 
-                return result_list
+                return result_dict
             except (Exception, Error) as error:
                 print(error)
                 return []
@@ -410,7 +398,7 @@ class ExerciseServicedb:
                     result_dict = {
                         "id": exercise.id,
                         "time": exercise.time,
-                        "field_6": exercise.field_6
+                        "results_flexible": exercise.field_6
                     }
                     result_list.append(result_dict)
 
@@ -448,22 +436,19 @@ class ExerciseServicedb:
                 res = session.execute(query)
                 exercise = res.unique().scalars().all()
 
-                result_list = []
-
                 for new_res in exercise:
                     result_dict = {
                         "id": new_res.id,
                         "time": new_res.time,
-                        "field_1": new_res.field_1,
-                        "field_2": new_res.field_2,
-                        "field_3": new_res.field_3,
-                        "field_4": new_res.field_4,
-                        "field_5": new_res.field_5,
-                        "field_6": new_res.field_6
+                        "action_dogmatic": new_res.field_1,
+                        "interference_dogmatic": new_res.field_2,
+                        "results_dogmatic": new_res.field_3,
+                        "action_flexible": new_res.field_4,
+                        "interference_flexible": new_res.field_5,
+                        "results_flexible": new_res.field_6
                     }
-                    result_list.append(result_dict)
 
-                return result_list
+                return result_dict
             except (Exception, Error) as error:
                 print(error)
                 return []

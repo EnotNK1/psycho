@@ -16,42 +16,42 @@ import uuid
 
 
 class DefiningProblemGroups(pydantic.BaseModel):
-    field_1: str
-    field_2: str
-    field_3: str
+    sphere: str
+    emotion: str
+    target: str
 
 
 class ProblemsAndGoals(pydantic.BaseModel):
-    field_1: str
-    field_2: str
-    field_3: str
-    field_4: str
-    field_5: str
+    sphere: str
+    emotion: str
+    event: str
+    argument: str
+    target: str
 
 
 class ProblemAnalysis(pydantic.BaseModel):
-    field_1: str
-    field_2: str
-    field_3: str
-    field_4: str
+    problem: str
+    target: str
+    elaboration: str
+    belief: str
 
 
 class TestingBeliefs(pydantic.BaseModel):
-    field_1: str
-    field_2: str
-    field_3: str
-    field_4: str
-    field_5: str
-    field_6: str
+    truthfulness_dogmatic: str
+    logic_dogmatic: str
+    utility_dogmatic: str
+    truthfulness_flexible: str
+    logic_flexible: str
+    utility_flexible: str
 
 
 class BeliefAnalysis(pydantic.BaseModel):
-    field_1: str
-    field_2: str
-    field_3: str
-    field_4: str
-    field_5: str
-    field_6: str
+    action_dogmatic: str
+    interference_dogmatic: str
+    results_dogmatic: str
+    action_flexible: str
+    interference_flexible: str
+    results_flexible: str
 
 # class ResponseGetExerciseResult(pydantic.BaseModel):
 #     title: str
