@@ -160,9 +160,7 @@ class ExerciseServicedb:
                     result_dict = {
                         "id": exercise.id,
                         "time": exercise.time,
-                        "field_1": exercise.field_1,
-                        "field_2": exercise.field_2,
-                        "field_3": exercise.field_3
+                        "field_1": exercise.field_1
                     }
                     result_list.append(result_dict)
 
@@ -227,10 +225,6 @@ class ExerciseServicedb:
                     result_dict = {
                         "id": exercise.id,
                         "time": exercise.time,
-                        "field_1": exercise.field_1,
-                        "field_2": exercise.field_2,
-                        "field_3": exercise.field_3,
-                        "field_4": exercise.field_4,
                         "field_5": exercise.field_5
                     }
                     result_list.append(result_dict)
@@ -300,9 +294,6 @@ class ExerciseServicedb:
                     result_dict = {
                         "id": exercise.id,
                         "time": exercise.time,
-                        "field_1": exercise.field_1,
-                        "field_2": exercise.field_2,
-                        "field_3": exercise.field_3,
                         "field_4": exercise.field_4
                     }
                     result_list.append(result_dict)
@@ -370,12 +361,7 @@ class ExerciseServicedb:
                     result_dict = {
                         "id": exercise.id,
                         "time": exercise.time,
-                        "field_1": exercise.field_1,
-                        "field_2": exercise.field_2,
-                        "field_3": exercise.field_3,
-                        "field_4": exercise.field_4,
-                        "field_5": exercise.field_5,
-                        "field_6": exercise.field_6
+                        "field_1": exercise.field_1
                     }
                     result_list.append(result_dict)
 
@@ -424,11 +410,6 @@ class ExerciseServicedb:
                     result_dict = {
                         "id": exercise.id,
                         "time": exercise.time,
-                        "field_1": exercise.field_1,
-                        "field_2": exercise.field_2,
-                        "field_3": exercise.field_3,
-                        "field_4": exercise.field_4,
-                        "field_5": exercise.field_5,
                         "field_6": exercise.field_6
                     }
                     result_list.append(result_dict)
