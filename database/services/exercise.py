@@ -160,7 +160,7 @@ class ExerciseServicedb:
                     result_dict = {
                         "id": exercise.id,
                         "time": exercise.time,
-                        "sphere": exercise.field_1
+                        "main_field": exercise.field_1
                     }
                     result_list.append(result_dict)
 
@@ -222,7 +222,7 @@ class ExerciseServicedb:
                     result_dict = {
                         "id": exercise.id,
                         "time": exercise.time,
-                        "target": exercise.field_5
+                        "main_field": exercise.field_5
                     }
                     result_list.append(result_dict)
 
@@ -288,7 +288,7 @@ class ExerciseServicedb:
                     result_dict = {
                         "id": exercise.id,
                         "time": exercise.time,
-                        "belief": exercise.field_4
+                        "main_field": exercise.field_4
                     }
                     result_list.append(result_dict)
 
@@ -352,7 +352,7 @@ class ExerciseServicedb:
                     result_dict = {
                         "id": exercise.id,
                         "time": exercise.time,
-                        "truthfulness": exercise.field_1
+                        "main_field": exercise.field_1
                     }
                     result_list.append(result_dict)
 
@@ -398,7 +398,7 @@ class ExerciseServicedb:
                     result_dict = {
                         "id": exercise.id,
                         "time": exercise.time,
-                        "results_flexible": exercise.field_6
+                        "main_field": exercise.field_6
                     }
                     result_list.append(result_dict)
 
