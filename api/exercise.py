@@ -2,7 +2,8 @@ import shutil
 import uuid
 
 from fastapi import APIRouter, Cookie, Depends, UploadFile, File, HTTPException
-from schemas.exercise import DefiningProblemGroups, ProblemAnalysis, ProblemsAndGoals, TestingBeliefs, BeliefAnalysis
+from schemas.exercise import DefiningProblemGroups, ProblemAnalysis, ProblemsAndGoals, TestingBeliefs, BeliefAnalysis, \
+    ResponseGetExerciseResult, ResponseGetDetailExerciseResult, EditExerciseResult, SaveExerciseResult
 from services.exercise import exercise_service
 # from database.models.exercise import Filled_field
 from database.services.exercise import exercise_service_db
@@ -12,15 +13,6 @@ from typing import List, Optional
 from utils.token_utils import check_token
 
 router = APIRouter()
-
-
-# @router.get(
-#     "/exercise/get_all_exercises",
-#     tags=["Exercise"],
-#     response_model=None,
-# )
-# def get_all_exercises(access_token: str = Cookie(None)):
-#     return exercise_service.get_all_exercises(access_token)
 
 @router.get(
     "/exercise/all",
@@ -266,42 +258,6 @@ def save_ba(data: BeliefAnalysis, access_token: str = Cookie(None)):
         raise HTTPException(status_code=500, detail="Failed to save exercise")
 
 
-# @router.get(
-#     "/exercise/get_exercise_results/{exercise_id}",
-#     tags=["Exercise"],
-#     response_model=List[ResponseGetExerciseResult],
-# )
-# def get_exercise_results(exercise_id: str, access_token: str = Cookie(None)):
-#     return exercise_service.get_exercise_res(exercise_id, access_token)
-
-
-# @router.get(
-#     "/exercise/get_exercise_result/{completed_exercise_id}",
-#     tags=["Exercise"],
-#     response_model=ResponseGetDetailExerciseResult,
-# )
-# def get_exercise_results(completed_exercise_id: str, access_token: str = Cookie(None)):
-#     return exercise_service.get_completed_exercise_res(completed_exercise_id, access_token)
-
-
-# @router.delete(
-#     "/exercise/delete_exercise_result/{completed_exercise_id}",
-#     tags=["Exercise"],
-#     response_model=None,
-# )
-# def delete_exercise_result(completed_exercise_id: str, access_token: str = Cookie(None)):
-#     return exercise_service.delete_exercise_result(completed_exercise_id, access_token)
-
-
-# @router.patch(
-#     "/exercise/edit_exercise_result",
-#     tags=["Exercise"],
-#     response_model=None,
-# )
-# def edit_exercise_result(data: EditExerciseResult, access_token: str = Cookie(None)):
-#     return exercise_service.edit_exercise_result(data, access_token)
-
-
 @router.post(
     "/exercise/upload/images_exercise",
     tags=["Exercise"],
@@ -320,6 +276,69 @@ def upload_image(file: UploadFile = File(...)):
 )
 def get_images(filename: str, access_token: str = Cookie(None)):
     return FileResponse(f"database/images_exercise/{filename}")
+
+
+@router.get(
+    "/exercise/get_all_exercises",
+    tags=["Exercise"],
+    response_model=None,
+)
+def get_all_exercises(access_token: str = Cookie(None)):
+    return exercise_service.get_all_exercises(access_token)
+
+
+@router.get(
+     "/exercise/get_exercise",
+     tags=["Exercise"],
+     response_model=None,
+)
+def get_exercise(exercise_id: uuid.UUID, access_token: str = Cookie(None)):
+     return exercise_service.get_exercise(exercise_id, access_token)
+
+
+@router.post(
+     "/exercise/save_exercise_result",
+     tags=["Exercise"],
+     response_model=None,
+)
+def save_test_result(data: SaveExerciseResult, access_token: str = Cookie(None)):
+     return exercise_service.save_exercise_result(data, access_token)
+
+
+@router.get(
+    "/exercise/get_exercise_results/{exercise_id}",
+    tags=["Exercise"],
+    response_model=List[ResponseGetExerciseResult],
+)
+def get_exercise_results(exercise_id: str, access_token: str = Cookie(None)):
+    return exercise_service.get_exercise_res(exercise_id, access_token)
+
+
+@router.get(
+    "/exercise/get_exercise_result/{completed_exercise_id}",
+    tags=["Exercise"],
+    response_model=ResponseGetDetailExerciseResult,
+)
+def get_exercise_results(completed_exercise_id: str, access_token: str = Cookie(None)):
+    return exercise_service.get_completed_exercise_res(completed_exercise_id, access_token)
+
+
+@router.delete(
+    "/exercise/delete_exercise_result/{completed_exercise_id}",
+    tags=["Exercise"],
+    response_model=None,
+)
+def delete_exercise_result(completed_exercise_id: str, access_token: str = Cookie(None)):
+    return exercise_service.delete_exercise_result(completed_exercise_id, access_token)
+
+
+@router.patch(
+    "/exercise/edit_exercise_result",
+    tags=["Exercise"],
+    response_model=None,
+)
+def edit_exercise_result(data: EditExerciseResult, access_token: str = Cookie(None)):
+    return exercise_service.edit_exercise_result(data, access_token)
 
 # @router.patch(
 #     "/review/read/{review_id}",

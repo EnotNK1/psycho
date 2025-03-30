@@ -83,77 +83,77 @@ class Exercise_5(Base):
     field_5: Mapped[str]
     field_6: Mapped[str]
 
-# class Exercise_structure(Base):
-#     __tablename__ = 'exercise_structure'
+class Exercise_structure(Base):
+    __tablename__ = 'exercise_structure'
 
-#     id: Mapped[uuid.UUID] = mapped_column(primary_key=True)
-#     title: Mapped[str]
-#     description: Mapped[str]
-#     picture_link: Mapped[str]
-#     linked_exercise_id: Mapped[uuid.UUID]
-#     closed: Mapped[bool]
+    id: Mapped[uuid.UUID] = mapped_column(primary_key=True)
+    title: Mapped[str]
+    description: Mapped[str]
+    picture_link: Mapped[str]
+    linked_exercise_id: Mapped[uuid.UUID]
+    closed: Mapped[bool]
 
-#     completed_exercise: Mapped[List["Сompleted_exercise"]] = relationship(
-#         cascade="all, delete-orphan")
-#     field: Mapped[List["Field"]] = relationship(cascade="all, delete-orphan")
-
-
-# class Сompleted_exercise(Base):
-#     __tablename__ = 'completed_exercise'
-
-#     id: Mapped[uuid.UUID] = mapped_column(primary_key=True)
-#     date: Mapped[datetime.datetime]
-#     exercise_structure_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("exercise_structure.id",
-#                                                                         ondelete="CASCADE"))
-#     user_id: Mapped[uuid.UUID] = mapped_column(
-#         ForeignKey("users.id", ondelete="CASCADE"))
-
-#     filled_field: Mapped[List["Filled_field"]] = relationship(
-#         cascade="all, delete-orphan")
+    completed_exercise: Mapped[List["Сompleted_exercise"]] = relationship(
+        cascade="all, delete-orphan")
+    field: Mapped[List["Field"]] = relationship(cascade="all, delete-orphan")
 
 
-# class Field(Base):
-#     __tablename__ = 'field'
+class Сompleted_exercise(Base):
+    __tablename__ = 'completed_exercise'
 
-#     id: Mapped[uuid.UUID] = mapped_column(primary_key=True)
-#     title: Mapped[str]
-#     hint: Mapped[str]
-#     description: Mapped[str]
-#     type: Mapped[FieldType] = mapped_column(Enum(FieldType), nullable=True)
-#     major: Mapped[bool]
-#     exercise_structure_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("exercise_structure.id",
-#                                                                         ondelete="CASCADE"))
+    id: Mapped[uuid.UUID] = mapped_column(primary_key=True)
+    date: Mapped[datetime.datetime]
+    exercise_structure_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("exercise_structure.id",
+                                                                        ondelete="CASCADE"))
+    user_id: Mapped[uuid.UUID] = mapped_column(
+        ForeignKey("users.id", ondelete="CASCADE"))
 
-#     variants: Mapped[List["Variant"]] = relationship(
-#         cascade="all, delete-orphan", back_populates="field"
-#     )
-#     exercises: Mapped[List[str]] = mapped_column(
-#         ARRAY(String), nullable=True)  # Новое поле
-
-#     filled_field: Mapped[List["Filled_field"]] = relationship(
-#         cascade="all, delete-orphan")
+    filled_field: Mapped[List["Filled_field"]] = relationship(
+        cascade="all, delete-orphan")
 
 
-# class Variant(Base):
-#     __tablename__ = 'variants'
+class Field(Base):
+    __tablename__ = 'field'
 
-#     id: Mapped[uuid.UUID] = mapped_column(primary_key=True, default=uuid.uuid4)
-#     field_id: Mapped[uuid.UUID] = mapped_column(
-#         ForeignKey("field.id", ondelete="CASCADE"), nullable=False)
-#     title: Mapped[str] = mapped_column(nullable=False)
+    id: Mapped[uuid.UUID] = mapped_column(primary_key=True)
+    title: Mapped[str]
+    hint: Mapped[str]
+    description: Mapped[str]
+    type: Mapped[FieldType] = mapped_column(Enum(FieldType), nullable=True)
+    major: Mapped[bool]
+    exercise_structure_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("exercise_structure.id",
+                                                                        ondelete="CASCADE"))
 
-#     # Связь с таблицей field
-#     field: Mapped["Field"] = relationship(back_populates="variants")
+    variants: Mapped[List["Variant"]] = relationship(
+        cascade="all, delete-orphan", back_populates="field"
+    )
+    exercises: Mapped[List[str]] = mapped_column(
+        ARRAY(String), nullable=True)  # Новое поле
+
+    filled_field: Mapped[List["Filled_field"]] = relationship(
+        cascade="all, delete-orphan")
 
 
-# class Filled_field(Base):
-#     __tablename__ = 'filled_field'
+class Variant(Base):
+    __tablename__ = 'variants'
 
-#     id: Mapped[uuid.UUID] = mapped_column(primary_key=True)
-#     text: Mapped[str]
+    id: Mapped[uuid.UUID] = mapped_column(primary_key=True, default=uuid.uuid4)
+    field_id: Mapped[uuid.UUID] = mapped_column(
+        ForeignKey("field.id", ondelete="CASCADE"), nullable=False)
+    title: Mapped[str] = mapped_column(nullable=False)
 
-#     field_id: Mapped[uuid.UUID] = mapped_column(
-#         ForeignKey("field.id", ondelete="CASCADE"))
-#     completed_exercise_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("completed_exercise.id",
-#                                                                         ondelete="CASCADE"))
-#     exercises: Mapped[List[str]] = mapped_column(ARRAY(String), nullable=True)
+    # Связь с таблицей field
+    field: Mapped["Field"] = relationship(back_populates="variants")
+
+
+class Filled_field(Base):
+    __tablename__ = 'filled_field'
+
+    id: Mapped[uuid.UUID] = mapped_column(primary_key=True)
+    text: Mapped[str]
+
+    field_id: Mapped[uuid.UUID] = mapped_column(
+        ForeignKey("field.id", ondelete="CASCADE"))
+    completed_exercise_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("completed_exercise.id",
+                                                                        ondelete="CASCADE"))
+    exercises: Mapped[List[str]] = mapped_column(ARRAY(String), nullable=True)
