@@ -11,6 +11,7 @@ router = APIRouter()
 @router.get(
     "/daily_tasks",
     tags=["Daily_task"],
+    description="у всех упражнений destination_id=b3f24ecc-d39e-46a3-b67b-4503f9f34506 фальшивый, не пользуйтесь им"
 )
 def get_daily_tasks(access_token: str = Cookie(None)):
     return daily_task_service.get_daily_tasks(access_token)
