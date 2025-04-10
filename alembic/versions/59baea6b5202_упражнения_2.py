@@ -21,6 +21,8 @@ depends_on: Union[str, Sequence[str], None] = None
 
 
 def upgrade() -> None:
+    op.execute("DROP TYPE IF EXISTS fieldtype")
+
     op.create_table(
         'exercise_structure',
         sa.Column('id', postgresql.UUID(as_uuid=True), nullable=False),
