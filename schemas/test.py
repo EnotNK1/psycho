@@ -189,7 +189,6 @@ class ResponseGetPassedTests(pydantic.BaseModel):
     title: str
     description: str
     test_id: uuid.UUID
-    link: str
 
 
 class ResponseGetPsychologist(pydantic.BaseModel):
