@@ -85,30 +85,33 @@ class EducationServiceDB:
     def get_all_education_material_db(self, education_theme_id, user_id):
         with session_factory() as session:
             try:
-                # 1. Проверка UUID
+                # Проверка UUID
                 try:
                     theme_uuid = uuid.UUID(str(education_theme_id))
-                    print(f"Converted UUID: {theme_uuid}")  # Логирование
                 except (ValueError, AttributeError) as e:
                     print(f"Invalid UUID format: {e}")
                     return -1
 
-                # 2. Проверка существования темы
+                # Проверка существования темы
                 theme = session.get(Educational_theme, theme_uuid)
                 if not theme:
                     print(f"Theme {theme_uuid} not found in DB")
                     return -1
 
-                # 3. Загрузка связанных данных
-                session.refresh(theme)
+                # Загрузка связанных данных с правильной сортировкой
                 materials = (
                     session.query(Educational_material)
                     .filter_by(educational_theme_id=theme_uuid)
-                    .options(selectinload(Educational_material.card))
+                    .order_by(Educational_material.number)  # Сортировка подтем по number
+                    .options(
+                        selectinload(Educational_material.card)
+                        .joinedload(Card)  # Явно загружаем карточки
+                        .order_by(Card.number)  # Сортировка карточек по number
+                    )
                     .all()
                 )
 
-                # 4. Формирование ответа
+                # Формирование ответа
                 response = {
                     "theme": theme.theme,
                     "id": str(theme.id),
@@ -118,15 +121,15 @@ class EducationServiceDB:
                     "subtopics": []
                 }
 
-                # 5. Обработка подтем - сортируем по полю number
-                for material in sorted(materials, key=lambda m: m.number):
+                # Группировка карточек по подтемам
+                for material in materials:
                     subtopic = {
                         "subtitle": material.subtitle or "",
                         "cards": []
                     }
 
-                    # Сортируем карточки по полю number
-                    for card in sorted(material.card, key=lambda c: c.number):
+                    # Добавляем карточки, относящиеся к этой подтеме
+                    for card in material.card:
                         subtopic["cards"].append({
                             "id": str(card.id),
                             "text": card.text,
@@ -135,7 +138,7 @@ class EducationServiceDB:
 
                     response["subtopics"].append(subtopic)
 
-                # 6. Обработка связанных тем
+                # Обработка связанных тем
                 if theme.related_topics:
                     for related_id in theme.related_topics:
                         try:
