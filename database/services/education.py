@@ -104,7 +104,6 @@ class EducationServiceDB:
                 materials = (
                     session.query(Educational_material)
                     .filter_by(educational_theme_id=theme_uuid)
-                    .order_by(Educational_material.number)
                     .options(selectinload(Educational_material.card))
                     .all()
                 )
@@ -119,13 +118,14 @@ class EducationServiceDB:
                     "subtopics": []
                 }
 
-                # 5. Обработка подтем
+                # 5. Обработка подтем - сортируем по полю number
                 for material in sorted(materials, key=lambda m: m.number):
                     subtopic = {
                         "subtitle": material.subtitle or "",
                         "cards": []
                     }
 
+                    # Сортируем карточки по полю number
                     for card in sorted(material.card, key=lambda c: c.number):
                         subtopic["cards"].append({
                             "id": str(card.id),
