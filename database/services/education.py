@@ -85,122 +85,75 @@ class EducationServiceDB:
     def get_all_education_material_db(self, education_theme_id, user_id):
         with session_factory() as session:
             try:
-                # Валидация UUID
+                # 1. Проверка UUID
                 try:
                     theme_uuid = uuid.UUID(str(education_theme_id))
-                except (ValueError, AttributeError):
+                    print(f"Converted UUID: {theme_uuid}")  # Логирование
+                except (ValueError, AttributeError) as e:
+                    print(f"Invalid UUID format: {e}")
                     return -1
 
-                # Получаем тему с материалами и карточками
-                query = (
-                    select(Educational_theme)
-                    .filter_by(id=theme_uuid)
-                    .options(
-                        selectinload(Educational_theme.educational_material)
-                        .selectinload(Educational_material.card),
-                        selectinload(Educational_theme.educational_material)
-                        .selectinload(Educational_material.educational_progress),
-                    )
-                )
-
-                try:
-                    education_theme = session.execute(query).scalars().one()
-                except NoResultFound:
+                # 2. Проверка существования темы
+                theme = session.get(Educational_theme, theme_uuid)
+                if not theme:
+                    print(f"Theme {theme_uuid} not found in DB")
                     return -1
 
-                # Сортируем материалы по number (с защитой от None)
-                sorted_materials = sorted(
-                    [m for m in education_theme.educational_material if m.number is not None],
-                    key=lambda x: x.number
+                # 3. Загрузка связанных данных
+                session.refresh(theme)
+                materials = (
+                    session.query(Educational_material)
+                    .filter_by(educational_theme_id=theme_uuid)
+                    .order_by(Educational_material.number)
+                    .options(selectinload(Educational_material.card))
+                    .all()
                 )
 
-                # Собираем связанные темы
-                related_topics = []
-                if education_theme.related_topics:
-                    for related_topic_id in education_theme.related_topics:
+                # 4. Формирование ответа
+                response = {
+                    "theme": theme.theme,
+                    "id": str(theme.id),
+                    "max_score": sum(len(m.card) for m in materials),
+                    "link_to_picture": theme.link or "",
+                    "related_topics": [],
+                    "subtopics": []
+                }
+
+                # 5. Обработка подтем
+                for material in sorted(materials, key=lambda m: m.number):
+                    subtopic = {
+                        "subtitle": material.subtitle or "",
+                        "cards": []
+                    }
+
+                    for card in sorted(material.card, key=lambda c: c.number):
+                        subtopic["cards"].append({
+                            "id": str(card.id),
+                            "text": card.text,
+                            "link_to_picture": card.link_to_picture or ""
+                        })
+
+                    response["subtopics"].append(subtopic)
+
+                # 6. Обработка связанных тем
+                if theme.related_topics:
+                    for related_id in theme.related_topics:
                         try:
-                            related_theme = session.get(Educational_theme, uuid.UUID(related_topic_id))
+                            related_theme = session.get(Educational_theme, uuid.UUID(related_id))
                             if related_theme:
-                                # Получаем первую картинку из первого материала
-                                link_to_picture = None
-                                if related_theme.educational_material:
-                                    first_material = min(
-                                        [m for m in related_theme.educational_material if m.number is not None],
-                                        key=lambda x: x.number,
-                                        default=None
-                                    )
-                                    if first_material and first_material.card:
-                                        first_card = min(
-                                            [c for c in first_material.card if c.number is not None],
-                                            key=lambda x: x.number,
-                                            default=None
-                                        )
-                                        if first_card:
-                                            link_to_picture = first_card.link_to_picture
-
-                                related_topics.append({
+                                response["related_topics"].append({
                                     "id": str(related_theme.id),
                                     "theme": related_theme.theme,
-                                    "link_to_picture": link_to_picture or "",
+                                    "link_to_picture": related_theme.link or "",
                                     "max_score": sum(len(m.card) for m in related_theme.educational_material)
                                 })
                         except:
                             continue
 
-                # Формируем подтемы с правильным порядком карточек
-                subtopics = []
-                for material in sorted_materials:
-                    # Сортируем карточки по number (с защитой от None)
-                    sorted_cards = sorted(
-                        [c for c in material.card if c.number is not None],
-                        key=lambda x: x.number
-                    )
-
-                    cards = [
-                        {
-                            "id": str(card.id),
-                            "text": card.text,
-                            "link_to_picture": card.link_to_picture or ""
-                        }
-                        for card in sorted_cards
-                    ]
-
-                    subtopics.append({
-                        "subtitle": material.subtitle or "",
-                        "cards": cards
-                    })
-
-                # Получаем основное изображение
-                main_link_to_picture = None
-                if education_theme.educational_material:
-                    first_material = min(
-                        [m for m in education_theme.educational_material if m.number is not None],
-                        key=lambda x: x.number,
-                        default=None
-                    )
-                    if first_material and first_material.card:
-                        first_card = min(
-                            [c for c in first_material.card if c.number is not None],
-                            key=lambda x: x.number,
-                            default=None
-                        )
-                        if first_card:
-                            main_link_to_picture = first_card.link_to_picture
-
-                # Формируем финальный ответ
-                response = {
-                    "theme": education_theme.theme,
-                    "id": str(education_theme.id),
-                    "max_score": sum(len(material.card) for material in education_theme.educational_material),
-                    "link_to_picture": main_link_to_picture or education_theme.link_to_picture or "",
-                    "related_topics": related_topics,
-                    "subtopics": subtopics
-                }
-
                 return response
 
             except Exception as e:
-                print(f"Error in get_all_education_material_db: {str(e)}")
+                print(f"Critical error: {str(e)}")
                 return -1
 
     def complete_education_material_db(self, edu_id, user_id):
