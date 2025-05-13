@@ -85,14 +85,13 @@ class EducationServiceDB:
     def get_all_education_material_db(self, education_theme_id, user_id):
         with session_factory() as session:
             try:
-                # Проверяем корректность UUID
+                # Валидация UUID
                 try:
-                    theme_uuid = uuid.UUID(education_theme_id)
-                except ValueError:
-                    print(f"Invalid UUID format: {education_theme_id}")
+                    theme_uuid = uuid.UUID(str(education_theme_id))
+                except (ValueError, AttributeError):
                     return -1
 
-                # Получаем тему с материалами
+                # Получаем тему с материалами и карточками
                 query = (
                     select(Educational_theme)
                     .filter_by(id=theme_uuid)
@@ -107,117 +106,101 @@ class EducationServiceDB:
                 try:
                     education_theme = session.execute(query).scalars().one()
                 except NoResultFound:
-                    print(f"Theme not found: {education_theme_id}")
-                    return -1
-                except Exception as e:
-                    print(f"Database error: {str(e)}")
                     return -1
 
-                # Логирование для отладки
-                print(f"Found theme: {education_theme.theme}")
-                print(f"Materials count: {len(education_theme.educational_material)}")
-
-                # Сортируем материалы по number
-                try:
-                    sorted_materials = sorted(
-                        education_theme.educational_material,
-                        key=lambda m: m.number
-                    )
-                    print("Materials sorted successfully")
-                except Exception as e:
-                    print(f"Sorting error: {str(e)}")
-                    return -1
+                # Сортируем материалы по number (с защитой от None)
+                sorted_materials = sorted(
+                    [m for m in education_theme.educational_material if m.number is not None],
+                    key=lambda x: x.number
+                )
 
                 # Собираем связанные темы
-                related_topics_ = []
+                related_topics = []
                 if education_theme.related_topics:
                     for related_topic_id in education_theme.related_topics:
                         try:
-                            topic_uuid = uuid.UUID(related_topic_id)
-                            query = select(Educational_theme).filter_by(id=topic_uuid)
-                            result = session.execute(query)
-                            education_theme_rel = result.scalars().one()
-
-                            # Получаем изображение для связанной темы
-                            link_to_picture = None
-                            if education_theme_rel.educational_material:
-                                sorted_rel_materials = sorted(
-                                    education_theme_rel.educational_material,
-                                    key=lambda m: m.number
-                                )
-                                if sorted_rel_materials and sorted_rel_materials[0].card:
-                                    sorted_rel_cards = sorted(
-                                        sorted_rel_materials[0].card,
-                                        key=lambda c: c.number
+                            related_theme = session.get(Educational_theme, uuid.UUID(related_topic_id))
+                            if related_theme:
+                                # Получаем первую картинку из первого материала
+                                link_to_picture = None
+                                if related_theme.educational_material:
+                                    first_material = min(
+                                        [m for m in related_theme.educational_material if m.number is not None],
+                                        key=lambda x: x.number,
+                                        default=None
                                     )
-                                    if sorted_rel_cards:
-                                        link_to_picture = sorted_rel_cards[0].link_to_picture
+                                    if first_material and first_material.card:
+                                        first_card = min(
+                                            [c for c in first_material.card if c.number is not None],
+                                            key=lambda x: x.number,
+                                            default=None
+                                        )
+                                        if first_card:
+                                            link_to_picture = first_card.link_to_picture
 
-                            topic = ResponceMaterial(
-                                id=education_theme_rel.id,
-                                theme=education_theme_rel.theme,
-                                link_to_picture=link_to_picture,
-                                max_score=sum(
-                                    len(material.card) for material in education_theme_rel.educational_material)
-                            )
-                            related_topics_.append(topic)
-                        except Exception as e:
-                            print(f"Error processing related topic {related_topic_id}: {str(e)}")
+                                related_topics.append({
+                                    "id": str(related_theme.id),
+                                    "theme": related_theme.theme,
+                                    "link_to_picture": link_to_picture or "",
+                                    "max_score": sum(len(m.card) for m in related_theme.educational_material)
+                                })
+                        except:
                             continue
 
-                # Формируем подтемы
+                # Формируем подтемы с правильным порядком карточек
                 subtopics = []
                 for material in sorted_materials:
-                    try:
-                        # Сортируем карточки
-                        sorted_cards = sorted(
-                            material.card,
-                            key=lambda c: c.number
-                        )
+                    # Сортируем карточки по number (с защитой от None)
+                    sorted_cards = sorted(
+                        [c for c in material.card if c.number is not None],
+                        key=lambda x: x.number
+                    )
 
-                        cards = [
-                            CardResponse(
-                                id=card.id,
-                                text=card.text,
-                                link_to_picture=card.link_to_picture
-                            )
-                            for card in sorted_cards
-                        ]
+                    cards = [
+                        {
+                            "id": str(card.id),
+                            "text": card.text,
+                            "link_to_picture": card.link_to_picture or ""
+                        }
+                        for card in sorted_cards
+                    ]
 
-                        subtopics.append(SubtopicResponse(
-                            subtitle=material.subtitle,
-                            cards=cards
-                        ))
-                    except Exception as e:
-                        print(f"Error processing material {material.id}: {str(e)}")
-                        continue
+                    subtopics.append({
+                        "subtitle": material.subtitle or "",
+                        "cards": cards
+                    })
 
                 # Получаем основное изображение
                 main_link_to_picture = None
-                if education_theme.educational_material and sorted_materials:
-                    first_material = sorted_materials[0]
-                    if first_material.card:
-                        sorted_cards = sorted(
-                            first_material.card,
-                            key=lambda c: c.number
+                if education_theme.educational_material:
+                    first_material = min(
+                        [m for m in education_theme.educational_material if m.number is not None],
+                        key=lambda x: x.number,
+                        default=None
+                    )
+                    if first_material and first_material.card:
+                        first_card = min(
+                            [c for c in first_material.card if c.number is not None],
+                            key=lambda x: x.number,
+                            default=None
                         )
-                        if sorted_cards:
-                            main_link_to_picture = sorted_cards[0].link_to_picture
+                        if first_card:
+                            main_link_to_picture = first_card.link_to_picture
 
-                # Формируем ответ
-                response = ResponceGetAllMaterial(
-                    theme=education_theme.theme,
-                    id=str(education_theme.id),
-                    link_to_picture=main_link_to_picture or education_theme.link_to_picture,
-                    max_score=sum(len(material.card) for material in education_theme.educational_material),
-                    related_topics=related_topics_,
-                    subtopics=subtopics
-                )
+                # Формируем финальный ответ
+                response = {
+                    "theme": education_theme.theme,
+                    "id": str(education_theme.id),
+                    "max_score": sum(len(material.card) for material in education_theme.educational_material),
+                    "link_to_picture": main_link_to_picture or education_theme.link_to_picture or "",
+                    "related_topics": related_topics,
+                    "subtopics": subtopics
+                }
 
                 return response
 
-            except Exception as error:
-                print(f"Critical error in get_all_education_material_db: {str(error)}", exc_info=True)
+            except Exception as e:
+                print(f"Error in get_all_education_material_db: {str(e)}")
                 return -1
 
     def complete_education_material_db(self, edu_id, user_id):
