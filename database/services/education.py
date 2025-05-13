@@ -85,7 +85,7 @@ class EducationServiceDB:
     def get_all_education_material_db(self, education_theme_id, user_id):
         with session_factory() as session:
             try:
-                # Получаем тему с материалами и карточками (без сортировки в запросе)
+                # Получаем тему с материалами и карточками
                 query = (
                     select(Educational_theme)
                     .filter_by(id=education_theme_id)
@@ -99,7 +99,13 @@ class EducationServiceDB:
                 result = session.execute(query)
                 education_theme = result.scalars().one()
 
-                # Собираем связанные темы (без изменений)
+                # Сортируем материалы по number и собираем данные
+                sorted_materials = sorted(
+                    education_theme.educational_material,
+                    key=lambda m: m.number
+                )
+
+                # Собираем связанные темы
                 related_topics_ = []
                 if education_theme.related_topics:
                     for related_topic_id in education_theme.related_topics:
@@ -107,7 +113,7 @@ class EducationServiceDB:
                         result = session.execute(query)
                         education_theme_rel = result.scalars().one()
 
-                        # Получаем первую картинку из первого материала первой карточки
+                        # Получаем первую картинку из первого материала
                         link_to_picture = None
                         if education_theme_rel.educational_material:
                             first_material = min(
@@ -129,11 +135,14 @@ class EducationServiceDB:
                         )
                         related_topics_.append(topic)
 
-                # Сортируем подтемы по number и собираем карточки
+                # Формируем подтемы с правильным порядком карточек
                 subtopics = []
-                for material in sorted(education_theme.educational_material, key=lambda m: m.number):
-                    # Сортируем карточки текущей подтемы по number
-                    sorted_cards = sorted(material.card, key=lambda c: c.number)
+                for material in sorted_materials:
+                    # Сортируем карточки по number
+                    sorted_cards = sorted(
+                        material.card,
+                        key=lambda c: c.number
+                    )
 
                     cards = [
                         CardResponse(
