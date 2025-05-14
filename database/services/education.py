@@ -104,6 +104,7 @@ class EducationServiceDB:
                 materials = (
                     session.query(Educational_material)
                     .filter_by(educational_theme_id=theme_uuid)
+                    .order_by(Educational_material.number)
                     .options(selectinload(Educational_material.card))
                     .all()
                 )
