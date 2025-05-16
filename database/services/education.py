@@ -98,7 +98,7 @@ class EducationServiceDB:
 
                 session.refresh(theme)
 
-                # Получаем материалы с подгруженными карточками
+                # Загружаем материалы с карточками
                 materials = (
                     session.query(Educational_material)
                     .filter_by(educational_theme_id=theme_uuid)
@@ -116,14 +116,12 @@ class EducationServiceDB:
                     "subtopics": []
                 }
 
-                # Привязка карточек строго к своему material
                 for material in materials:
                     subtopic = {
                         "subtitle": material.subtitle or "",
                         "cards": []
                     }
 
-                    # Только карточки, относящиеся к этому материалу
                     for card in sorted(material.card, key=lambda c: c.number):
                         subtopic["cards"].append({
                             "id": str(card.id),
