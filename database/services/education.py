@@ -116,20 +116,35 @@ class EducationServiceDB:
                     "subtopics": []
                 }
 
-                for material in materials:
-                    subtopic = {
+                # Создаем мапу number -> subtopic
+                number_to_subtopic = {
+                    material.number: {
                         "subtitle": material.subtitle or "",
                         "cards": []
                     }
+                    for material in materials
+                }
 
-                    for card in sorted(material.card, key=lambda c: c.number):
-                        subtopic["cards"].append({
-                            "id": str(card.id),
-                            "text": card.text,
-                            "link_to_picture": card.link_to_picture or ""
-                        })
+                # Привязка карточек по предпоследней цифре UUID
+                for material in materials:
+                    for card in material.card:
+                        card_str = str(card.id).replace("-", "")
+                        if len(card_str) < 2:
+                            continue
+                        try:
+                            penultimate_digit = int(card_str[-2])
+                            if penultimate_digit in number_to_subtopic:
+                                number_to_subtopic[penultimate_digit]["cards"].append({
+                                    "id": str(card.id),
+                                    "text": card.text,
+                                    "link_to_picture": card.link_to_picture or ""
+                                })
+                        except Exception as e:
+                            print(f"Card ID error: {e}")
+                            continue
 
-                    response["subtopics"].append(subtopic)
+                # Добавляем в response
+                response["subtopics"] = list(number_to_subtopic.values())
 
                 # Обработка связанных тем
                 if theme.related_topics:
