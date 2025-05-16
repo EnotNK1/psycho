@@ -88,6 +88,7 @@ class EducationServiceDB:
                 # 1. Проверка UUID
                 try:
                     theme_uuid = uuid.UUID(str(education_theme_id))
+                    print(f"Converted UUID: {theme_uuid}")  # Логирование
                 except (ValueError, AttributeError) as e:
                     print(f"Invalid UUID format: {e}")
                     return -1
@@ -98,16 +99,15 @@ class EducationServiceDB:
                     print(f"Theme {theme_uuid} not found in DB")
                     return -1
 
-                # 3. Загрузка всех подтем (Educational_material) с их карточками, сортируем по number
+                # 3. Загрузка связанных данных
+                session.refresh(theme)
                 materials = (
                     session.query(Educational_material)
                     .filter_by(educational_theme_id=theme_uuid)
-                    .options(
-                        selectinload(Educational_material.card)  # Жадная загрузка карточек
-                    )
-                    .order_by(Educational_material.number)  # Сортируем подтемы по number
+                    .options(selectinload(Educational_material.card))
                     .all()
                 )
+
 
                 # 4. Формирование ответа
                 response = {
@@ -119,27 +119,24 @@ class EducationServiceDB:
                     "subtopics": []
                 }
 
-                # 5. Обработка подтем и их карточек
-                for material in materials:
-                    # Сортируем карточки внутри подтемы по number
-                    sorted_cards = sorted(material.card, key=lambda c: c.number if c.number is not None else 0)
-
+                # 5. Обработка подтем - сортируем по полю number
+                for material in sorted(materials, key=lambda m: m.number):
                     subtopic = {
                         "subtitle": material.subtitle or "",
-                        "number": material.number,  # Добавляем номер подтемы (если нужно)
-                        "cards": [
-                            {
-                                "id": str(card.id),
-                                "number": card.number,  # Добавляем номер карточки (если нужно)
-                                "text": card.text,
-                                "link_to_picture": card.link_to_picture or ""
-                            }
-                            for card in sorted_cards
-                        ]
+                        "cards": []
                     }
+
+                    # Сортируем карточки по полю number
+                    for card in sorted(material.card, key=lambda c: c.number):
+                        subtopic["cards"].append({
+                            "id": str(card.id),
+                            "text": card.text,
+                            "link_to_picture": card.link_to_picture or ""
+                        })
+
                     response["subtopics"].append(subtopic)
 
-                # 6. Обработка связанных тем (если есть)
+                # 6. Обработка связанных тем
                 if theme.related_topics:
                     for related_id in theme.related_topics:
                         try:
