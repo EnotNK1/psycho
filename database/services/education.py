@@ -88,7 +88,6 @@ class EducationServiceDB:
                 # 1. Проверка UUID
                 try:
                     theme_uuid = uuid.UUID(str(education_theme_id))
-                    print(f"Converted UUID: {theme_uuid}")  # Логирование
                 except (ValueError, AttributeError) as e:
                     print(f"Invalid UUID format: {e}")
                     return -1
@@ -99,8 +98,7 @@ class EducationServiceDB:
                     print(f"Theme {theme_uuid} not found in DB")
                     return -1
 
-                # 3. Загрузка связанных данных
-                session.refresh(theme)
+                # 3. Загрузка материалов с карточками
                 materials = (
                     session.query(Educational_material)
                     .filter_by(educational_theme_id=theme_uuid)
@@ -109,35 +107,66 @@ class EducationServiceDB:
                     .all()
                 )
 
+                # Сортировка карточек внутри материалов
+                for material in materials:
+                    material.card.sort(key=lambda c: c.number)
 
-                # 4. Формирование ответа
+                # 4. Сбор всех карточек в одну ленту
+                all_cards = []
+                for material in materials:
+                    for card in material.card:
+                        all_cards.append((material.subtitle or "", card))
+
+                # 5. Группировка карточек по подзаголовкам (subtitle)
+                subtopics = []
+                current_subtitle_index = 0
+                grouped_cards = []
+                subtitles = [m.subtitle or "" for m in materials]
+
+                for subtitle in subtitles:
+                    if subtitle.strip():  # отфильтровка пустых
+                        pass
+                    else:
+                        subtitles.remove(subtitle)
+
+                for subtitle in subtitles:
+                    subtopics.append({
+                        "subtitle": subtitle,
+                        "cards": []
+                    })
+
+                if not subtopics:
+                    print("No subtitles found")
+                    return -1
+
+                current_subtopic = subtopics[current_subtitle_index]
+
+                for _, card in all_cards:
+                    if card.number == 1 and current_subtitle_index < len(subtopics):
+                        # Переход к следующей подтеме, если уже есть карточки
+                        if current_subtopic["cards"]:
+                            current_subtitle_index += 1
+                            if current_subtitle_index >= len(subtopics):
+                                break
+                            current_subtopic = subtopics[current_subtitle_index]
+                    # Добавление карточки в текущую подтему
+                    current_subtopic["cards"].append({
+                        "id": str(card.id),
+                        "text": card.text,
+                        "link_to_picture": card.link_to_picture or ""
+                    })
+
+                # 6. Формирование полного ответа
                 response = {
                     "theme": theme.theme,
                     "id": str(theme.id),
                     "max_score": sum(len(m.card) for m in materials),
                     "link_to_picture": theme.link or "",
                     "related_topics": [],
-                    "subtopics": []
+                    "subtopics": subtopics
                 }
 
-                # 5. Обработка подтем - сортируем по полю number
-                for material in sorted(materials, key=lambda m: m.number):
-                    subtopic = {
-                        "subtitle": material.subtitle or "",
-                        "cards": []
-                    }
-
-                    # Сортируем карточки по полю number
-                    for card in sorted(material.card, key=lambda c: c.number):
-                        subtopic["cards"].append({
-                            "id": str(card.id),
-                            "text": card.text,
-                            "link_to_picture": card.link_to_picture or ""
-                        })
-
-                    response["subtopics"].append(subtopic)
-
-                # 6. Обработка связанных тем
+                # 7. Обработка связанных тем
                 if theme.related_topics:
                     for related_id in theme.related_topics:
                         try:
@@ -149,7 +178,7 @@ class EducationServiceDB:
                                     "link_to_picture": related_theme.link or "",
                                     "max_score": sum(len(m.card) for m in related_theme.educational_material)
                                 })
-                        except:
+                        except Exception as e:
                             continue
 
                 return response
@@ -157,6 +186,7 @@ class EducationServiceDB:
             except Exception as e:
                 print(f"Critical error: {str(e)}")
                 return -1
+
 
     def complete_education_material_db(self, edu_id, user_id):
         with session_factory() as session:
