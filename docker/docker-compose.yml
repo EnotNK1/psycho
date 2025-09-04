@@ -2,7 +2,7 @@ version: '3'
 
 services:
   app:
-    container_name: odeyalo-backend-app
+    container_name: old-odeyalo-backend-app
     build:
       context: ..
       dockerfile: ./docker/Dockerfile
@@ -14,9 +14,9 @@ services:
       - odeyalo-network
     depends_on:
       - db
-    mac_address: 02:42:ac:18:00:01
+    mac_address: 02:42:ac:18:01:01
   db:
-    container_name: odeyalo-backend-db
+    container_name: old-odeyalo-backend-db
     image: public.ecr.aws/docker/library/postgres
     environment:
       POSTGRES_USER: user
@@ -24,9 +24,9 @@ services:
       POSTGRES_DB: dbname
     networks:
       - odeyalo-network
-    mac_address: 02:42:ac:18:00:02
+    mac_address: 02:42:ac:18:01:02
   nginx:
-    container_name: odeyalo-backend-nginx
+    container_name: old-odeyalo-backend-nginx
     image: public.ecr.aws/nginx/nginx:latest
     # ports:
     # - "80:80"
@@ -38,9 +38,9 @@ services:
       - odeyalo-network
     depends_on:
       - app
-    mac_address: 02:42:ac:18:00:03
+    mac_address: 02:42:ac:18:01:03
   redis:
-    container_name: odeyalo-backend-redis
+    container_name: old-odeyalo-backend-redis
     image: public.ecr.aws/docker/library/redis:latest
     volumes:
       - ./redis-data:/data
@@ -48,9 +48,9 @@ services:
       - odeyalo-network
     depends_on:
       - nginx
-    mac_address: 02:42:ac:18:00:04
+    mac_address: 02:42:ac:18:01:04
   celery:
-    container_name: odeyalo-backend-celery
+    container_name: old-odeyalo-backend-celery
     build:
       context: ..
       dockerfile: ./docker/Dockerfile
@@ -61,7 +61,7 @@ services:
       - odeyalo-network
     depends_on:
       - redis
-    mac_address: 02:42:ac:18:00:05
+    mac_address: 02:42:ac:18:01:05
 
 networks:
   odeyalo-network:
